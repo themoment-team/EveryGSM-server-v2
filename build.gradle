@@ -77,7 +77,7 @@ dependencies {
 	annotationProcessor 'io.github.openfeign.querydsl:querydsl-apt:7.1:jakarta'
 
 	// json
-	implementation("net.minidev:json-smart:2.6.0")
+	implementation 'net.minidev:json-smart:2.6.0'
 
 	// Jakarta
 	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
