@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 @RestControllerAdvice
 public class ApiResponseWrapper implements ResponseBodyAdvice<Object> {
 
-    private static final String[] NOT_WRAPPING_URL = {"/api-docs/**", "/prometheus/**"};
+    private static final String[] NOT_WRAPPING_URL = {"/api-docs/**"};
 
     private final AntPathMatcher matcher = new AntPathMatcher();
 
