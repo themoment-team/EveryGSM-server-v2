@@ -10,7 +10,7 @@ import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.SneakyThrows;
 
-@OpenAPIDefinition(info = @Info(title = "Hello, GSM 2025", description = "광주소프트웨어마이스터고등학교 입학지원 시스템", version = "v1"))
+@OpenAPIDefinition(info = @Info(title = "EveryGSM v2", description = "광주소프트웨어마이스터고등학교 프로젝트를 한 곳에 모으는 서비스", version = "v1"))
 @Configuration
 public class SwaggerConfig {
 
