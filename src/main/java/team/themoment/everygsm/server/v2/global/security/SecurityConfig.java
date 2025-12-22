@@ -1,7 +1,9 @@
 package team.themoment.everygsm.server.v2.global.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -10,13 +12,16 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import team.themoment.everygsm.server.v2.global.security.data.CorsEnvironment;
 
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CorsEnvironment corsEnvironment;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -39,15 +44,25 @@ public class SecurityConfig {
         return http.build();
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of(
-                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
-        ));
+        configuration.setAllowedOrigins(corsEnvironment.getAllowedOrigins());
+
+        configuration.setAllowedMethods(
+                List.of(
+                                HttpMethod.GET,
+                                HttpMethod.POST,
+                                HttpMethod.PUT,
+                                HttpMethod.PATCH,
+                                HttpMethod.DELETE,
+                                HttpMethod.OPTIONS
+                        ).stream()
+                        .map(HttpMethod::name)
+                        .toList()
+        );
+
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(false);
 
