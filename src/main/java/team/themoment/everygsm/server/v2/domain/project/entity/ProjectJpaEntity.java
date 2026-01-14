@@ -71,10 +71,6 @@ public class ProjectJpaEntity {
         this.reason = reason;
     }
 
-    public void updateStatus(Status status) {
-        this.status = status;
-    }
-
     public void updateStatus(Status status, String reason) {
         this.status = status;
         this.reason = reason;
