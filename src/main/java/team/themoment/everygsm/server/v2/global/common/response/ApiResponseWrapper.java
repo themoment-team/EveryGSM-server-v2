@@ -28,8 +28,8 @@ public class ApiResponseWrapper implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
-                                  Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
-                                  ServerHttpResponse response) {
+            Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
+            ServerHttpResponse response) {
 
         if (isNotWrappingURL(request.getURI().getPath())) {
             return body;
@@ -65,7 +65,7 @@ public class ApiResponseWrapper implements ResponseBodyAdvice<Object> {
     }
 
     private static CommonApiResponse<Object> exceptionResponse(ServerHttpResponse response,
-                                                               Map<String, Object> bodyMap) {
+            Map<String, Object> bodyMap) {
         if (bodyMap.containsKey("status")) {
             int statusCode = (int) bodyMap.get("status");
             if (statusCode >= 400 && statusCode < 600) {

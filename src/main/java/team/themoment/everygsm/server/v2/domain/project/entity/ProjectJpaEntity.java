@@ -1,13 +1,13 @@
 package team.themoment.everygsm.server.v2.domain.project.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "projects")
@@ -53,14 +53,8 @@ public class ProjectJpaEntity {
     }
 
     @Builder
-    public ProjectJpaEntity(UserJpaEntity user,
-                            String logo,
-                            String title,
-                            String affiliation,
-                            String description,
-                            String prodUrl,
-                            Status status,
-                            String reason) {
+    public ProjectJpaEntity(UserJpaEntity user, String logo, String title, String affiliation, String description,
+            String prodUrl, Status status, String reason) {
         this.user = user;
         this.logo = logo;
         this.title = title;
