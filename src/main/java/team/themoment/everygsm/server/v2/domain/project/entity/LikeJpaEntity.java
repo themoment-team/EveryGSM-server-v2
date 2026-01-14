@@ -10,7 +10,7 @@ import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
 @Table(name = "likes", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"project_id", "user_id"})
 })
-@NoArgsConstructor
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Getter
 public class LikeJpaEntity {
     @Id

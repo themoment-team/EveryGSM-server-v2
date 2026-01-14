@@ -8,7 +8,7 @@ import team.themoment.everygsm.server.v2.domain.user.entity.constant.Role;
 
 @Entity
 @Table(name = "users")
-@NoArgsConstructor
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Getter
 public class UserJpaEntity {
     @Id
