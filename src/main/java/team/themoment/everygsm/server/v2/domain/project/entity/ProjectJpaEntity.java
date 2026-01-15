@@ -50,20 +50,14 @@ public class ProjectJpaEntity {
     private LocalDateTime createdAt;
 
     @ElementCollection
-    @CollectionTable(
-            name = "repo_urls",
-            joinColumns = @JoinColumn(name = "project_id"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"project_id", "repo_url"})
-    )
+    @CollectionTable(name = "repo_urls", joinColumns = @JoinColumn(name = "project_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+            "project_id", "repo_url"}))
     @Column(name = "repo_url", nullable = false, length = 512)
     private Set<String> repoUrls;
 
     @ElementCollection
-    @CollectionTable(
-            name = "stack_names",
-            joinColumns = @JoinColumn(name = "project_id"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"project_id", "stack_name"})
-    )
+    @CollectionTable(name = "stack_names", joinColumns = @JoinColumn(name = "project_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+            "project_id", "stack_name"}))
     @Column(name = "stack_name", nullable = false)
     private Set<String> stackNames;
 
