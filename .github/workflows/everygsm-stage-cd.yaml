@@ -1,16 +1,18 @@
-#name: EveryGSM stage CD workflow
-#
-#on:
-#  push:
-#    branches:
-#      - 'develop'
-#  workflow_dispatch:
-#
-#jobs:
-#  CD:
-#    runs-on: ubuntu-latest
-#    environment: stage
-#    steps:
+name: EveryGSM stage CD workflow
+
+on:
+  push:
+    branches:
+      - 'develop'
+  workflow_dispatch:
+
+jobs:
+  CD:
+    runs-on: ubuntu-latest
+    environment: stage
+    steps:
+      - name: Temporary Disabled Step
+        run: echo "This deployment workflow is temporarily disabled."
 #      - name: Checkout Code
 #        uses: actions/checkout@v6
 #
