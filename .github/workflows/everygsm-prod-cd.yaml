@@ -28,7 +28,7 @@
 #
 #      - name: Make YML Files
 #        run: |
-#          touch ./src/main/resources/application-PROD.yml
+#          touch ./src/main/resources/application-prod.yml
 #          echo "${{ secrets.PROD_APPLICATION_YAML }}" > ./src/main/resources/application-prod.yml
 #        shell: bash
 #
