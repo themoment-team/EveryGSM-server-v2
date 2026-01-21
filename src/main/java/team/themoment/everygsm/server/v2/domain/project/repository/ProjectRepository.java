@@ -12,18 +12,18 @@ import java.util.Set;
 public interface ProjectRepository extends JpaRepository<ProjectJpaEntity, Long> {
 
     @Query("""
-        select r
-        from ProjectJpaEntity p
-        join p.repoUrls r
-        where p.id = :projectId
+        SELECT r
+        FROM ProjectJpaEntity p
+        JOIN p.repoUrls r
+        WHERE p.id = :projectId
     """)
     Set<String> findRepoUrlsByProjectId(@Param("projectId") Long projectId);
 
     @Query("""
-        select s
-        from ProjectJpaEntity p
-        join p.stackNames s
-        where p.id = :projectId
+        SELECT s
+        FROM ProjectJpaEntity p
+        JOIN p.stackNames s
+        WHERE p.id = :projectId
     """)
     Set<String> findStackNamesByProjectId(@Param("projectId") Long projectId);
 }
