@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.request.CreateProjectReqDto;
-import team.themoment.everygsm.server.v2.domain.project.dto.response.CreateProjectResDto;
+import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
@@ -28,7 +28,7 @@ public class CreateProjectService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CreateProjectResDto execute(Long userId, CreateProjectReqDto reqDto){
+    public ProjectResDto execute(Long userId, CreateProjectReqDto reqDto){
         UserJpaEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ExpectedException("해당 유저가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
@@ -59,7 +59,7 @@ public class CreateProjectService {
                 .stackNames(stackNames)
                 .build();
     }
-    private CreateProjectResDto buildProjectResDto(ProjectJpaEntity project){
+    private ProjectResDto buildProjectResDto(ProjectJpaEntity project){
         List<TechStackDto> techStacks =
                 project.getStackNames().stream()
                         .map(TechStackDto::new)
@@ -70,7 +70,7 @@ public class CreateProjectService {
                         .map(RepositoryDto::new)
                         .toList();
 
-        return new CreateProjectResDto(
+        return new ProjectResDto(
                 project.getId(),
                 project.getLogo(),
                 project.getTitle(),

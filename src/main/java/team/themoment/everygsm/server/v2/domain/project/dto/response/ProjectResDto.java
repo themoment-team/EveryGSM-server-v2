@@ -7,7 +7,7 @@ import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record CreateProjectResDto(
+public record ProjectResDto(
         Long projectId,
         String logo,
         String title,
