@@ -6,15 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
-import team.themoment.everygsm.server.v2.domain.project.dto.request.RegisterProjectReqDto;
-import team.themoment.everygsm.server.v2.domain.project.dto.response.RegisterProjectResDto;
+import team.themoment.everygsm.server.v2.domain.project.dto.request.CreateProjectReqDto;
+import team.themoment.everygsm.server.v2.domain.project.dto.response.CreateProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
 import team.themoment.everygsm.server.v2.domain.user.repository.UserRepository;
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,13 +22,13 @@ import static team.themoment.everygsm.server.v2.domain.project.entity.constant.S
 
 @Service
 @RequiredArgsConstructor
-public class RegisterProjectService {
+public class CreateProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
     @Transactional
-    public RegisterProjectResDto execute(Long userId, RegisterProjectReqDto reqDto){
+    public CreateProjectResDto execute(Long userId, CreateProjectReqDto reqDto){
         UserJpaEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ExpectedException("해당 유저가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
@@ -37,7 +36,7 @@ public class RegisterProjectService {
         return buildProjectResDto(project);
     }
 
-    private ProjectJpaEntity buildProject(RegisterProjectReqDto reqDto, UserJpaEntity user){
+    private ProjectJpaEntity buildProject(CreateProjectReqDto reqDto, UserJpaEntity user){
         Set<String> repoUrls = java.util.Optional.ofNullable(reqDto.repository()).stream()
                 .flatMap(java.util.Collection::stream)
                 .map(RepositoryDto::repoUrl)
@@ -60,7 +59,7 @@ public class RegisterProjectService {
                 .stackNames(stackNames)
                 .build();
     }
-    private RegisterProjectResDto buildProjectResDto(ProjectJpaEntity project){
+    private CreateProjectResDto buildProjectResDto(ProjectJpaEntity project){
         List<TechStackDto> techStacks =
                 project.getStackNames().stream()
                         .map(TechStackDto::new)
@@ -71,7 +70,7 @@ public class RegisterProjectService {
                         .map(RepositoryDto::new)
                         .toList();
 
-        return new RegisterProjectResDto(
+        return new CreateProjectResDto(
                 project.getId(),
                 project.getLogo(),
                 project.getTitle(),

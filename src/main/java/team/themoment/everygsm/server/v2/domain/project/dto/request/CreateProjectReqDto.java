@@ -9,7 +9,7 @@ import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 
 import java.util.List;
 
-public record RegisterProjectReqDto(
+public record CreateProjectReqDto(
         @URL String logo,
         @NotBlank String title,
         @NotBlank String affiliation,
