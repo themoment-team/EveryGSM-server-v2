@@ -19,7 +19,7 @@ public class ProjectController {
 
     @PostMapping("/registration")
     public RegisterProjectResDto register(@RequestBody @Valid RegisterProjectReqDto reqDto){
-        Long userId = 1L;
+        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
         return registerProjectService.execute(userId, reqDto);
     }
 }
