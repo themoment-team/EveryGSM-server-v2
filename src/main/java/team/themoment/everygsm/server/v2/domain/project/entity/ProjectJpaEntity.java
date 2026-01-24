@@ -67,8 +67,16 @@ public class ProjectJpaEntity {
     }
 
     @Builder
-    public ProjectJpaEntity(UserJpaEntity user, String logo, String title, String affiliation, String description,
-            String prodUrl, Status status, String reason, Set<String> repoUrls, Set<String> stackNames) {
+    public ProjectJpaEntity(UserJpaEntity user,
+            String logo,
+            String title,
+            String affiliation,
+            String description,
+            String prodUrl,
+            Status status,
+            String reason,
+            Set<String> repoUrls,
+            Set<String> stackNames) {
         this.user = user;
         this.logo = logo;
         this.title = title;

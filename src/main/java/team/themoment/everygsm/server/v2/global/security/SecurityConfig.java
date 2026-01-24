@@ -45,8 +45,12 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(corsEnvironment.getAllowedOrigins());
 
-        configuration.setAllowedMethods(List.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH,
-                HttpMethod.DELETE, HttpMethod.OPTIONS).stream().map(HttpMethod::name).toList());
+        configuration.setAllowedMethods(List.of(HttpMethod.GET,
+                HttpMethod.POST,
+                HttpMethod.PUT,
+                HttpMethod.PATCH,
+                HttpMethod.DELETE,
+                HttpMethod.OPTIONS).stream().map(HttpMethod::name).toList());
 
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(false);
