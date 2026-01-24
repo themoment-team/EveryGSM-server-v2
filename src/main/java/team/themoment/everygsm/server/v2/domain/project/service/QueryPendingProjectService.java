@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectListResDto;
@@ -18,6 +19,7 @@ import team.themoment.everygsm.server.v2.domain.project.repository.ProjectReposi
 public class QueryPendingProjectService {
     private final ProjectRepository projectRepository;
 
+    @Transactional(readOnly = true)
     public ProjectListResDto execute(Long userId) {
         List<ProjectJpaEntity> projects = projectRepository.findByUserIdAndStatus(userId, Status.PENDING);
 
