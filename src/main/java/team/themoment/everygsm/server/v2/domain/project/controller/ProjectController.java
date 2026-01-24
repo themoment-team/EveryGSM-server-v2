@@ -14,7 +14,7 @@ import team.themoment.everygsm.server.v2.domain.project.service.QueryProjectServ
 import team.themoment.everygsm.server.v2.domain.user.entity.constant.Role;
 
 @RestController
-@RequestMapping("/api/v1/project")
+@RequestMapping("/api/v1/projects")
 @RequiredArgsConstructor
 public class ProjectController {
     private final CreateProjectService createProjectService;
@@ -26,8 +26,8 @@ public class ProjectController {
         return createProjectService.execute(userId, reqDto);
     }
 
-    @GetMapping("/view")
-    public QueryProjectResDto view() {
+    @GetMapping("/")
+    public QueryProjectResDto query() {
         Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
         Role role = USER; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
         return queryProjectService.execute(role, userId);
