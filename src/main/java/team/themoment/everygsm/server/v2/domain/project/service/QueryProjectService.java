@@ -54,7 +54,7 @@ public class QueryProjectService {
 
         List<Long> projectIds = projects.stream().map(ProjectJpaEntity::getId).toList();
 
-        Set<Long> likedProjectIds = new java.util.HashSet<>(projectLikeRepository.findProjectId(userId, projectIds));
+        Set<Long> likedProjectIds = new java.util.HashSet<>(projectLikeRepository.findByProjectId(userId, projectIds));
 
         List<ProjectResDto> res = projects.stream().map(p -> toUserRes(p, likedProjectIds.contains(p.getId())))
                 .toList();

@@ -15,5 +15,5 @@ public interface ProjectLikeRepository extends JpaRepository<LikeJpaEntity, Long
                 WHERE pl.user.id = :userId
                   AND pl.project.id in :projectIds
             """)
-    List<Long> findProjectId(@Param("userId") Long userId, @Param("projectIds") List<Long> projectIds);
+    List<Long> findByProjectId(@Param("userId") Long userId, @Param("projectIds") List<Long> projectIds);
 }
