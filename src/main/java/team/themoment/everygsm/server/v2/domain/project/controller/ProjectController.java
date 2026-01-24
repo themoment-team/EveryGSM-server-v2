@@ -26,7 +26,7 @@ public class ProjectController {
         return createProjectService.execute(userId, reqDto);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public QueryProjectResDto query() {
         Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
         Role role = USER; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
