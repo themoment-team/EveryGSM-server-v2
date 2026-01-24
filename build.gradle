@@ -17,7 +17,7 @@ java {
 spotless {
 	java {
 		target 'src/main/java/**/*.java', 'src/test/java/**/*.java'
-		eclipse()
+		eclipse().configFile("src/main/resources/eclipse-java-formatter.xml")
 		leadingTabsToSpaces(4)
 		importOrder('java', 'javax', 'org', 'com', '')
 		removeUnusedImports()
