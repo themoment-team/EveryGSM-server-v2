@@ -73,18 +73,36 @@ public class QueryProjectService {
         List<TechStackDto> techStacks = extractTechStacks(project);
         List<RepositoryDto> repositories = extractRepositories(project);
 
-        return new ProjectResDto(project.getId(), project.getLogo(), project.getTitle(), project.getAffiliation(),
-                project.getDescription(), project.getProdUrl(), project.getStatus(), project.getReason(),
-                project.getCreatedAt(), techStacks, repositories, false);
+        return new ProjectResDto(project.getId(),
+                project.getLogo(),
+                project.getTitle(),
+                project.getAffiliation(),
+                project.getDescription(),
+                project.getProdUrl(),
+                project.getStatus(),
+                project.getReason(),
+                project.getCreatedAt(),
+                techStacks,
+                repositories,
+                false);
     }
 
     private ProjectResDto toUserRes(ProjectJpaEntity project, boolean liked) {
         List<TechStackDto> techStacks = extractTechStacks(project);
         List<RepositoryDto> repositories = extractRepositories(project);
 
-        return new ProjectResDto(project.getId(), project.getLogo(), project.getTitle(), project.getAffiliation(),
-                project.getDescription(), project.getProdUrl(), project.getStatus(), project.getReason(),
-                project.getCreatedAt(), techStacks, repositories, liked);
+        return new ProjectResDto(project.getId(),
+                project.getLogo(),
+                project.getTitle(),
+                project.getAffiliation(),
+                project.getDescription(),
+                project.getProdUrl(),
+                project.getStatus(),
+                project.getReason(),
+                project.getCreatedAt(),
+                techStacks,
+                repositories,
+                liked);
     }
 
     private List<TechStackDto> extractTechStacks(ProjectJpaEntity project) {
