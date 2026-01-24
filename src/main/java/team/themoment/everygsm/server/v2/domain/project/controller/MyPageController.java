@@ -19,7 +19,7 @@ public class MyPageController {
     private final QueryPendingProjectService queryPendingProjectService;
     private final QueryRejectedProjectService queryRejectedProjectService;
 
-    @GetMapping("/")
+    @GetMapping
     public MyPageResDto query() {
         Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
         return queryMypageService.execute(userId);
