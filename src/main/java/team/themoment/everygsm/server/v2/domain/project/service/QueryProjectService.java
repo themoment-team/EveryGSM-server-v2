@@ -10,6 +10,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
@@ -26,34 +27,35 @@ public class QueryProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectLikeRepository projectLikeRepository;
 
+    @Transactional
     public QueryProjectResDto execute(@Nullable Role role, @Nullable Long userId) {
-        return buildViewResDto(role, userId);
+        return buildQueryResDto(role, userId);
     }
 
-    private QueryProjectResDto buildViewResDto(@Nullable Role role, @Nullable Long userId) {
+    private QueryProjectResDto buildQueryResDto(@Nullable Role role, @Nullable Long userId) {
         if (role == null) {
-            return buildGuestView();
+            return buildGuestQuery();
         }
         return switch (role) {
-            case USER -> buildUserView(userId);
-            case ADMIN -> buildAdminView();
+            case USER -> buildUserQuery(userId);
+            case ADMIN -> buildAdminQuery();
         };
     }
 
-    private QueryProjectResDto buildGuestView() {
+    private QueryProjectResDto buildGuestQuery() {
         List<ProjectJpaEntity> projects = projectRepository.findByStatus(APPROVED);
         List<ProjectResDto> res = projects.stream().map(this::toRes).toList();
 
         return new QueryProjectResDto(res);
     }
 
-    private QueryProjectResDto buildUserView(Long userId) {
+    private QueryProjectResDto buildUserQuery(Long userId) {
         List<ProjectJpaEntity> projects = projectRepository.findByStatus(APPROVED);
 
         List<Long> projectIds = projects.stream().map(ProjectJpaEntity::getId).toList();
 
         Set<Long> likedProjectIds = new java.util.HashSet<>(
-                projectLikeRepository.findLikedProjectIds(userId, projectIds));
+                projectLikeRepository.findProjectId(userId, projectIds));
 
         List<ProjectResDto> res = projects.stream().map(p -> toUserRes(p, likedProjectIds.contains(p.getId())))
                 .toList();
@@ -61,7 +63,7 @@ public class QueryProjectService {
         return new QueryProjectResDto(res);
     }
 
-    private QueryProjectResDto buildAdminView() {
+    private QueryProjectResDto buildAdminQuery() {
         List<ProjectJpaEntity> projects = projectRepository.findByStatus(PENDING);
         List<ProjectResDto> res = projects.stream().map(this::toRes).toList();
 
