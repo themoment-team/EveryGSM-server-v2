@@ -6,11 +6,11 @@ import static team.themoment.everygsm.server.v2.domain.project.entity.constant.S
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
@@ -54,8 +54,7 @@ public class QueryProjectService {
 
         List<Long> projectIds = projects.stream().map(ProjectJpaEntity::getId).toList();
 
-        Set<Long> likedProjectIds = new java.util.HashSet<>(
-                projectLikeRepository.findProjectId(userId, projectIds));
+        Set<Long> likedProjectIds = new java.util.HashSet<>(projectLikeRepository.findProjectId(userId, projectIds));
 
         List<ProjectResDto> res = projects.stream().map(p -> toUserRes(p, likedProjectIds.contains(p.getId())))
                 .toList();
