@@ -4,6 +4,7 @@ import static team.themoment.everygsm.server.v2.domain.project.entity.constant.S
 import static team.themoment.everygsm.server.v2.domain.project.entity.constant.Status.PENDING;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
@@ -35,10 +36,12 @@ public class ViewProjectService {
     }
 
     private ViewProjectResDto buildViewResDto(@Nullable Role role, @Nullable Long userId) {
+        if (role == null) {
+            return buildGuestView();
+        }
         return switch (role) {
             case USER -> buildUserView(userId);
             case ADMIN -> buildAdminView();
-            default -> buildGuestView();
         };
     }
 
@@ -51,7 +54,18 @@ public class ViewProjectService {
 
     private ViewProjectResDto buildUserView(Long userId) {
         List<ProjectJpaEntity> projects = projectRepository.findByStatus(APPROVED);
-        List<ProjectResDto> res = projects.stream().map(project -> toUserRes(project, userId)).toList();
+
+        List<Long> projectIds = projects.stream()
+                .map(ProjectJpaEntity::getId)
+                .toList();
+
+        Set<Long> likedProjectIds = new java.util.HashSet<>(
+                projectLikeRepository.findLikedProjectIds(userId, projectIds)
+        );
+
+        List<ProjectResDto> res = projects.stream()
+                .map(p -> toUserRes(p, likedProjectIds.contains(p.getId())))
+                .toList();
 
         return new ViewProjectResDto(res);
     }
@@ -64,27 +78,32 @@ public class ViewProjectService {
     }
 
     private ProjectResDto toRes(ProjectJpaEntity project) {
-        List<TechStackDto> techStacks = project.getStackNames().stream().map(TechStackDto::new).toList();
-
-        List<RepositoryDto> repositories = project.getRepoUrls().stream().map(RepositoryDto::new).toList();
+        List<TechStackDto> techStacks = extractTechStacks(project);
+        List<RepositoryDto> repositories = extractRepositories(project);
 
         return new ProjectResDto(project.getId(), project.getLogo(), project.getTitle(), project.getAffiliation(),
                 project.getDescription(), project.getProdUrl(), project.getStatus(), project.getReason(),
                 project.getCreatedAt(), techStacks, repositories, false);
     }
 
-    private ProjectResDto toUserRes(ProjectJpaEntity project, Long userId) {
-        UserJpaEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new ExpectedException("해당 유저가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
-
-        List<TechStackDto> techStacks = project.getStackNames().stream().map(TechStackDto::new).toList();
-
-        List<RepositoryDto> repositories = project.getRepoUrls().stream().map(RepositoryDto::new).toList();
-
-        boolean liked = projectLikeRepository.findByProjectAndUser(project, user);
+    private ProjectResDto toUserRes(ProjectJpaEntity project, boolean liked) {
+        List<TechStackDto> techStacks = extractTechStacks(project);
+        List<RepositoryDto> repositories = extractRepositories(project);
 
         return new ProjectResDto(project.getId(), project.getLogo(), project.getTitle(), project.getAffiliation(),
                 project.getDescription(), project.getProdUrl(), project.getStatus(), project.getReason(),
                 project.getCreatedAt(), techStacks, repositories, liked);
+    }
+
+    private List<TechStackDto> extractTechStacks(ProjectJpaEntity project) {
+        return project.getStackNames().stream()
+                .map(TechStackDto::new)
+                .toList();
+    }
+
+    private List<RepositoryDto> extractRepositories(ProjectJpaEntity project) {
+        return project.getRepoUrls().stream()
+                .map(RepositoryDto::new)
+                .toList();
     }
 }
