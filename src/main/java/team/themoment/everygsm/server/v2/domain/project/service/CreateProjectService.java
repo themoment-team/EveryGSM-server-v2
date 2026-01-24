@@ -53,8 +53,17 @@ public class CreateProjectService {
 
         List<RepositoryDto> repositories = project.getRepoUrls().stream().map(RepositoryDto::new).toList();
 
-        return new ProjectResDto(project.getId(), project.getLogo(), project.getTitle(), project.getAffiliation(),
-                project.getDescription(), project.getProdUrl(), project.getStatus(), project.getReason(),
-                project.getCreatedAt(), techStacks, repositories, false);
+        return new ProjectResDto(project.getId(),
+                project.getLogo(),
+                project.getTitle(),
+                project.getAffiliation(),
+                project.getDescription(),
+                project.getProdUrl(),
+                project.getStatus(),
+                project.getReason(),
+                project.getCreatedAt(),
+                techStacks,
+                repositories,
+                false);
     }
 }
