@@ -39,7 +39,7 @@ public class QueryProjectService {
 
     private QueryProjectResDto buildGuestQuery() {
         List<ProjectJpaEntity> projects = projectRepository.findByStatus(APPROVED);
-        List<ProjectResDto> res = projects.stream().map(p -> projectMapper.toRes(p,false)).toList();
+        List<ProjectResDto> res = projects.stream().map(p -> projectMapper.toRes(p, false)).toList();
 
         return new QueryProjectResDto(res);
     }
