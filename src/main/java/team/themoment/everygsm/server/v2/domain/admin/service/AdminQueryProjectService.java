@@ -21,7 +21,7 @@ public class AdminQueryProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public QueryProjectResDto execute() {
         return buildAdminQueryResDto();
     }
