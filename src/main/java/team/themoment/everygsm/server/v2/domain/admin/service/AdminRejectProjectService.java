@@ -1,6 +1,6 @@
 package team.themoment.everygsm.server.v2.domain.admin.service;
 
-import static team.themoment.everygsm.server.v2.domain.project.entity.constant.Status.APPROVED;
+import static team.themoment.everygsm.server.v2.domain.project.entity.constant.Status.REJECTED;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class AdminRejectProjectService {
     private ProjectJpaEntity rejectProject(Long projectId, AdminRejectReqDto req) {
         ProjectJpaEntity project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ExpectedException("해당 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
-        project.updateStatus(APPROVED, req.reason());
+        project.updateStatus(REJECTED, req.reason());
         return project;
     }
 }
