@@ -1,6 +1,6 @@
 package team.themoment.everygsm.server.v2.domain.admin.dto.request;
 
-import software.amazon.awssdk.annotations.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
-public record AdminRejectReqDto(@NotNull String reason) {
+public record AdminRejectReqDto(@NotBlank String reason) {
 }
