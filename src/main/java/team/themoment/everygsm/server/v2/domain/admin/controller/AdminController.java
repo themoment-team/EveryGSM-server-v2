@@ -12,7 +12,7 @@ import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResD
 import team.themoment.everygsm.server.v2.domain.project.dto.response.QueryProjectResDto;
 
 @RestController
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v2/admin")
 @RequiredArgsConstructor
 public class AdminController {
     private final AdminQueryProjectService adminQueryProjectService;

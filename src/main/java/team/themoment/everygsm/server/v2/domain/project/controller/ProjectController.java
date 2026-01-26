@@ -11,7 +11,7 @@ import team.themoment.everygsm.server.v2.domain.project.service.CreateProjectSer
 import team.themoment.everygsm.server.v2.domain.project.service.QueryProjectService;
 
 @RestController
-@RequestMapping("/api/v1/projects")
+@RequestMapping("/api/v2/projects")
 @RequiredArgsConstructor
 public class ProjectController {
     private final CreateProjectService createProjectService;
