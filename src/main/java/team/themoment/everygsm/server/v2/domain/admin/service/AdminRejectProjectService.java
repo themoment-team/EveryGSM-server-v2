@@ -22,7 +22,7 @@ public class AdminRejectProjectService {
 
     @Transactional
     public ProjectResDto execute(Long projectId, AdminRejectReqDto req) {
-        return projectMapper.toRes(rejectProject(projectId, req));
+        return projectMapper.toRes(rejectProject(projectId, req), false);
     }
 
     private ProjectJpaEntity rejectProject(Long projectId, AdminRejectReqDto req) {

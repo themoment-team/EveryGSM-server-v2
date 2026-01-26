@@ -39,7 +39,7 @@ public class QueryProjectService {
 
     private QueryProjectResDto buildGuestQuery() {
         List<ProjectJpaEntity> projects = projectRepository.findByStatus(APPROVED);
-        List<ProjectResDto> res = projects.stream().map(projectMapper::toRes).toList();
+        List<ProjectResDto> res = projects.stream().map(p -> projectMapper.toRes(p,false)).toList();
 
         return new QueryProjectResDto(res);
     }
@@ -52,7 +52,7 @@ public class QueryProjectService {
         Set<Long> likedProjectIds = new java.util.HashSet<>(projectLikeRepository.findByProjectId(userId, projectIds));
 
         List<ProjectResDto> res = projects.stream()
-                .map(p -> projectMapper.toUserRes(p, likedProjectIds.contains(p.getId()))).toList();
+                .map(p -> projectMapper.toRes(p, likedProjectIds.contains(p.getId()))).toList();
 
         return new QueryProjectResDto(res);
     }

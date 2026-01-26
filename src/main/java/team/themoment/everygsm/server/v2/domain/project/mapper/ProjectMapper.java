@@ -12,25 +12,7 @@ import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 @Component
 public class ProjectMapper {
 
-    public ProjectResDto toRes(ProjectJpaEntity project) {
-        List<TechStackDto> techStacks = extractTechStacks(project);
-        List<RepositoryDto> repositories = extractRepositories(project);
-
-        return new ProjectResDto(project.getId(),
-                project.getLogo(),
-                project.getTitle(),
-                project.getAffiliation(),
-                project.getDescription(),
-                project.getProdUrl(),
-                project.getStatus(),
-                project.getReason(),
-                project.getCreatedAt(),
-                techStacks,
-                repositories,
-                false);
-    }
-
-    public ProjectResDto toUserRes(ProjectJpaEntity project, boolean liked) {
+    public ProjectResDto toRes(ProjectJpaEntity project, boolean liked) {
         List<TechStackDto> techStacks = extractTechStacks(project);
         List<RepositoryDto> repositories = extractRepositories(project);
 

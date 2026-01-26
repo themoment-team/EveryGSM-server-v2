@@ -28,7 +28,7 @@ public class AdminQueryProjectService {
 
     private QueryProjectResDto buildAdminQueryResDto() {
         List<ProjectJpaEntity> projects = projectRepository.findByStatus(PENDING);
-        List<ProjectResDto> res = projects.stream().map(projectMapper::toRes).toList();
+        List<ProjectResDto> res = projects.stream().map(p -> projectMapper.toRes(p,false)).toList();
 
         return new QueryProjectResDto(res);
     }

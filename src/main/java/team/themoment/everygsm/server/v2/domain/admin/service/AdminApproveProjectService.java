@@ -21,7 +21,7 @@ public class AdminApproveProjectService {
 
     @Transactional
     public ProjectResDto execute(Long projectId) {
-        return projectMapper.toRes(approveProject(projectId));
+        return projectMapper.toRes(approveProject(projectId), false);
     }
 
     private ProjectJpaEntity approveProject(Long projectId) {
