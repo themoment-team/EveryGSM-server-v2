@@ -12,8 +12,8 @@ import team.themoment.everygsm.server.v2.domain.project.dto.response.QueryProjec
 import team.themoment.everygsm.server.v2.domain.project.service.CreateProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryMypageService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryPendingProjectService;
-import team.themoment.everygsm.server.v2.domain.project.service.QueryRejectedProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryProjectService;
+import team.themoment.everygsm.server.v2.domain.project.service.QueryRejectedProjectService;
 
 @RestController
 @RequestMapping("/api/v2/projects")
@@ -25,14 +25,8 @@ public class ProjectController {
     private final QueryRejectedProjectService queryRejectedProjectService;
     private final QueryProjectService queryProjectService;
 
-    @PostMapping("/registration")
-    public ProjectResDto create(@RequestBody @Valid CreateProjectReqDto reqDto) {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
-        return createProjectService.execute(userId, reqDto);
-    }
-
     @GetMapping("/my")
-    public MyPageResDto query() {
+    public MyPageResDto queryMyProjects() {
         Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
         return queryMypageService.execute(userId);
     }
@@ -47,6 +41,14 @@ public class ProjectController {
     public ProjectListResDto rejected() {
         Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
         return queryRejectedProjectService.execute(userId);
+    }
+
+    @PostMapping("/registration")
+    public ProjectResDto create(@RequestBody @Valid CreateProjectReqDto reqDto) {
+        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+        return createProjectService.execute(userId, reqDto);
+    }
+
     @GetMapping
     public QueryProjectResDto query() {
         Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
