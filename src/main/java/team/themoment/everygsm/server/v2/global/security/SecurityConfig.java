@@ -10,12 +10,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.global.security.data.CorsEnvironment;
+import team.themoment.everygsm.server.v2.global.security.filter.JwtAuthenticationFilter;
+import team.themoment.everygsm.server.v2.global.security.handler.JwtAccessDeniedHandler;
+import team.themoment.everygsm.server.v2.global.security.handler.JwtAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -23,18 +27,34 @@ import team.themoment.everygsm.server.v2.global.security.data.CorsEnvironment;
 public class SecurityConfig {
 
     private final CorsEnvironment corsEnvironment;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.formLogin(AbstractHttpConfigurer::disable).httpBasic(AbstractHttpConfigurer::disable)
-
-                .csrf(AbstractHttpConfigurer::disable)
-
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
+                .csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler))
+
+                .authorizeHttpRequests(
+                        auth -> auth.requestMatchers("/api/v2/projects/registration").hasAnyAuthority("USER", "ADMIN")
+                                .requestMatchers("/api/v2/projects/my").hasAnyAuthority("USER", "ADMIN")
+                                .requestMatchers("/api/v2/projects/my/pending").hasAnyAuthority("USER", "ADMIN")
+                                .requestMatchers("/api/v2/projects/my/rejected").hasAnyAuthority("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/v2/projects").permitAll()
+
+                                .requestMatchers("/api/v2/admin/requests").hasAuthority("ADMIN")
+                                .requestMatchers("/api/v2/admin/approve/*").hasAuthority("ADMIN")
+                                .requestMatchers("/api/v2/admin/reject/*").hasAuthority("ADMIN")
+
+                                .anyRequest().authenticated())
+
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
