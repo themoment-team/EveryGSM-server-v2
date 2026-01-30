@@ -41,18 +41,15 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler))
 
-                .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/api/v2/projects/registration").hasAnyAuthority("USER", "ADMIN")
-                                .requestMatchers("/api/v2/projects/my").hasAnyAuthority("USER", "ADMIN")
-                                .requestMatchers("/api/v2/projects/my/pending").hasAnyAuthority("USER", "ADMIN")
-                                .requestMatchers("/api/v2/projects/my/rejected").hasAnyAuthority("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/api/v2/projects").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v2/projects/registration",
+                                "/api/v2/projects/my",
+                                "/api/v2/projects/my/pending",
+                                "/api/v2/projects/my/rejected")
+                        .hasAnyAuthority("USER", "ADMIN").requestMatchers(HttpMethod.GET, "/api/v2/projects")
+                        .permitAll().requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
 
-                                .requestMatchers("/api/v2/admin/requests").hasAuthority("ADMIN")
-                                .requestMatchers("/api/v2/admin/approve/*").hasAuthority("ADMIN")
-                                .requestMatchers("/api/v2/admin/reject/*").hasAuthority("ADMIN")
-
-                                .anyRequest().authenticated())
+                        .anyRequest().authenticated())
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
