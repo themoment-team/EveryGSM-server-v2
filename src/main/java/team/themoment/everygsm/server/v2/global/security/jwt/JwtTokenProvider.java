@@ -56,31 +56,4 @@ public class JwtTokenProvider {
             throw new ExpectedException("JWT 토큰이 잘못되었습니다.", HttpStatus.UNAUTHORIZED);
         }
     }
-
-    public void validateToken(String token) {
-        try {
-            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-        } catch (ExpiredJwtException e) {
-            log.warn("만료된 JWT 토큰입니다.");
-            throw new ExpectedException("만료된 JWT 토큰입니다.", HttpStatus.UNAUTHORIZED);
-        } catch (SecurityException | MalformedJwtException e) {
-            log.warn("잘못된 JWT 서명입니다.");
-            throw new ExpectedException("잘못된 JWT 서명입니다.", HttpStatus.UNAUTHORIZED);
-        } catch (UnsupportedJwtException e) {
-            log.warn("지원되지 않는 JWT 토큰입니다.");
-            throw new ExpectedException("지원되지 않는 JWT 토큰입니다.", HttpStatus.UNAUTHORIZED);
-        } catch (IllegalArgumentException e) {
-            log.warn("JWT 토큰이 잘못되었습니다.");
-            throw new ExpectedException("JWT 토큰이 잘못되었습니다.", HttpStatus.UNAUTHORIZED);
-        }
-    }
-
-    public boolean isTokenValid(String token) {
-        try {
-            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }

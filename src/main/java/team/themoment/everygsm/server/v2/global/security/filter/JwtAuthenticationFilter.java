@@ -38,25 +38,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = resolveToken(request);
 
             if (token != null) {
-                if (jwtTokenProvider.isTokenValid(token)) {
-                    Claims claims = jwtTokenProvider.getClaims(token);
+                Claims claims = jwtTokenProvider.getClaims(token);
 
-                    Long userId = Long.parseLong(claims.getSubject());
-                    String role = claims.get("role", String.class);
+                Long userId = Long.parseLong(claims.getSubject());
+                String role = claims.get("role", String.class);
 
-                    if (role == null || role.isEmpty()) {
-                        throw new ExpectedException("권한 정보가 없는 토큰입니다.", HttpStatus.UNAUTHORIZED);
-                    }
-
-                    Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId,
-                            null,
-                            authorities);
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (role == null || role.isEmpty()) {
+                    throw new ExpectedException("권한 정보가 없는 토큰입니다.", HttpStatus.UNAUTHORIZED);
                 }
+
+                Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId,
+                        null,
+                        authorities);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);
         } catch (ExpectedException e) {
