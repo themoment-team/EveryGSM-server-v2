@@ -39,7 +39,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (token != null) {
                 Claims claims = jwtTokenProvider.getClaims(token);
-
                 Long userId = Long.parseLong(claims.getSubject());
                 String role = claims.get("role", String.class);
 
@@ -48,24 +47,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId,
                         null,
                         authorities);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-            filterChain.doFilter(request, response);
         } catch (ExpectedException e) {
-            log.error("JWT 인증  중 예외 발생: {}", e.getMessage());
+            log.error("JWT 인증 중 예외 발생: {}", e.getMessage());
             request.setAttribute("exception", e);
-            filterChain.doFilter(request, response);
         } catch (Exception e) {
             log.error("JWT 필터에서 예상치 못한 예외 발생: {}", e.getMessage(), e);
             request.setAttribute("exception", e);
-            filterChain.doFilter(request, response);
         }
+        filterChain.doFilter(request, response);
     }
 
     private String resolveToken(HttpServletRequest request) {
