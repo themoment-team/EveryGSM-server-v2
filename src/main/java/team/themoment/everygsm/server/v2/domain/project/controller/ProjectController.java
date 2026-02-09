@@ -1,5 +1,6 @@
 package team.themoment.everygsm.server.v2.domain.project.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -26,32 +27,27 @@ public class ProjectController {
     private final QueryProjectService queryProjectService;
 
     @GetMapping("/my")
-    public MyPageResDto queryMyProjects() {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public MyPageResDto queryMyProjects(@AuthenticationPrincipal Long userId) {
         return queryMypageService.execute(userId);
     }
 
     @GetMapping("/my/pending")
-    public ProjectListResDto pending() {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public ProjectListResDto pending(@AuthenticationPrincipal Long userId) {
         return queryPendingProjectService.execute(userId);
     }
 
     @GetMapping("/my/rejected")
-    public ProjectListResDto rejected() {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public ProjectListResDto rejected(@AuthenticationPrincipal Long userId) {
         return queryRejectedProjectService.execute(userId);
     }
 
     @PostMapping("/registration")
-    public ProjectResDto create(@RequestBody @Valid CreateProjectReqDto reqDto) {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public ProjectResDto create(@AuthenticationPrincipal Long userId, @RequestBody @Valid CreateProjectReqDto reqDto) {
         return createProjectService.execute(userId, reqDto);
     }
 
     @GetMapping
-    public QueryProjectResDto query() {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public QueryProjectResDto query(@AuthenticationPrincipal Long userId) {
         return queryProjectService.execute(userId);
     }
 }
