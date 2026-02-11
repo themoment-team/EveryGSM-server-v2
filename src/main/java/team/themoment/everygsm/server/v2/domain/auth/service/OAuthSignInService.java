@@ -14,7 +14,8 @@ import team.themoment.datagsm.sdk.oauth.model.UserInfo;
 import team.themoment.everygsm.server.v2.domain.auth.dto.request.OAuthSignInReqDto;
 import team.themoment.everygsm.server.v2.domain.auth.dto.response.OAuthSignInResDto;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
-import team.themoment.everygsm.server.v2.domain.user.service.SignInUserService;
+import team.themoment.everygsm.server.v2.domain.user.repository.UserRepository;
+import team.themoment.everygsm.server.v2.domain.user.service.CreateUserService;
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
 import team.themoment.everygsm.server.v2.global.security.jwt.JwtTokenProvider;
 
@@ -24,7 +25,8 @@ import team.themoment.everygsm.server.v2.global.security.jwt.JwtTokenProvider;
 public class OAuthSignInService {
 
     private final DataGsmClient dataGsmClient;
-    private final SignInUserService signInUserService;
+    private final UserRepository userRepository;
+    private final CreateUserService createUserService;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
@@ -42,8 +44,8 @@ public class OAuthSignInService {
                 throw new ExpectedException("학생 정보가 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
             }
 
-            UserJpaEntity user = signInUserService
-                    .execute(userInfo.getEmail(), student.getName(), student.getStudentNumber());
+            UserJpaEntity user = userRepository.findByEmail(userInfo.getEmail()).orElseGet(() -> createUserService
+                    .execute(userInfo.getEmail(), student.getName(), student.getStudentNumber()));
 
             String jwt = jwtTokenProvider.createToken(user.getId(), user.getRole().name());
 
