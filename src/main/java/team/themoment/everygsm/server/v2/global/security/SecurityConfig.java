@@ -41,16 +41,15 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler))
 
-                .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/api/v2/auth/**").permitAll()
-                                .requestMatchers("/api/v2/projects/registration",
-                                        "/api/v2/projects/my",
-                                        "/api/v2/projects/my/pending",
-                                        "/api/v2/projects/my/rejected")
-                                .hasAnyAuthority("USER", "ADMIN").requestMatchers(HttpMethod.GET, "/api/v2/projects")
-                                .permitAll().requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/v2/auth/**").permitAll()
+                        .requestMatchers("/api/v2/projects/registration",
+                                "/api/v2/projects/my",
+                                "/api/v2/projects/my/pending",
+                                "/api/v2/projects/my/rejected")
+                        .hasAnyAuthority("USER", "ADMIN").requestMatchers(HttpMethod.GET, "/api/v2/projects")
+                        .permitAll().requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
 
-                                .anyRequest().authenticated())
+                        .anyRequest().authenticated())
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
