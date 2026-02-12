@@ -47,11 +47,9 @@ server:
 
 springdoc:
   api-docs:
-    groups:
-      enabled: true
+    path: /v3/api-docs
   swagger-ui:
     enabled: true
-    disable-swagger-default-url: true
     display-request-duration: true
     tags-sorter: alpha
     operations-sorter: method
