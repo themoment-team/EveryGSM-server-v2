@@ -47,11 +47,9 @@ server:
 
 springdoc:
   api-docs:
-    groups:
-      enabled: true
+    path: /v3/api-docs
   swagger-ui:
     enabled: true
-    disable-swagger-default-url: true
     display-request-duration: true
     tags-sorter: alpha
     operations-sorter: method
@@ -59,3 +57,7 @@ springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
   writer-with-default-pretty-printer: true
+
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  expiration: 60
