@@ -3,6 +3,6 @@ services:
     image: 'mysql:latest'
     environment:
       MYSQL_DATABASE: everygsm
-      MYSQL_ROOT_PASSWORD: everygsm1234!
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:12345678}
     ports:
       - '3306:3306'
