@@ -3,9 +3,9 @@ spring:
     name: everygsm.server.v2
 
   datasource:
-    url: jdbc:mysql://localhost:3306/everygsm?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-    username: root
-    password: everygsm1234!
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/everygsm?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:12345678}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 20
@@ -29,17 +29,9 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 
-  cloud:
-    aws:
-      credentials:
-        access-key: ${AWS_ACCESS_KEY_ID}
-        secret-key: ${AWS_SECRET_ACCESS_KEY}
-      region:
-        static: ap-northeast-2
-      s3:
-        bucket: ${AWS_S3_BUCKET}
-      stack:
-        auto: false
+  docker:
+    compose:
+      enabled: false
 
 server:
   shutdown: graceful
