@@ -8,7 +8,9 @@ spring:
       ddl-auto: validate
   security:
     cors:
-      allowed-origins: "*"
+      allowed-origins:
+        - "http://localhost:3000"
+        - "http://localhost:3001"
 
 jwt:
   secret: ${JWT_SECRET_KEY}
