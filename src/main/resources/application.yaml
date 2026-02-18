@@ -2,7 +2,6 @@ spring:
   application:
     name: everygsm.server.v2
   jpa:
-    show-sql: false
     properties:
       hibernate:
         format_sql: true

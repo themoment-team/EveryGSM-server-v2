@@ -9,7 +9,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: false
   security:
     cors:
       allowed-origins:
