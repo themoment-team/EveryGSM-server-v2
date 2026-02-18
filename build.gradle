@@ -15,7 +15,7 @@ java {
 }
 
 bootJar {
-    archiveFileName = 'app.jar'
+	archiveFileName = 'app.jar'
 }
 
 spotless {
