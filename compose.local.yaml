@@ -1,0 +1,12 @@
+services:
+  app:
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      DB_HOST: mysql
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
