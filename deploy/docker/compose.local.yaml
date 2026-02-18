@@ -1,5 +1,6 @@
 services:
   app:
+    image: everygsm-app:local
     environment:
       SPRING_PROFILES_ACTIVE: local
       DB_HOST: mysql
