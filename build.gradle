@@ -49,7 +49,6 @@ dependencies {
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
 
 	// Devtools
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
