@@ -1,54 +1,16 @@
 spring:
   application:
     name: everygsm.server.v2
-
-  datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/everygsm?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:12345678}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      maximum-pool-size: 20
-      minimum-idle: 5
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
-
-
-  security:
-    cors:
-      allowed-origins:
-        - "*"
-
   jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 
-  cloud:
-    aws:
-      credentials:
-        access-key: ${AWS_ACCESS_KEY_ID}
-        secret-key: ${AWS_SECRET_ACCESS_KEY}
-      region:
-        static: ap-northeast-2
-      s3:
-        bucket: ${AWS_S3_BUCKET}
-      stack:
-        auto: false
-
-
-  docker:
-    compose:
-      enabled: false
-
 server:
   shutdown: graceful
-  port: 8080
+  port: 8081
 
 springdoc:
   api-docs:
@@ -58,11 +20,9 @@ springdoc:
     display-request-duration: true
     tags-sorter: alpha
     operations-sorter: method
-  show-actuator: false
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
   writer-with-default-pretty-printer: true
 
 jwt:
-  secret: ${JWT_SECRET_KEY}
   expiration: 60
