@@ -14,6 +14,10 @@ java {
 	}
 }
 
+bootJar {
+	archiveFileName = 'app.jar'
+}
+
 spotless {
 	java {
 		target 'src/main/java/**/*.java', 'src/test/java/**/*.java'
@@ -49,10 +53,6 @@ dependencies {
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-
-	// Devtools
-	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 
 	// MySQL Driver
 	runtimeOnly 'com.mysql:mysql-connector-j'
