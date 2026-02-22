@@ -11,7 +11,7 @@ import team.themoment.everygsm.server.v2.global.exception.error.ExpectedExceptio
 
 @Service
 @RequiredArgsConstructor
-public class UnlikeProjectService {
+public class DeleteProjectLikeService {
 
     private final ProjectLikeRepository projectLikeRepository;
 

@@ -15,7 +15,7 @@ import team.themoment.everygsm.server.v2.global.exception.error.ExpectedExceptio
 
 @Service
 @RequiredArgsConstructor
-public class LikeProjectService {
+public class CreateProjectLikeService {
 
     private final ProjectLikeRepository projectLikeRepository;
     private final ProjectRepository projectRepository;
