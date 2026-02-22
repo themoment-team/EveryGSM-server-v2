@@ -12,10 +12,12 @@ import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectList
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.QueryProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.service.CreateProjectService;
+import team.themoment.everygsm.server.v2.domain.project.service.LikeProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryMypageService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryPendingProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryRejectedProjectService;
+import team.themoment.everygsm.server.v2.domain.project.service.UnlikeProjectService;
 
 @Tag(name = "Project", description = "프로젝트 API")
 @RestController
@@ -27,6 +29,8 @@ public class ProjectController {
     private final QueryPendingProjectService queryPendingProjectService;
     private final QueryRejectedProjectService queryRejectedProjectService;
     private final QueryProjectService queryProjectService;
+    private final LikeProjectService likeProjectService;
+    private final UnlikeProjectService unlikeProjectService;
 
     @Operation(summary = "마이페이지 조회", description = "좋아요한 프로젝트와 등록한 프로젝트를 조회합니다")
     @GetMapping("/my")
@@ -61,5 +65,19 @@ public class ProjectController {
     public QueryProjectResDto query() {
         Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
         return queryProjectService.execute(userId);
+    }
+
+    @Operation(summary = "프로젝트 좋아요", description = "프로젝트에 좋아요를 추가합니다")
+    @PostMapping("/like/{projectId}")
+    public void likeProject(@PathVariable Long projectId) {
+        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+        likeProjectService.execute(userId, projectId);
+    }
+
+    @Operation(summary = "프로젝트 좋아요 취소", description = "프로젝트 좋아요를 취소합니다")
+    @DeleteMapping("/like/{projectId}")
+    public void unlikeProject(@PathVariable Long projectId) {
+        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+        unlikeProjectService.execute(userId, projectId);
     }
 }

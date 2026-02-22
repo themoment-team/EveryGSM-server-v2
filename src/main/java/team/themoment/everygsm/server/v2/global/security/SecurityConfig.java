@@ -46,7 +46,12 @@ public class SecurityConfig {
                                 "/api/v2/projects/my",
                                 "/api/v2/projects/my/pending",
                                 "/api/v2/projects/my/rejected")
-                        .hasAnyAuthority("USER", "ADMIN").requestMatchers(HttpMethod.GET, "/api/v2/projects")
+                        .hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v2/projects/like/**")
+                        .hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v2/projects/like/**")
+                        .hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v2/projects")
                         .permitAll().requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
 
                         .anyRequest().authenticated())
