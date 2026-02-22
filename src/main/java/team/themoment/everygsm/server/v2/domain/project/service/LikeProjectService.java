@@ -29,10 +29,7 @@ public class LikeProjectService {
         ProjectJpaEntity project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ExpectedException("해당 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
-        LikeJpaEntity like = LikeJpaEntity.builder()
-                .user(user)
-                .project(project)
-                .build();
+        LikeJpaEntity like = LikeJpaEntity.builder().user(user).project(project).build();
 
         projectLikeRepository.save(like);
     }
