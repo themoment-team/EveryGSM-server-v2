@@ -10,10 +10,8 @@ import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
-import team.themoment.everygsm.server.v2.domain.project.entity.LikeJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectLikeRepository;
-import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
 
 @Service
@@ -21,17 +19,14 @@ import team.themoment.everygsm.server.v2.global.exception.error.ExpectedExceptio
 public class DeleteProjectLikeService {
 
     private final ProjectLikeRepository projectLikeRepository;
-    private final ProjectRepository projectRepository;
 
     @Transactional
     public ProjectResDto execute(Long userId, Long projectId) {
-        LikeJpaEntity like = projectLikeRepository.findByUserIdAndProjectId(userId, projectId)
+        ProjectJpaEntity project = projectLikeRepository
+                .findProjectWithCollectionsByUserIdAndProjectId(userId, projectId)
                 .orElseThrow(() -> new ExpectedException("좋아요한 프로젝트가 아닙니다.", HttpStatus.NOT_FOUND));
 
-        projectLikeRepository.delete(like);
-
-        ProjectJpaEntity project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ExpectedException("해당 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+        projectLikeRepository.deleteByUserIdAndProjectId(userId, projectId);
 
         return buildProjectResDto(project);
     }
