@@ -19,9 +19,8 @@ public class ProjectLikeRepositoryImpl implements ProjectLikeRepositoryCustom {
     public Optional<ProjectJpaEntity> findProjectWithCollectionsByUserIdAndProjectId(Long userId, Long projectId) {
         ProjectJpaEntity result = queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames)
                 .fetchJoin().leftJoin(projectJpaEntity.repoUrls).fetchJoin().join(likeJpaEntity)
-                .on(likeJpaEntity.project.eq(projectJpaEntity).and(likeJpaEntity.user.id.eq(userId))
-                        .and(likeJpaEntity.project.id.eq(projectId)))
-                .distinct().fetchOne();
+                .on(likeJpaEntity.project.eq(projectJpaEntity).and(likeJpaEntity.user.id.eq(userId)))
+                .where(projectJpaEntity.id.eq(projectId)).distinct().fetchOne();
 
         return Optional.ofNullable(result);
     }
