@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import team.themoment.everygsm.server.v2.domain.project.entity.LikeJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.repository.custom.ProjectLikeRepositoryCustom;
 
 public interface ProjectLikeRepository extends JpaRepository<LikeJpaEntity, Long>, ProjectLikeRepositoryCustom {
     @Query("""

@@ -1,4 +1,4 @@
-package team.themoment.everygsm.server.v2.domain.project.repository.impl;
+package team.themoment.everygsm.server.v2.domain.project.repository.custom.impl;
 
 import static team.themoment.everygsm.server.v2.domain.project.entity.QLikeJpaEntity.likeJpaEntity;
 import static team.themoment.everygsm.server.v2.domain.project.entity.QProjectJpaEntity.projectJpaEntity;
@@ -9,7 +9,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
-import team.themoment.everygsm.server.v2.domain.project.repository.ProjectLikeRepositoryCustom;
+import team.themoment.everygsm.server.v2.domain.project.repository.custom.ProjectLikeRepositoryCustom;
 
 @RequiredArgsConstructor
 public class ProjectLikeRepositoryImpl implements ProjectLikeRepositoryCustom {

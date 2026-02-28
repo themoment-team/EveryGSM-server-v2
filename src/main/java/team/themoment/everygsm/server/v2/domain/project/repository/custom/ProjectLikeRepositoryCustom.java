@@ -1,4 +1,4 @@
-package team.themoment.everygsm.server.v2.domain.project.repository;
+package team.themoment.everygsm.server.v2.domain.project.repository.custom;
 
 import java.util.Optional;
 
