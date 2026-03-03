@@ -83,6 +83,9 @@ dependencies {
 	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
 	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 
+	// DataGSM OpenAPI SDK
+	implementation 'com.github.themoment-team:datagsm-openapi-sdk-java:1.1.1'
+
 	// Jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
