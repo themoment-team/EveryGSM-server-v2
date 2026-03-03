@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
-import team.themoment.datagsm.sdk.openapi.client.ClubApi;
 import team.themoment.datagsm.sdk.openapi.client.ProjectApi;
 import team.themoment.datagsm.sdk.openapi.model.ClubDetail;
 import team.themoment.datagsm.sdk.openapi.model.ParticipantInfo;
@@ -67,22 +66,24 @@ public class SyncProjectService {
     }
 
     private void syncProject(Project externalProject) {
+        String affiliation = externalProject.getClub() != null ? externalProject.getClub().getName() : null;
         projectRepository.findByExternalProjectId(externalProject.getId())
                 .ifPresentOrElse(
                         entity -> entity.syncUpdate(
                                 externalProject.getName(),
                                 externalProject.getDescription(),
-                                externalProject.getClub().getName()),
+                                affiliation),
                         () -> projectRepository.save(buildNewProject(externalProject)));
     }
 
     private ProjectJpaEntity buildNewProject(Project externalProject) {
-        UserJpaEntity owner = findOrCreateLeader(externalProject.getClub().getId());
+        UserJpaEntity owner = findOrCreateOwner(externalProject);
+        String affiliation = externalProject.getClub() != null ? externalProject.getClub().getName() : null;
         return ProjectJpaEntity.builder()
                 .user(owner)
                 .title(externalProject.getName())
                 .description(externalProject.getDescription())
-                .affiliation(externalProject.getClub().getName())
+                .affiliation(affiliation)
                 .logo("")
                 .prodUrl("")
                 .status(Status.APPROVED)
@@ -92,15 +93,33 @@ public class SyncProjectService {
                 .build();
     }
 
-    private UserJpaEntity findOrCreateLeader(Long clubId) {
-        ClubDetail clubDetail = dataGsmOpenApiClient.clubs().getClub(clubId);
-        ParticipantInfo leader = clubDetail.getLeader();
-        return userRepository.findByEmail(leader.getEmail())
+    private UserJpaEntity findOrCreateOwner(Project externalProject) {
+        if (externalProject.getClub() != null) {
+            try {
+                ClubDetail clubDetail = dataGsmOpenApiClient.clubs().getClub(externalProject.getClub().getId());
+                return findOrCreateUser(clubDetail.getLeader());
+            } catch (Exception e) {
+                log.warn("Failed to fetch club leader for clubId={}, falling back to project participants",
+                        externalProject.getClub().getId(), e);
+            }
+        }
+
+        List<ParticipantInfo> participants = externalProject.getParticipants();
+        if (participants != null && !participants.isEmpty()) {
+            return findOrCreateUser(participants.get(0));
+        }
+
+        log.warn("No leader or participants available for project id={}, owner will be null", externalProject.getId());
+        return null;
+    }
+
+    private UserJpaEntity findOrCreateUser(ParticipantInfo participant) {
+        return userRepository.findByEmail(participant.getEmail())
                 .orElseGet(() -> userRepository.save(
                         UserJpaEntity.builder()
-                                .email(leader.getEmail())
-                                .name(leader.getName())
-                                .studentNumber(String.valueOf(leader.getStudentNumber()))
+                                .email(participant.getEmail())
+                                .name(participant.getName())
+                                .studentNumber(String.valueOf(participant.getStudentNumber()))
                                 .role(Role.USER)
                                 .build()));
     }
