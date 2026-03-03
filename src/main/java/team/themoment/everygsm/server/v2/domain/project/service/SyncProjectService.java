@@ -67,30 +67,18 @@ public class SyncProjectService {
 
     private void syncProject(Project externalProject) {
         String affiliation = externalProject.getClub() != null ? externalProject.getClub().getName() : null;
-        projectRepository.findByExternalProjectId(externalProject.getId())
-                .ifPresentOrElse(
-                        entity -> entity.syncUpdate(
-                                externalProject.getName(),
-                                externalProject.getDescription(),
-                                affiliation),
-                        () -> projectRepository.save(buildNewProject(externalProject)));
+        projectRepository.findByExternalProjectId(externalProject.getId()).ifPresentOrElse(
+                entity -> entity.syncUpdate(externalProject.getName(), externalProject.getDescription(), affiliation),
+                () -> projectRepository.save(buildNewProject(externalProject)));
     }
 
     private ProjectJpaEntity buildNewProject(Project externalProject) {
         UserJpaEntity owner = findOrCreateOwner(externalProject);
         String affiliation = externalProject.getClub() != null ? externalProject.getClub().getName() : null;
-        return ProjectJpaEntity.builder()
-                .user(owner)
-                .title(externalProject.getName())
-                .description(externalProject.getDescription())
-                .affiliation(affiliation)
-                .logo("")
-                .prodUrl("")
-                .status(Status.APPROVED)
-                .repoUrls(new HashSet<>())
-                .stackNames(new HashSet<>())
-                .externalProjectId(externalProject.getId())
-                .build();
+        return ProjectJpaEntity.builder().user(owner).title(externalProject.getName())
+                .description(externalProject.getDescription()).affiliation(affiliation).logo("").prodUrl("")
+                .status(Status.APPROVED).repoUrls(new HashSet<>()).stackNames(new HashSet<>())
+                .externalProjectId(externalProject.getId()).build();
     }
 
     private UserJpaEntity findOrCreateOwner(Project externalProject) {
@@ -100,7 +88,8 @@ public class SyncProjectService {
                 return findOrCreateUser(clubDetail.getLeader());
             } catch (Exception e) {
                 log.warn("Failed to fetch club leader for clubId={}, falling back to project participants",
-                        externalProject.getClub().getId(), e);
+                        externalProject.getClub().getId(),
+                        e);
             }
         }
 
@@ -115,12 +104,8 @@ public class SyncProjectService {
 
     private UserJpaEntity findOrCreateUser(ParticipantInfo participant) {
         return userRepository.findByEmail(participant.getEmail())
-                .orElseGet(() -> userRepository.save(
-                        UserJpaEntity.builder()
-                                .email(participant.getEmail())
-                                .name(participant.getName())
-                                .studentNumber(String.valueOf(participant.getStudentNumber()))
-                                .role(Role.USER)
-                                .build()));
+                .orElseGet(() -> userRepository.save(UserJpaEntity.builder().email(participant.getEmail())
+                        .name(participant.getName()).studentNumber(String.valueOf(participant.getStudentNumber()))
+                        .role(Role.USER).build()));
     }
 }
