@@ -21,7 +21,7 @@ public class ProjectJpaEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private UserJpaEntity user;
 
     @Column(nullable = false, length = 512)
@@ -30,7 +30,7 @@ public class ProjectJpaEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, length = 512)
+    @Column(length = 512)
     private String affiliation;
 
     @Column(nullable = false, length = 200)
