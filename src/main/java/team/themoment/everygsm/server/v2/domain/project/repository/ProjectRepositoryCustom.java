@@ -1,6 +1,7 @@
 package team.themoment.everygsm.server.v2.domain.project.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
@@ -9,4 +10,5 @@ public interface ProjectRepositoryCustom {
     List<ProjectJpaEntity> findLikedProjectsByUserId(Long userId);
     List<ProjectJpaEntity> findRegisteredProjectsByUserId(Long userId);
     List<ProjectJpaEntity> findByUserIdAndStatus(Long userId, Status status);
+    void markUnseenProjectsAsInactive(Set<Long> seenIds);
 }

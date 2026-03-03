@@ -41,14 +41,12 @@ public class SyncProjectService {
             try {
                 syncProject(externalProject);
                 seenExternalIds.add(externalProject.getId());
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 log.error("Failed to sync project id={}", externalProject.getId(), e);
             }
         }
 
-        projectRepository.findAllByExternalProjectIdIsNotNull().stream()
-                .filter(p -> !seenExternalIds.contains(p.getExternalProjectId()))
-                .forEach(ProjectJpaEntity::markInactive);
+        projectRepository.markUnseenProjectsAsInactive(seenExternalIds);
     }
 
     private List<Project> fetchAllProjects() {
@@ -67,14 +65,13 @@ public class SyncProjectService {
 
     private void syncProject(Project externalProject) {
         String affiliation = externalProject.getClub() != null ? externalProject.getClub().getName() : null;
+        UserJpaEntity owner = findOrCreateOwner(externalProject);
         projectRepository.findByExternalProjectId(externalProject.getId()).ifPresentOrElse(
-                entity -> entity.syncUpdate(externalProject.getName(), externalProject.getDescription(), affiliation),
-                () -> projectRepository.save(buildNewProject(externalProject)));
+                entity -> entity.syncUpdate(externalProject.getName(), externalProject.getDescription(), affiliation, owner),
+                () -> projectRepository.save(buildNewProject(externalProject, affiliation, owner)));
     }
 
-    private ProjectJpaEntity buildNewProject(Project externalProject) {
-        UserJpaEntity owner = findOrCreateOwner(externalProject);
-        String affiliation = externalProject.getClub() != null ? externalProject.getClub().getName() : null;
+    private ProjectJpaEntity buildNewProject(Project externalProject, String affiliation, UserJpaEntity owner) {
         return ProjectJpaEntity.builder().user(owner).title(externalProject.getName())
                 .description(externalProject.getDescription()).affiliation(affiliation).logo("").prodUrl("")
                 .status(Status.APPROVED).repoUrls(new HashSet<>()).stackNames(new HashSet<>())
@@ -86,7 +83,7 @@ public class SyncProjectService {
             try {
                 ClubDetail clubDetail = dataGsmOpenApiClient.clubs().getClub(externalProject.getClub().getId());
                 return findOrCreateUser(clubDetail.getLeader());
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 log.warn("Failed to fetch club leader for clubId={}, falling back to project participants",
                         externalProject.getClub().getId(),
                         e);
@@ -95,7 +92,7 @@ public class SyncProjectService {
 
         List<ParticipantInfo> participants = externalProject.getParticipants();
         if (participants != null && !participants.isEmpty()) {
-            return findOrCreateUser(participants.get(0));
+            return findOrCreateUser(participants.getFirst());
         }
 
         log.warn("No leader or participants available for project id={}, owner will be null", externalProject.getId());

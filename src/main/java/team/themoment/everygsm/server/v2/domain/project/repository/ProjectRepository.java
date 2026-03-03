@@ -12,6 +12,4 @@ public interface ProjectRepository extends JpaRepository<ProjectJpaEntity, Long>
     List<ProjectJpaEntity> findByStatus(Status status);
 
     Optional<ProjectJpaEntity> findByExternalProjectId(Long externalProjectId);
-
-    List<ProjectJpaEntity> findAllByExternalProjectIdIsNotNull();
 }

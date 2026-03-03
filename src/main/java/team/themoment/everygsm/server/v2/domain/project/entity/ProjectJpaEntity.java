@@ -99,10 +99,13 @@ public class ProjectJpaEntity {
         this.reason = reason;
     }
 
-    public void syncUpdate(String title, String description, String affiliation) {
+    public void syncUpdate(String title, String description, String affiliation, UserJpaEntity user) {
         this.title = title;
         this.description = description;
         this.affiliation = affiliation;
+        if (user != null) {
+            this.user = user;
+        }
     }
 
     public void markInactive() {
