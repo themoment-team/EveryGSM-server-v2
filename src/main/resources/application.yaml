@@ -8,6 +8,10 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
   cloud:
+    datagsm:
+      openapi:
+        api-key: ${DATAGSM_OPENAPI_KEY}
+        sync-cron: "0 0 3 * * *"
     aws:
       credentials:
         access-key: ${AWS_ACCESS_KEY_ID}
