@@ -1,0 +1,23 @@
+services:
+  app:
+    ports:
+      - '8081:8081'
+    restart: on-failure
+
+  mysql:
+    image: 'mysql:8.0'
+    environment:
+      MYSQL_DATABASE: everygsm
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

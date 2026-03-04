@@ -1,0 +1,22 @@
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: deploy/Dockerfile.stage
+    environment:
+      SPRING_PROFILES_ACTIVE: stage
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}

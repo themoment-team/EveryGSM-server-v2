@@ -1,8 +1,0 @@
-services:
-  mysql:
-    image: 'mysql:latest'
-    environment:
-      MYSQL_DATABASE: everygsm
-      MYSQL_ROOT_PASSWORD: everygsm1234!
-    ports:
-      - '3306:3306'
