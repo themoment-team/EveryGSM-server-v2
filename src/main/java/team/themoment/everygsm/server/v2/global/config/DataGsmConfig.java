@@ -9,7 +9,7 @@ import team.themoment.datagsm.sdk.oauth.DataGsmOAuthClient;
 @Configuration
 public class DataGsmConfig {
     @Bean
-    public DataGsmOAuthClient dataGsmClient(@Value("${${oauth.datagsm.client-id}") String clientId,
+    public DataGsmOAuthClient dataGsmClient(@Value("${oauth.datagsm.client-id}") String clientId,
             @Value("${oauth.datagsm.client-secret}") String clientSecret) {
         return DataGsmOAuthClient.builder(clientId, clientSecret).build();
     }
