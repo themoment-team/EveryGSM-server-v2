@@ -1,7 +1,5 @@
 package team.themoment.everygsm.server.v2.domain.auth.service;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -35,7 +33,19 @@ public class OAuthSignInService {
     @Value("${oauth.datagsm.redirect-uri}")
     private String redirectUri;
 
-    private final ConcurrentHashMap<String, Object> lockMap = new ConcurrentHashMap<>();
+    private static final int LOCK_STRIPE_COUNT = 64;
+    private final Object[] lockStripes = createStripes(LOCK_STRIPE_COUNT);
+
+    private static Object[] createStripes(int count) {
+        Object[] arr = new Object[count];
+        for (int i = 0; i < count; i++)
+            arr[i] = new Object();
+        return arr;
+    }
+
+    private Object getLock(String email) {
+        return lockStripes[Math.abs(email.hashCode() % LOCK_STRIPE_COUNT)];
+    }
 
     @Transactional
     public OAuthSignInResDto execute(OAuthSignInReqDto reqDto) {
@@ -65,9 +75,7 @@ public class OAuthSignInService {
     }
 
     private UserJpaEntity getOrCreateUser(String email, String name, Integer studentNumber) {
-        Object lock = lockMap.computeIfAbsent(email, k -> new Object());
-
-        synchronized (lock) {
+        synchronized (getLock(email)) {
             return userRepository.findByEmail(email).orElseGet(() -> {
                 UserJpaEntity newUser = UserJpaEntity.builder().email(email).name(name)
                         .studentNumber(String.valueOf(studentNumber)).role(Role.USER).build();
