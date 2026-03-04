@@ -2,13 +2,14 @@ package team.themoment.everygsm.server.v2.domain.auth.service;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import team.themoment.datagsm.sdk.oauth.DataGsmClient;
+import team.themoment.datagsm.sdk.oauth.DataGsmOAuthClient;
 import team.themoment.datagsm.sdk.oauth.exception.DataGsmException;
 import team.themoment.datagsm.sdk.oauth.model.Student;
 import team.themoment.datagsm.sdk.oauth.model.TokenResponse;
@@ -27,17 +28,19 @@ import team.themoment.everygsm.server.v2.global.security.jwt.JwtTokenProvider;
 @Slf4j
 public class OAuthSignInService {
 
-    private final DataGsmClient dataGsmClient;
+    private final DataGsmOAuthClient dataGsmClient;
     private final UserRepository userRepository;
     private final CreateUserService createUserService;
     private final JwtTokenProvider jwtTokenProvider;
+    @Value("${oauth.datagsm.redirect-uri}")
+    private String redirectUri;
 
     private final ConcurrentHashMap<String, Object> lockMap = new ConcurrentHashMap<>();
 
     @Transactional
     public OAuthSignInResDto execute(OAuthSignInReqDto reqDto) {
         try {
-            TokenResponse tokenResponse = dataGsmClient.exchangeToken(reqDto.authCode());
+            TokenResponse tokenResponse = dataGsmClient.exchangeCodeForToken(reqDto.authCode(), redirectUri);
             UserInfo userInfo = dataGsmClient.getUserInfo(tokenResponse.getAccessToken());
 
             if (!userInfo.isStudent()) {

@@ -66,4 +66,6 @@ jwt:
 
 oauth:
   datagsm:
+    client-id: ${DATAGSM_CLIENT_ID}
     client-secret: ${DATAGSM_CLIENT_SECRET}
+    redirect-uri: ${DATAGSM_REDIRECT_URI}
