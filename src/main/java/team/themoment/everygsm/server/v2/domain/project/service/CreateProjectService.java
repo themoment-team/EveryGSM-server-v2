@@ -50,4 +50,3 @@ public class CreateProjectService {
                 .status(PENDING).repoUrls(repoUrls).stackNames(stackNames).build();
     }
 }
-

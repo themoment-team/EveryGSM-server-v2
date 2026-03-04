@@ -48,4 +48,3 @@ public class CreateProjectLikeService {
         return projectMapper.toRes(project, true);
     }
 }
-

@@ -1,7 +1,5 @@
 package team.themoment.everygsm.server.v2.domain.project.service;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
