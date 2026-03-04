@@ -7,10 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto;
-import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectLikeRepository;
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
 
@@ -19,6 +18,7 @@ import team.themoment.everygsm.server.v2.global.exception.error.ExpectedExceptio
 public class DeleteProjectLikeService {
 
     private final ProjectLikeRepository projectLikeRepository;
+    private final ProjectMapper projectMapper;
 
     @Transactional
     public ProjectResDto execute(Long userId, Long projectId) {
@@ -28,25 +28,6 @@ public class DeleteProjectLikeService {
 
         projectLikeRepository.deleteByUserIdAndProjectId(userId, projectId);
 
-        return buildProjectResDto(project);
-    }
-
-    private ProjectResDto buildProjectResDto(ProjectJpaEntity project) {
-        List<TechStackDto> techStacks = project.getStackNames().stream().map(TechStackDto::new).toList();
-
-        List<RepositoryDto> repositories = project.getRepoUrls().stream().map(RepositoryDto::new).toList();
-
-        return new ProjectResDto(project.getId(),
-                project.getLogo(),
-                project.getTitle(),
-                project.getAffiliation(),
-                project.getDescription(),
-                project.getProdUrl(),
-                project.getStatus(),
-                project.getReason(),
-                project.getCreatedAt(),
-                techStacks,
-                repositories,
-                false);
+        return projectMapper.toRes(project, false);
     }
 }

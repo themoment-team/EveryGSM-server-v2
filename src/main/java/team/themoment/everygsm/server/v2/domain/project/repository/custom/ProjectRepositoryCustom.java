@@ -9,4 +9,5 @@ public interface ProjectRepositoryCustom {
     List<ProjectJpaEntity> findLikedProjectsByUserId(Long userId);
     List<ProjectJpaEntity> findRegisteredProjectsByUserId(Long userId);
     List<ProjectJpaEntity> findByUserIdAndStatus(Long userId, Status status);
+    List<ProjectJpaEntity> findAllByStatusWithCollections(Status status);
 }

@@ -25,7 +25,7 @@ public class QueryProjectService {
     private final ProjectLikeRepository projectLikeRepository;
     private final ProjectMapper projectMapper;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public QueryProjectResDto execute(@Nullable Long userId) {
         return buildQueryResDto(userId);
     }
@@ -38,14 +38,14 @@ public class QueryProjectService {
     }
 
     private QueryProjectResDto buildGuestQuery() {
-        List<ProjectJpaEntity> projects = projectRepository.findByStatus(APPROVED);
+        List<ProjectJpaEntity> projects = projectRepository.findAllByStatusWithCollections(APPROVED);
         List<ProjectResDto> res = projects.stream().map(p -> projectMapper.toRes(p, false)).toList();
 
         return new QueryProjectResDto(res);
     }
 
     private QueryProjectResDto buildUserQuery(Long userId) {
-        List<ProjectJpaEntity> projects = projectRepository.findByStatus(APPROVED);
+        List<ProjectJpaEntity> projects = projectRepository.findAllByStatusWithCollections(APPROVED);
 
         List<Long> projectIds = projects.stream().map(ProjectJpaEntity::getId).toList();
 
