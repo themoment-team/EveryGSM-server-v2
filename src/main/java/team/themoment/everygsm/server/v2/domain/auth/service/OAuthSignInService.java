@@ -60,7 +60,7 @@ public class OAuthSignInService {
 
         } catch (DataGsmException e) {
             log.error("DataGSM OAuth error: status={}, message={}", e.getStatusCode(), e.getMessage());
-            throw new ExpectedException("OAuth 인증에 실패했습니다: " + e.getMessage(), HttpStatus.valueOf(e.getStatusCode()));
+            throw new ExpectedException("OAuth 인증에 실패했습니다.", HttpStatus.valueOf(e.getStatusCode()));
         }
     }
 
