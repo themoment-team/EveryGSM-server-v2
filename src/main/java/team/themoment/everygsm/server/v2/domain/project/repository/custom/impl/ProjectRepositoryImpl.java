@@ -45,10 +45,8 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         if (seenIds.isEmpty()) {
             return;
         }
-        queryFactory.update(projectJpaEntity)
-                .set(projectJpaEntity.status, Status.INACTIVE)
-                .where(projectJpaEntity.externalProjectId.isNotNull()
-                        .and(projectJpaEntity.externalProjectId.notIn(seenIds)))
+        queryFactory.update(projectJpaEntity).set(projectJpaEntity.status, Status.INACTIVE).where(
+                projectJpaEntity.externalProjectId.isNotNull().and(projectJpaEntity.externalProjectId.notIn(seenIds)))
                 .execute();
     }
 }

@@ -66,9 +66,10 @@ public class SyncProjectService {
     private void syncProject(Project externalProject) {
         String affiliation = externalProject.getClub() != null ? externalProject.getClub().getName() : null;
         UserJpaEntity owner = findOrCreateOwner(externalProject);
-        projectRepository.findByExternalProjectId(externalProject.getId()).ifPresentOrElse(
-                entity -> entity.syncUpdate(externalProject.getName(), externalProject.getDescription(), affiliation, owner),
-                () -> projectRepository.save(buildNewProject(externalProject, affiliation, owner)));
+        projectRepository.findByExternalProjectId(externalProject.getId())
+                .ifPresentOrElse(entity -> entity
+                        .syncUpdate(externalProject.getName(), externalProject.getDescription(), affiliation, owner),
+                        () -> projectRepository.save(buildNewProject(externalProject, affiliation, owner)));
     }
 
     private ProjectJpaEntity buildNewProject(Project externalProject, String affiliation, UserJpaEntity owner) {
