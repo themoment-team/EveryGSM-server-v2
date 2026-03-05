@@ -5,9 +5,9 @@ import static team.themoment.everygsm.server.v2.domain.project.entity.QProjectJp
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
@@ -15,6 +15,7 @@ import team.themoment.everygsm.server.v2.domain.project.repository.custom.Projec
 
 @RequiredArgsConstructor
 public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
+
     private final JPAQueryFactory queryFactory;
 
     @Override
@@ -52,5 +53,15 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         return Optional.ofNullable(queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames)
                 .fetchJoin().leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.id.eq(projectId))
                 .fetchOne());
+    }
+
+    @Override
+    public void markUnseenProjectsAsInactive(Set<Long> seenIds) {
+        if (seenIds.isEmpty()) {
+            return;
+        }
+        queryFactory.update(projectJpaEntity).set(projectJpaEntity.status, Status.INACTIVE).where(
+                projectJpaEntity.externalProjectId.isNotNull().and(projectJpaEntity.externalProjectId.notIn(seenIds)))
+                .execute();
     }
 }
