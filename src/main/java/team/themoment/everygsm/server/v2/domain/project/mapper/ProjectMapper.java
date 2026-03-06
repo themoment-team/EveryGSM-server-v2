@@ -8,6 +8,7 @@ import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto
 import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.entity.RepoUrl;
 
 @Component
 public class ProjectMapper {
@@ -35,6 +36,7 @@ public class ProjectMapper {
     }
 
     public List<RepositoryDto> extractRepositories(ProjectJpaEntity project) {
-        return project.getRepoUrls().stream().map(RepositoryDto::new).toList();
+        return project.getRepoUrls().stream()
+                .map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl())).toList();
     }
 }

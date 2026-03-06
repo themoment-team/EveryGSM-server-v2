@@ -49,11 +49,8 @@ public class ProjectJpaEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @ElementCollection
-    @CollectionTable(name = "repo_urls", joinColumns = @JoinColumn(name = "project_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
-            "project_id", "repo_url"}))
-    @Column(name = "repo_url", nullable = false, length = 512)
-    private Set<String> repoUrls;
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<RepoUrl> repoUrls;
 
     @ElementCollection
     @CollectionTable(name = "stack_names", joinColumns = @JoinColumn(name = "project_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
@@ -78,7 +75,6 @@ public class ProjectJpaEntity {
             String prodUrl,
             Status status,
             String reason,
-            Set<String> repoUrls,
             Set<String> stackNames,
             Long externalProjectId) {
         this.user = user;
@@ -89,9 +85,13 @@ public class ProjectJpaEntity {
         this.prodUrl = prodUrl;
         this.status = status;
         this.reason = reason;
-        this.repoUrls = repoUrls != null ? repoUrls : new HashSet<>();
+        this.repoUrls = new HashSet<>();
         this.stackNames = stackNames != null ? stackNames : new HashSet<>();
         this.externalProjectId = externalProjectId;
+    }
+
+    public void addRepoUrl(String repoName, String repoUrl) {
+        this.repoUrls.add(new RepoUrl(this, repoName, repoUrl));
     }
 
     public void updateStatus(Status status, String reason) {

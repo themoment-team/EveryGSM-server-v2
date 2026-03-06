@@ -75,7 +75,7 @@ public class SyncProjectService {
     private ProjectJpaEntity buildNewProject(Project externalProject, String affiliation, UserJpaEntity owner) {
         return ProjectJpaEntity.builder().user(owner).title(externalProject.getName())
                 .description(externalProject.getDescription()).affiliation(affiliation).logo("").prodUrl("")
-                .status(Status.APPROVED).repoUrls(new HashSet<>()).stackNames(new HashSet<>())
+                .status(Status.APPROVED).stackNames(new HashSet<>())
                 .externalProjectId(externalProject.getId()).build();
     }
 
