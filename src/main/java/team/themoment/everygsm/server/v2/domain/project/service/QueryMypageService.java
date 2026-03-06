@@ -37,7 +37,8 @@ public class QueryMypageService {
                         project.getReason(),
                         project.getCreatedAt(),
                         project.getStackNames().stream().map(TechStackDto::new).toList(),
-                        project.getRepoUrls().stream().map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl())).toList(),
+                        project.getRepoUrls().stream().map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl()))
+                                .toList(),
                         true // 좋아요가 되어있는 것만 조회했기 때문에 true
                 )).toList();
 
@@ -55,7 +56,8 @@ public class QueryMypageService {
                         project.getReason(),
                         project.getCreatedAt(),
                         project.getStackNames().stream().map(TechStackDto::new).toList(),
-                        project.getRepoUrls().stream().map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl())).toList(),
+                        project.getRepoUrls().stream().map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl()))
+                                .toList(),
                         likedProjectIds.contains(project.getId()) // 좋아요 여부 설정
                 )).toList();
 

@@ -36,15 +36,14 @@ public class CreateProjectService {
                 .orElseThrow(() -> new ExpectedException("해당 유저가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
         ProjectJpaEntity project = projectRepository.save(buildProject(reqDto, user));
-        Optional.ofNullable(reqDto.repository()).stream()
-                .flatMap(Collection::stream)
+        Optional.ofNullable(reqDto.repository()).stream().flatMap(Collection::stream)
                 .forEach(dto -> project.addRepoUrl(dto.repoName(), dto.repoUrl()));
         return buildProjectResDto(project);
     }
 
     private ProjectJpaEntity buildProject(CreateProjectReqDto reqDto, UserJpaEntity user) {
-        Set<String> stackNames = Optional.ofNullable(reqDto.techStack()).stream()
-                .flatMap(Collection::stream).map(TechStackDto::stackName).collect(Collectors.toSet());
+        Set<String> stackNames = Optional.ofNullable(reqDto.techStack()).stream().flatMap(Collection::stream)
+                .map(TechStackDto::stackName).collect(Collectors.toSet());
 
         return ProjectJpaEntity.builder().user(user).logo(reqDto.logo()).title(reqDto.title())
                 .affiliation(reqDto.affiliation()).description(reqDto.description()).prodUrl(reqDto.prodUrl())
