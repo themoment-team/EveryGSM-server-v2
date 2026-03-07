@@ -32,4 +32,16 @@ public class RepoUrl {
         this.repoName = repoName;
         this.repoUrl = repoUrl;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RepoUrl other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
