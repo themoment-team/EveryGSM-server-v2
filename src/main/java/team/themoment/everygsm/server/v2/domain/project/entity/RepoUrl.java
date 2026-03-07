@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "repo_urls")
+@Table(name = "repo_urls", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"project_id", "repo_name"})
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class RepoUrl {
