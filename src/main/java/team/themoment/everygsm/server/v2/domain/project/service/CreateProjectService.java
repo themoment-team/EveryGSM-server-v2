@@ -37,7 +37,7 @@ public class CreateProjectService {
 
         ProjectJpaEntity project = projectRepository.save(buildProject(reqDto, user));
         Optional.ofNullable(reqDto.repository()).stream().flatMap(Collection::stream)
-                .forEach(dto -> project.addRepoUrl(dto.repoName(), dto.repoUrl()));
+                .forEach(dto -> project.addRepo(dto.repoName(), dto.repoUrl()));
         return buildProjectResDto(project);
     }
 
@@ -52,7 +52,7 @@ public class CreateProjectService {
     private ProjectResDto buildProjectResDto(ProjectJpaEntity project) {
         List<TechStackDto> techStacks = project.getStackNames().stream().map(TechStackDto::new).toList();
 
-        List<RepositoryDto> repositories = project.getRepoUrls().stream()
+        List<RepositoryDto> repositories = project.getRepository().stream()
                 .map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl())).toList();
 
         return new ProjectResDto(project.getId(),

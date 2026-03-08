@@ -50,7 +50,7 @@ public class ProjectJpaEntity {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<RepoUrl> repoUrls;
+    private Set<RepositoryJpaEntity> repository;
 
     @ElementCollection
     @CollectionTable(name = "stack_names", joinColumns = @JoinColumn(name = "project_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
@@ -85,13 +85,13 @@ public class ProjectJpaEntity {
         this.prodUrl = prodUrl;
         this.status = status;
         this.reason = reason;
-        this.repoUrls = new HashSet<>();
+        this.repository = new HashSet<>();
         this.stackNames = stackNames != null ? stackNames : new HashSet<>();
         this.externalProjectId = externalProjectId;
     }
 
-    public void addRepoUrl(String repoName, String repoUrl) {
-        this.repoUrls.add(new RepoUrl(this, repoName, repoUrl));
+    public void addRepo(String repoName, String repoUrl) {
+        this.repository.add(new RepositoryJpaEntity(this, repoName, repoUrl));
     }
 
     public void updateStatus(Status status, String reason) {

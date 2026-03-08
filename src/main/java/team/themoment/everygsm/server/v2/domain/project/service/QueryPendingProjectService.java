@@ -34,7 +34,7 @@ public class QueryPendingProjectService {
                         project.getReason(),
                         project.getCreatedAt(),
                         project.getStackNames().stream().map(TechStackDto::new).toList(),
-                        project.getRepoUrls().stream().map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl()))
+                        project.getRepository().stream().map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl()))
                                 .toList(),
                         false // 승인 대기중인 프로젝트는 좋아요 불가
                 )).toList());

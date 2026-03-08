@@ -34,7 +34,7 @@ public class QueryRejectedProjectService {
                         project.getReason(),
                         project.getCreatedAt(),
                         project.getStackNames().stream().map(TechStackDto::new).toList(),
-                        project.getRepoUrls().stream().map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl()))
+                        project.getRepository().stream().map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl()))
                                 .toList(),
                         false // 거절된 프로젝트는 좋아요 불가
                 )).toList());

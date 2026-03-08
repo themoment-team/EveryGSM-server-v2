@@ -48,7 +48,7 @@ public class CreateProjectLikeService {
     private ProjectResDto buildProjectResDto(ProjectJpaEntity project) {
         List<TechStackDto> techStacks = project.getStackNames().stream().map(TechStackDto::new).toList();
 
-        List<RepositoryDto> repositories = project.getRepoUrls().stream()
+        List<RepositoryDto> repositories = project.getRepository().stream()
                 .map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl())).toList();
 
         return new ProjectResDto(project.getId(),

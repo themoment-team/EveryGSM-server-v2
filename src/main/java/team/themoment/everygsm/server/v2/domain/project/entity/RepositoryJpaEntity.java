@@ -6,10 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "repo_urls", uniqueConstraints = {@UniqueConstraint(columnNames = {"project_id", "repo_name"})})
+@Table(name = "repo", uniqueConstraints = {@UniqueConstraint(columnNames = {"project_id", "repo_name"})})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class RepoUrl {
+public class RepositoryJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class RepoUrl {
     @Column(name = "repo_url", nullable = false, length = 512)
     private String repoUrl;
 
-    public RepoUrl(ProjectJpaEntity project, String repoName, String repoUrl) {
+    public RepositoryJpaEntity(ProjectJpaEntity project, String repoName, String repoUrl) {
         this.project = project;
         this.repoName = repoName;
         this.repoUrl = repoUrl;
@@ -35,7 +35,7 @@ public class RepoUrl {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof RepoUrl other))
+        if (!(o instanceof RepositoryJpaEntity other))
             return false;
         return id != null && id.equals(other.id);
     }
