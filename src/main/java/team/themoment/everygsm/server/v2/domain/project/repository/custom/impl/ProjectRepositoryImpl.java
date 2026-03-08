@@ -4,6 +4,7 @@ import static team.themoment.everygsm.server.v2.domain.project.entity.QLikeJpaEn
 import static team.themoment.everygsm.server.v2.domain.project.entity.QProjectJpaEntity.projectJpaEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -38,6 +39,14 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                 .leftJoin(projectJpaEntity.repoUrls).fetchJoin()
                 .where(projectJpaEntity.user.id.eq(userId).and(projectJpaEntity.status.eq(status)))
                 .orderBy(projectJpaEntity.createdAt.desc()).distinct().fetch();
+    }
+
+    @Override
+    public Optional<ProjectJpaEntity> findProjectWithCollectionsById(Long projectId) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
+                        .leftJoin(projectJpaEntity.repoUrls).fetchJoin()
+                        .where(projectJpaEntity.id.eq(projectId)).distinct().fetchOne());
     }
 
     @Override
