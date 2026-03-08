@@ -43,10 +43,9 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     @Override
     public Optional<ProjectJpaEntity> findProjectWithCollectionsById(Long projectId) {
-        return Optional.ofNullable(
-                queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
-                        .leftJoin(projectJpaEntity.repoUrls).fetchJoin()
-                        .where(projectJpaEntity.id.eq(projectId)).distinct().fetchOne());
+        return Optional.ofNullable(queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames)
+                .fetchJoin().leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.id.eq(projectId))
+                .distinct().fetchOne());
     }
 
     @Override

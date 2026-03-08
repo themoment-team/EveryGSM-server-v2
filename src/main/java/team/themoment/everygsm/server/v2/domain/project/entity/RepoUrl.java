@@ -6,9 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "repo_urls", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"project_id", "repo_name"})
-})
+@Table(name = "repo_urls", uniqueConstraints = {@UniqueConstraint(columnNames = {"project_id", "repo_name"})})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class RepoUrl {
@@ -35,8 +33,10 @@ public class RepoUrl {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof RepoUrl other)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof RepoUrl other))
+            return false;
         return id != null && id.equals(other.id);
     }
 
