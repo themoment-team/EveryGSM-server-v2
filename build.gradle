@@ -70,7 +70,7 @@ dependencies {
 	implementation 'ca.pjer:logback-awslogs-appender:1.6.0'
 
 	// AWS S3
-	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:4.0.0-RC1'
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:4.0.0'
 
 	// QueryDSL
 	implementation 'io.github.openfeign.querydsl:querydsl-jpa:7.1'
