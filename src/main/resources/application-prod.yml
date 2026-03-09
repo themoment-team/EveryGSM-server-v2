@@ -20,3 +20,9 @@ springdoc:
 
 jwt:
   secret: ${JWT_SECRET_KEY}
+
+sdk:
+  swagger:
+    enabled: false
+  exception:
+    use-english-message: false

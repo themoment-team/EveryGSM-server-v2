@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import team.themoment.everygsm.server.v2.global.common.response.CommonApiResponse;
+import team.themoment.sdk.response.CommonApiResponse;
 import tools.jackson.databind.ObjectMapper;
 
 @Slf4j

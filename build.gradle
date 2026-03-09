@@ -90,6 +90,9 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.7'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.7'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.7'
+
+    // Custom SDK
+    implementation("com.github.themoment-team:the-sdk:1.5")
 }
 
 tasks.named('test') {
