@@ -63,9 +63,6 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// Swagger
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
-
 	// AWS CloudWatch Logging
 	implementation 'ca.pjer:logback-awslogs-appender:1.6.0'
 
