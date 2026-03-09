@@ -11,6 +11,8 @@ public interface ProjectRepositoryCustom {
     List<ProjectJpaEntity> findLikedProjectsByUserId(Long userId);
     List<ProjectJpaEntity> findRegisteredProjectsByUserId(Long userId);
     List<ProjectJpaEntity> findByUserIdAndStatus(Long userId, Status status);
+    List<ProjectJpaEntity> findAllByStatusWithCollections(Status status);
+    Optional<ProjectJpaEntity> findByIdWithCollections(Long projectId);
     void markUnseenProjectsAsInactive(Set<Long> seenIds);
     Optional<ProjectJpaEntity> findProjectWithCollectionsById(Long projectId);
 }
