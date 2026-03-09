@@ -47,17 +47,12 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         return Optional.ofNullable(queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames)
                 .fetchJoin().leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.id.eq(projectId))
                 .distinct().fetchOne());
+    }
+
     public List<ProjectJpaEntity> findAllByStatusWithCollections(Status status) {
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
                 .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.status.eq(status))
                 .orderBy(projectJpaEntity.createdAt.desc()).distinct().fetch();
-    }
-
-    @Override
-    public Optional<ProjectJpaEntity> findByIdWithCollections(Long projectId) {
-        return Optional.ofNullable(queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames)
-                .fetchJoin().leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.id.eq(projectId))
-                .fetchOne());
     }
 
     @Override

@@ -3,7 +3,6 @@ package team.themoment.everygsm.server.v2.domain.project.service;
 import static team.themoment.everygsm.server.v2.domain.project.entity.constant.Status.PENDING;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
