@@ -14,10 +14,6 @@ spring:
       allowed-origins:
         - "https://everygsm.kr"
 
-springdoc:
-  swagger-ui:
-    enabled: false
-
 jwt:
   secret: ${JWT_SECRET_KEY}
 
