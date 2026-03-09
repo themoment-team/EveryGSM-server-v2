@@ -50,8 +50,7 @@ public class ProjectJpaEntity {
     private LocalDateTime createdAt;
 
     @ElementCollection
-    @CollectionTable(name = "repo_urls", joinColumns = @JoinColumn(name = "project_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
-            "project_id", "repo_url"}))
+    @CollectionTable(name = "repo_urls", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "repo_url", nullable = false, length = 512)
     private Set<String> repoUrls;
 

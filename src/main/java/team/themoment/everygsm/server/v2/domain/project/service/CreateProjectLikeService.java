@@ -30,7 +30,7 @@ public class CreateProjectLikeService {
         UserJpaEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ExpectedException("해당 유저가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
-        ProjectJpaEntity project = projectRepository.findByIdWithCollections(projectId)
+        ProjectJpaEntity project = projectRepository.findProjectWithCollectionsById(projectId)
                 .orElseThrow(() -> new ExpectedException("해당 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
         if (project.getStatus() != Status.APPROVED) {

@@ -2,6 +2,8 @@ package team.themoment.everygsm.server.v2.domain.project.service;
 
 import static team.themoment.everygsm.server.v2.domain.project.entity.constant.Status.PENDING;
 
+import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,14 +41,14 @@ public class CreateProjectService {
     }
 
     private ProjectJpaEntity buildProject(CreateProjectReqDto reqDto, UserJpaEntity user) {
-        Set<String> repoUrls = java.util.Optional.ofNullable(reqDto.repository()).stream()
-                .flatMap(java.util.Collection::stream).map(RepositoryDto::repoUrl).collect(Collectors.toSet());
+        Set<String> stackNames = Optional.ofNullable(reqDto.techStack()).stream().flatMap(Collection::stream)
+                .map(TechStackDto::stackName).collect(Collectors.toSet());
 
-        Set<String> stackNames = java.util.Optional.ofNullable(reqDto.techStack()).stream()
-                .flatMap(java.util.Collection::stream).map(TechStackDto::stackName).collect(Collectors.toSet());
+        Set<String> repoUrls = Optional.ofNullable(reqDto.repository()).stream().flatMap(Collection::stream)
+                .map(RepositoryDto::repoUrl).collect(Collectors.toSet());
 
         return ProjectJpaEntity.builder().user(user).logo(reqDto.logo()).title(reqDto.title())
                 .affiliation(reqDto.affiliation()).description(reqDto.description()).prodUrl(reqDto.prodUrl())
-                .status(PENDING).repoUrls(repoUrls).stackNames(stackNames).build();
+                .status(PENDING).stackNames(stackNames).repoUrls(repoUrls).build();
     }
 }
