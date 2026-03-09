@@ -36,8 +36,6 @@ public class CreateProjectService {
                 .orElseThrow(() -> new ExpectedException("해당 유저가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
         ProjectJpaEntity project = projectRepository.save(buildProject(reqDto, user));
-        Optional.ofNullable(reqDto.repository()).stream().flatMap(Collection::stream)
-                .forEach(dto -> project.addRepo(dto.repoName(), dto.repoUrl()));
         return buildProjectResDto(project);
     }
 
@@ -45,15 +43,17 @@ public class CreateProjectService {
         Set<String> stackNames = Optional.ofNullable(reqDto.techStack()).stream().flatMap(Collection::stream)
                 .map(TechStackDto::stackName).collect(Collectors.toSet());
 
+        Set<String> repoUrls = Optional.ofNullable(reqDto.repository()).stream().flatMap(Collection::stream)
+                .map(RepositoryDto::repoUrl).collect(Collectors.toSet());
+
         return ProjectJpaEntity.builder().user(user).logo(reqDto.logo()).title(reqDto.title())
                 .affiliation(reqDto.affiliation()).description(reqDto.description()).prodUrl(reqDto.prodUrl())
-                .status(PENDING).stackNames(stackNames).build();
+                .status(PENDING).stackNames(stackNames).repoUrls(repoUrls).build();
     }
     private ProjectResDto buildProjectResDto(ProjectJpaEntity project) {
         List<TechStackDto> techStacks = project.getStackNames().stream().map(TechStackDto::new).toList();
 
-        List<RepositoryDto> repositories = project.getRepository().stream()
-                .map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl())).toList();
+        List<RepositoryDto> repositories = project.getRepoUrls().stream().map(RepositoryDto::new).toList();
 
         return new ProjectResDto(project.getId(),
                 project.getLogo(),

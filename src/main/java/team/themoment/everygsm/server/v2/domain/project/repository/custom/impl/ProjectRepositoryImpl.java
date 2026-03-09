@@ -21,7 +21,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     @Override
     public List<ProjectJpaEntity> findLikedProjectsByUserId(Long userId) {
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
-                .leftJoin(projectJpaEntity.repository).fetchJoin().join(likeJpaEntity)
+                .leftJoin(projectJpaEntity.repoUrls).fetchJoin().join(likeJpaEntity)
                 .on(likeJpaEntity.project.eq(projectJpaEntity)).where(likeJpaEntity.user.id.eq(userId))
                 .orderBy(projectJpaEntity.createdAt.desc()).distinct().fetch();
     }
@@ -29,14 +29,14 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     @Override
     public List<ProjectJpaEntity> findRegisteredProjectsByUserId(Long userId) {
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
-                .leftJoin(projectJpaEntity.repository).fetchJoin().where(projectJpaEntity.user.id.eq(userId))
+                .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.user.id.eq(userId))
                 .orderBy(projectJpaEntity.createdAt.desc()).distinct().fetch();
     }
 
     @Override
     public List<ProjectJpaEntity> findByUserIdAndStatus(Long userId, Status status) {
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
-                .leftJoin(projectJpaEntity.repository).fetchJoin()
+                .leftJoin(projectJpaEntity.repoUrls).fetchJoin()
                 .where(projectJpaEntity.user.id.eq(userId).and(projectJpaEntity.status.eq(status)))
                 .orderBy(projectJpaEntity.createdAt.desc()).distinct().fetch();
     }
@@ -44,7 +44,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     @Override
     public Optional<ProjectJpaEntity> findProjectWithCollectionsById(Long projectId) {
         return Optional.ofNullable(queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames)
-                .fetchJoin().leftJoin(projectJpaEntity.repository).fetchJoin().where(projectJpaEntity.id.eq(projectId))
+                .fetchJoin().leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.id.eq(projectId))
                 .distinct().fetchOne());
     }
 

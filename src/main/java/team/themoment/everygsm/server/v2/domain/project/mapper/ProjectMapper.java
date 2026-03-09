@@ -35,6 +35,6 @@ public class ProjectMapper {
     }
 
     public List<RepositoryDto> extractRepositories(ProjectJpaEntity project) {
-        return project.getRepository().stream().map(r -> new RepositoryDto(r.getRepoName(), r.getRepoUrl())).toList();
+        return project.getRepoUrls().stream().map(RepositoryDto::new).toList();
     }
 }
