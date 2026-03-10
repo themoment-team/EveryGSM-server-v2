@@ -1,6 +1,7 @@
 package team.themoment.everygsm.server.v2.global.security;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,12 +10,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import team.themoment.everygsm.server.v2.global.security.data.CorsEnvironment;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import team.themoment.everygsm.server.v2.global.security.data.CorsEnvironment;
+import team.themoment.everygsm.server.v2.global.security.filter.JwtAuthenticationFilter;
+import team.themoment.everygsm.server.v2.global.security.handler.JwtAccessDeniedHandler;
+import team.themoment.everygsm.server.v2.global.security.handler.JwtAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -22,24 +27,32 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CorsEnvironment corsEnvironment;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
+        http.formLogin(AbstractHttpConfigurer::disable).httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler))
 
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/v2/projects/registration",
+                                "/api/v2/projects/my",
+                                "/api/v2/projects/my/pending",
+                                "/api/v2/projects/my/rejected")
+                        .hasAnyAuthority("USER", "ADMIN").requestMatchers("/api/v2/projects/like/**")
+                        .hasAnyAuthority("USER", "ADMIN").requestMatchers(HttpMethod.GET, "/api/v2/projects")
+                        .permitAll().requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
 
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                        .anyRequest().authenticated())
 
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                );
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -50,24 +63,17 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(corsEnvironment.getAllowedOrigins());
 
-        configuration.setAllowedMethods(
-                List.of(
-                                HttpMethod.GET,
-                                HttpMethod.POST,
-                                HttpMethod.PUT,
-                                HttpMethod.PATCH,
-                                HttpMethod.DELETE,
-                                HttpMethod.OPTIONS
-                        ).stream()
-                        .map(HttpMethod::name)
-                        .toList()
-        );
+        configuration.setAllowedMethods(List.of(HttpMethod.GET,
+                HttpMethod.POST,
+                HttpMethod.PUT,
+                HttpMethod.PATCH,
+                HttpMethod.DELETE,
+                HttpMethod.OPTIONS).stream().map(HttpMethod::name).toList());
 
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(false);
 
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
