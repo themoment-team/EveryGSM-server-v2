@@ -13,3 +13,7 @@ spring:
 
 jwt:
   secret: local-secret-key
+
+sdk:
+  exception:
+    use-english-message: false

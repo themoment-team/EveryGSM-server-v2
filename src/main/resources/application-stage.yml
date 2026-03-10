@@ -14,3 +14,7 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET_KEY}
+
+sdk:
+  exception:
+    use-english-message: false
