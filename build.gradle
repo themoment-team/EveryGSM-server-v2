@@ -88,6 +88,9 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.7'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.7'
 
+	// DataGSM OAuth SDK
+	implementation 'com.github.themoment-team:datagsm-oauth-sdk-java:1.1.0'
+
 	// Custom SDK
 	implementation("com.github.themoment-team:the-sdk:1.5")
 }

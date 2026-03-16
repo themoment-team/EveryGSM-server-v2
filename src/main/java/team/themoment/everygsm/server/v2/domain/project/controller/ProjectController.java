@@ -1,5 +1,6 @@
 package team.themoment.everygsm.server.v2.domain.project.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,36 +35,31 @@ public class ProjectController {
 
     @Operation(summary = "마이페이지 조회", description = "좋아요한 프로젝트와 등록한 프로젝트를 조회합니다")
     @GetMapping("/my")
-    public MyPageResDto queryMyProjects() {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public MyPageResDto queryMyProjects(@AuthenticationPrincipal Long userId) {
         return queryMypageService.execute(userId);
     }
 
     @Operation(summary = "승인 대기 프로젝트 조회", description = "내가 등록한 승인 대기 중인 프로젝트 목록을 조회합니다")
     @GetMapping("/my/pending")
-    public ProjectListResDto pending() {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public ProjectListResDto pending(@AuthenticationPrincipal Long userId) {
         return queryPendingProjectService.execute(userId);
     }
 
     @Operation(summary = "거절된 프로젝트 조회", description = "내가 등록한 거절된 프로젝트 목록을 조회합니다")
     @GetMapping("/my/rejected")
-    public ProjectListResDto rejected() {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public ProjectListResDto rejected(@AuthenticationPrincipal Long userId) {
         return queryRejectedProjectService.execute(userId);
     }
 
     @Operation(summary = "프로젝트 등록", description = "새로운 프로젝트를 등록합니다")
     @PostMapping("/registration")
-    public ProjectResDto create(@RequestBody @Valid CreateProjectReqDto reqDto) {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public ProjectResDto create(@AuthenticationPrincipal Long userId, @RequestBody @Valid CreateProjectReqDto reqDto) {
         return createProjectService.execute(userId, reqDto);
     }
 
     @Operation(summary = "승인된 프로젝트 전체 조회", description = "승인된 모든 프로젝트를 조회합니다")
     @GetMapping
-    public QueryProjectResDto query() {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public QueryProjectResDto query(@AuthenticationPrincipal Long userId) {
         return queryProjectService.execute(userId);
     }
 
