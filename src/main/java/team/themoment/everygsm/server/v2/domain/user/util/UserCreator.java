@@ -1,4 +1,4 @@
-package team.themoment.everygsm.server.v2.domain.user.service;
+package team.themoment.everygsm.server.v2.domain.user.util;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +9,7 @@ import team.themoment.everygsm.server.v2.domain.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class CreateUserService {
+public class UserCreator {
 
     private final UserRepository userRepository;
 

@@ -17,7 +17,7 @@ import team.themoment.everygsm.server.v2.domain.auth.dto.response.OAuthSignInRes
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
 import team.themoment.everygsm.server.v2.domain.user.entity.constant.Role;
 import team.themoment.everygsm.server.v2.domain.user.repository.UserRepository;
-import team.themoment.everygsm.server.v2.domain.user.service.CreateUserService;
+import team.themoment.everygsm.server.v2.domain.user.util.UserCreator;
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
 import team.themoment.everygsm.server.v2.global.security.jwt.JwtTokenProvider;
 
@@ -28,7 +28,7 @@ public class OAuthSignInService {
 
     private final DataGsmOAuthClient dataGsmClient;
     private final UserRepository userRepository;
-    private final CreateUserService createUserService;
+    private final UserCreator userCreator;
     private final JwtTokenProvider jwtTokenProvider;
     @Value("${oauth.datagsm.redirect-uri}")
     private String redirectUri;
@@ -79,7 +79,7 @@ public class OAuthSignInService {
             return userRepository.findByEmail(email).orElseGet(() -> {
                 UserJpaEntity newUser = UserJpaEntity.builder().email(email).name(name)
                         .studentNumber(String.valueOf(studentNumber)).role(Role.USER).build();
-                return createUserService.execute(newUser);
+                return userCreator.execute(newUser);
             });
         }
     }
