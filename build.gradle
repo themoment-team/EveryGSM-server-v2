@@ -1,12 +1,12 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.0.0'
+	id 'org.springframework.boot' version '4.0.3'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id 'com.diffplug.spotless' version '8.1.0'
+	id 'com.diffplug.spotless' version '8.3.0'
 }
 
 group = 'team.themoment'
-version = '0.0.1-SNAPSHOT'
+version = '20260310.0'
 
 java {
 	toolchain {
@@ -63,14 +63,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// Swagger
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
-
 	// AWS CloudWatch Logging
 	implementation 'ca.pjer:logback-awslogs-appender:1.6.0'
 
 	// AWS S3
-	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:4.0.0-M1'
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:4.0.0'
 
 	// QueryDSL
 	implementation 'io.github.openfeign.querydsl:querydsl-jpa:7.1'
@@ -83,13 +80,19 @@ dependencies {
 	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
 	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 
+	// DataGSM OpenAPI SDK
+	implementation 'com.github.themoment-team:datagsm-openapi-sdk-java:1.1.1'
+
 	// Jwt
-	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.7'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.7'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.7'
 
 	// DataGSM OAuth SDK
 	implementation 'com.github.themoment-team:datagsm-oauth-sdk-java:1.1.0'
+
+	// Custom SDK
+	implementation("com.github.themoment-team:the-sdk:1.5")
 }
 
 tasks.named('test') {

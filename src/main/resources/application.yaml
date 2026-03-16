@@ -8,6 +8,10 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
   cloud:
+    datagsm:
+      openapi:
+        api-key: ${DATAGSM_OPENAPI_KEY}
+        sync-cron: "0 0 3 * * *"
     aws:
       credentials:
         access-key: ${AWS_ACCESS_KEY_ID}
@@ -22,18 +26,6 @@ spring:
 server:
   shutdown: graceful
   port: ${PORT:8080}
-
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    enabled: true
-    display-request-duration: true
-    tags-sorter: alpha
-    operations-sorter: method
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
-  writer-with-default-pretty-printer: true
 
 jwt:
   secret: ${JWT_SECRET}

@@ -21,7 +21,7 @@ public class ProjectJpaEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private UserJpaEntity user;
 
     @Column(nullable = false, length = 512)
@@ -30,7 +30,7 @@ public class ProjectJpaEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, length = 512)
+    @Column(length = 512)
     private String affiliation;
 
     @Column(nullable = false, length = 200)
@@ -50,8 +50,7 @@ public class ProjectJpaEntity {
     private LocalDateTime createdAt;
 
     @ElementCollection
-    @CollectionTable(name = "repo_urls", joinColumns = @JoinColumn(name = "project_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
-            "project_id", "repo_url"}))
+    @CollectionTable(name = "repo_urls", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "repo_url", nullable = false, length = 512)
     private Set<String> repoUrls;
 
@@ -60,6 +59,9 @@ public class ProjectJpaEntity {
             "project_id", "stack_name"}))
     @Column(name = "stack_name", nullable = false)
     private Set<String> stackNames;
+
+    @Column(name = "external_project_id", unique = true)
+    private Long externalProjectId;
 
     @PrePersist
     protected void onCreate() {
@@ -76,7 +78,8 @@ public class ProjectJpaEntity {
             Status status,
             String reason,
             Set<String> repoUrls,
-            Set<String> stackNames) {
+            Set<String> stackNames,
+            Long externalProjectId) {
         this.user = user;
         this.logo = logo;
         this.title = title;
@@ -87,10 +90,24 @@ public class ProjectJpaEntity {
         this.reason = reason;
         this.repoUrls = repoUrls != null ? repoUrls : new HashSet<>();
         this.stackNames = stackNames != null ? stackNames : new HashSet<>();
+        this.externalProjectId = externalProjectId;
     }
 
     public void updateStatus(Status status, String reason) {
         this.status = status;
         this.reason = reason;
+    }
+
+    public void syncUpdate(String title, String description, String affiliation, UserJpaEntity user) {
+        this.title = title;
+        this.description = description;
+        this.affiliation = affiliation;
+        if (user != null) {
+            this.user = user;
+        }
+    }
+
+    public void markInactive() {
+        this.status = Status.INACTIVE;
     }
 }
