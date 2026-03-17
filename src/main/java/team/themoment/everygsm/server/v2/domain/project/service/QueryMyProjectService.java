@@ -30,8 +30,7 @@ public class QueryMyProjectService {
 
         boolean liked = projectLikeRepository.findByUserIdAndProjectId(userId, projectId).isPresent();
 
-        return new ProjectResDto(
-                project.getId(),
+        return new ProjectResDto(project.getId(),
                 project.getLogo(),
                 project.getTitle(),
                 project.getAffiliation(),
@@ -42,7 +41,6 @@ public class QueryMyProjectService {
                 project.getCreatedAt(),
                 project.getStackNames().stream().map(TechStackDto::new).toList(),
                 project.getRepoUrls().stream().map(RepositoryDto::new).toList(),
-                liked
-        );
+                liked);
     }
 }
