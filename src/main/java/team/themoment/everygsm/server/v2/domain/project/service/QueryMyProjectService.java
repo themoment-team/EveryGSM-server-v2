@@ -24,7 +24,7 @@ public class QueryMyProjectService {
         ProjectJpaEntity project = projectRepository.findProjectWithCollectionsByIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new ExpectedException("유저에게 해당 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
-        boolean liked = projectLikeRepository.findByUserIdAndProjectId(userId, projectId).isPresent();
+        boolean liked = projectLikeRepository.existsByProjectIdAndUserId(project.getId(), userId);
 
         return new ProjectResDto(project.getId(),
                 project.getLogo(),
