@@ -10,7 +10,7 @@ import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
 public class DataGsmOpenApiConfig {
 
     @Bean
-    public DataGsmOpenApiClient dataGsmClient(@Value("${spring.cloud.datagsm.openapi.api-key}") String apiKey) {
+    public DataGsmOpenApiClient dataGsmOpenApiClient(@Value("${spring.cloud.datagsm.openapi.api-key}") String apiKey) {
         return DataGsmOpenApiClient.builder(apiKey).build();
     }
 }

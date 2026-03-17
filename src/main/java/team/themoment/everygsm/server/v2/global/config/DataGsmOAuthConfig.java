@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import team.themoment.datagsm.sdk.oauth.DataGsmOAuthClient;
 
 @Configuration
-public class DataGsmConfig {
+public class DataGsmOAuthConfig {
     @Bean
-    public DataGsmOAuthClient dataGsmClient(@Value("${oauth.datagsm.client-id}") String clientId,
+    public DataGsmOAuthClient dataGsmOAuthClient(@Value("${oauth.datagsm.client-id}") String clientId,
             @Value("${oauth.datagsm.client-secret}") String clientSecret) {
         return DataGsmOAuthClient.builder(clientId, clientSecret).build();
     }
