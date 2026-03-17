@@ -15,6 +15,7 @@ import team.themoment.everygsm.server.v2.domain.project.dto.response.QueryProjec
 import team.themoment.everygsm.server.v2.domain.project.service.CreateProjectLikeService;
 import team.themoment.everygsm.server.v2.domain.project.service.CreateProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.DeleteProjectLikeService;
+import team.themoment.everygsm.server.v2.domain.project.service.QueryMyProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryMypageService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryPendingProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryProjectService;
@@ -27,6 +28,7 @@ import team.themoment.everygsm.server.v2.domain.project.service.QueryRejectedPro
 public class ProjectController {
     private final CreateProjectService createProjectService;
     private final QueryMypageService queryMypageService;
+    private final QueryMyProjectService queryMyProjectService;
     private final QueryPendingProjectService queryPendingProjectService;
     private final QueryRejectedProjectService queryRejectedProjectService;
     private final QueryProjectService queryProjectService;
@@ -37,6 +39,12 @@ public class ProjectController {
     @GetMapping("/my")
     public MyPageResDto queryMyProjects(@AuthenticationPrincipal Long userId) {
         return queryMypageService.execute(userId);
+    }
+
+    @Operation(summary = "내 프로젝트 단건 조회", description = "자신이 등록한 프로젝트를 ID로 조회합니다")
+    @GetMapping("/my/{id}")
+    public ProjectResDto queryMyProject(@AuthenticationPrincipal Long userId, @PathVariable Long id) {
+        return queryMyProjectService.execute(userId, id);
     }
 
     @Operation(summary = "승인 대기 프로젝트 조회", description = "내가 등록한 승인 대기 중인 프로젝트 목록을 조회합니다")

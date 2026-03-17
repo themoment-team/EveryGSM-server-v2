@@ -49,6 +49,14 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                 .distinct().fetchOne());
     }
 
+    @Override
+    public Optional<ProjectJpaEntity> findProjectWithCollectionsByIdAndUserId(Long projectId, Long userId) {
+        return Optional.ofNullable(queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames)
+                .fetchJoin().leftJoin(projectJpaEntity.repoUrls).fetchJoin()
+                .where(projectJpaEntity.id.eq(projectId).and(projectJpaEntity.user.id.eq(userId))).distinct()
+                .fetchOne());
+    }
+
     public List<ProjectJpaEntity> findAllByStatusWithCollections(Status status) {
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
                 .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.status.eq(status))
