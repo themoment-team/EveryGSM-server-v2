@@ -21,12 +21,8 @@ public class QueryMyProjectService {
 
     @Transactional(readOnly = true)
     public ProjectResDto execute(Long userId, Long projectId) {
-        ProjectJpaEntity project = projectRepository.findProjectWithCollectionsById(projectId)
-                .orElseThrow(() -> new ExpectedException("해당 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
-
-        if (!project.getUser().getId().equals(userId)) {
-            throw new ExpectedException("자신의 프로젝트가 아닙니다.", HttpStatus.FORBIDDEN);
-        }
+        ProjectJpaEntity project = projectRepository.findProjectWithCollectionsByIdAndUserId(projectId, userId)
+                .orElseThrow(() -> new ExpectedException("유저에게 해당 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
         boolean liked = projectLikeRepository.findByUserIdAndProjectId(userId, projectId).isPresent();
 
