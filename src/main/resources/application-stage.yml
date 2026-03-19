@@ -18,5 +18,3 @@ jwt:
 sdk:
   exception:
     use-english-message: false
-  logging:
-    enabled: false
