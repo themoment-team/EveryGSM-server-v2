@@ -1,6 +1,6 @@
 package team.themoment.everygsm.server.v2.domain.auth.service;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -33,7 +33,7 @@ public class OAuthSignInService {
     private final UserCreator userCreator;
     private final JwtTokenProvider jwtTokenProvider;
     @Value("${oauth.datagsm.redirect-uris}")
-    private List<String> allowedRedirectUris;
+    private Set<String> allowedRedirectUris;
 
     private static final int LOCK_STRIPE_COUNT = 64;
     private final Object[] lockStripes = createStripes(LOCK_STRIPE_COUNT);
