@@ -1,5 +1,7 @@
 package team.themoment.everygsm.server.v2.domain.auth.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -30,8 +32,8 @@ public class OAuthSignInService {
     private final UserRepository userRepository;
     private final UserCreator userCreator;
     private final JwtTokenProvider jwtTokenProvider;
-    @Value("${oauth.datagsm.redirect-uri}")
-    private String redirectUri;
+    @Value("${oauth.datagsm.redirect-uris}")
+    private List<String> allowedRedirectUris;
 
     private static final int LOCK_STRIPE_COUNT = 64;
     private final Object[] lockStripes = createStripes(LOCK_STRIPE_COUNT);
@@ -49,6 +51,11 @@ public class OAuthSignInService {
 
     @Transactional
     public OAuthSignInResDto execute(OAuthSignInReqDto reqDto) {
+        String redirectUri = reqDto.redirectUri();
+        if (!allowedRedirectUris.contains(redirectUri)) {
+            throw new ExpectedException("허용되지 않은 redirectUri입니다.", HttpStatus.BAD_REQUEST);
+        }
+
         try {
             TokenResponse tokenResponse = dataGsmClient.exchangeCodeForToken(reqDto.authCode(), redirectUri);
             UserInfo userInfo = dataGsmClient.getUserInfo(tokenResponse.getAccessToken());
