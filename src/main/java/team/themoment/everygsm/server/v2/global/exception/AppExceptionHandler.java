@@ -8,7 +8,7 @@ import team.themoment.everygsm.server.v2.global.exception.error.ExpectedExceptio
 import team.themoment.sdk.response.CommonApiResponse;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class AppExceptionHandler {
 
     @ExceptionHandler(ExpectedException.class)
     public ResponseEntity handleExpectedException(ExpectedException e) {
