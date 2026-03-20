@@ -12,7 +12,7 @@ jobs:
     environment: stage
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Connect deploy key
         uses: cloudtype-github-actions/connect@v1
