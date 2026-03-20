@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup JDK 25
         uses: actions/setup-java@v5
@@ -30,16 +30,3 @@ jobs:
       - name: Test with Gradle
         run: ./gradlew build --parallel --build-cache
 
-      - name: CI Success Notification
-        uses: sarisia/actions-status-discord@v1
-        if: success()
-        with:
-          webhook: ${{ secrets.DISCORD_INFORMATION_ALERT_CHANNEL_WEBHOOK }}
-          color: 0x4CAF50
-
-      - name: CI Failure Notification
-        uses: sarisia/actions-status-discord@v1
-        if: failure()
-        with:
-          webhook: ${{ secrets.DISCORD_INFORMATION_ALERT_CHANNEL_WEBHOOK }}
-          color: 0xFF4C4C
