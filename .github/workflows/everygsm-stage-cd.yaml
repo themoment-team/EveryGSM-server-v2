@@ -14,21 +14,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup JDK 25
-        uses: actions/setup-java@v5
-        with:
-          java-version: '25'
-          distribution: 'temurin'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
-        with:
-          cache-read-only: false
-          gradle-home-cache-cleanup: true
-
-      - name: Build with Gradle
-        run: ./gradlew build -x test --parallel --build-cache
-
       - name: Connect deploy key
         uses: cloudtype-github-actions/connect@v1
         with:
@@ -43,15 +28,30 @@ jobs:
           stage: main
           yaml: |
             name: everygsm-stage
-            app: java@25
+            app: dockerfile
             options:
               env:
                 - name: SPRING_PROFILES_ACTIVE
                   value: stage
+                - name: DB_HOST
+                  secret: DB_HOST
+                - name: DB_PORT
+                  secret: DB_PORT
+                - name: DB_USERNAME
+                  secret: DB_USERNAME
+                - name: DB_PASSWORD
+                  secret: DB_PASSWORD
+                - name: JWT_SECRET_KEY
+                  secret: JWT_SECRET_KEY
+                - name: AWS_ACCESS_KEY_ID
+                  secret: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  secret: AWS_SECRET_ACCESS_KEY
+                - name: AWS_S3_BUCKET
+                  secret: AWS_S3_BUCKET
               ports: 8080
-              start: java -jar build/libs/app.jar
+              dockerfile: deploy/Dockerfile.stage
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git
                 ref: ${{ github.ref }}
-
