@@ -34,21 +34,21 @@ jobs:
                 - name: SPRING_PROFILES_ACTIVE
                   value: stage
                 - name: DB_HOST
-                  secret: DB_HOST
+                  value: ${{ secrets.DB_HOST }}
                 - name: DB_PORT
-                  secret: DB_PORT
+                  value: ${{ secrets.DB_PORT }}
                 - name: DB_USERNAME
-                  secret: DB_USERNAME
+                  value: ${{ secrets.DB_USERNAME }}
                 - name: DB_PASSWORD
-                  secret: DB_PASSWORD
+                  value: ${{ secrets.DB_PASSWORD }}
                 - name: JWT_SECRET_KEY
-                  secret: JWT_SECRET_KEY
+                  value: ${{ secrets.JWT_SECRET_KEY }}
                 - name: AWS_ACCESS_KEY_ID
-                  secret: AWS_ACCESS_KEY_ID
+                  value: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 - name: AWS_SECRET_ACCESS_KEY
-                  secret: AWS_SECRET_ACCESS_KEY
+                  value: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 - name: AWS_S3_BUCKET
-                  secret: AWS_S3_BUCKET
+                  value: ${{ secrets.AWS_S3_BUCKET }}
               ports: 8080
               dockerfile: deploy/Dockerfile.stage
             context:
