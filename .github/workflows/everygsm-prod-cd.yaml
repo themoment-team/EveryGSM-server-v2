@@ -13,6 +13,20 @@ jobs:
     steps:
       - name: Temporary Disabled Step
         run: echo "This deployment workflow is temporarily disabled."
+
+      - name: CD Success Notification
+        uses: sarisia/actions-status-discord@v1
+        if: success()
+        with:
+          webhook: ${{ secrets.DISCORD_INFORMATION_ALERT_CHANNEL_WEBHOOK }}
+          color: 0x4CAF50
+
+      - name: CD Failure Notification
+        uses: sarisia/actions-status-discord@v1
+        if: failure()
+        with:
+          webhook: ${{ secrets.DISCORD_INFORMATION_ALERT_CHANNEL_WEBHOOK }}
+          color: 0xFF4C4C
 #      - name: Checkout Code
 #        uses: actions/checkout@v6
 #
