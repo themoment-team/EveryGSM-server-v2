@@ -77,3 +77,10 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_INFORMATION_ALERT_CHANNEL_WEBHOOK }}
           color: 0xFF4C4C
+
+      - name: CD Cancelled Notification
+        uses: sarisia/actions-status-discord@v1
+        if: cancelled()
+        with:
+          webhook: ${{ secrets.DISCORD_INFORMATION_ALERT_CHANNEL_WEBHOOK }}
+          color: 0xFFC107
