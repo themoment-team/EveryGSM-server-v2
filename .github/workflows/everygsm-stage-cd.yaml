@@ -41,8 +41,8 @@ jobs:
                   value: ${{ secrets.DB_USERNAME }}
                 - name: DB_PASSWORD
                   value: ${{ secrets.DB_PASSWORD }}
-                - name: JWT_SECRET_KEY
-                  value: ${{ secrets.JWT_SECRET_KEY }}
+                - name: JWT_SECRET
+                  value: ${{ secrets.JWT_SECRET }}
                 - name: AWS_ACCESS_KEY_ID
                   value: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 - name: AWS_SECRET_ACCESS_KEY
