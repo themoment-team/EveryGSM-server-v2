@@ -11,8 +11,6 @@ public class DataGsmOAuthConfig {
     @Bean
     public DataGsmOAuthClient dataGsmOAuthClient(@Value("${oauth.datagsm.client-id}") String clientId,
             @Value("${oauth.datagsm.client-secret}") String clientSecret) {
-        return DataGsmOAuthClient.builder(clientId, clientSecret)
-                .authorizationBaseUrl("https://oauth-auth-data.stage.hellogsm.kr")
-                .userInfoBaseUrl("https://oauth-userinfo-data.stage.hellogsm.kr").build();
+        return DataGsmOAuthClient.builder(clientId, clientSecret).build();
     }
 }
