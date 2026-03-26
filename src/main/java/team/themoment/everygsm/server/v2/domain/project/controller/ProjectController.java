@@ -73,15 +73,13 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 좋아요", description = "프로젝트에 좋아요를 추가합니다")
     @PostMapping("/like/{projectId}")
-    public ProjectResDto createLike(@PathVariable Long projectId) {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public ProjectResDto createLike(@AuthenticationPrincipal Long userId, @PathVariable Long projectId) {
         return createProjectLikeService.execute(userId, projectId);
     }
 
     @Operation(summary = "프로젝트 좋아요 취소", description = "프로젝트 좋아요를 취소합니다")
     @DeleteMapping("/like/{projectId}")
-    public ProjectResDto deleteLike(@PathVariable Long projectId) {
-        Long userId = 1L; // TODO : 해당 부분 인증 구현되면 변경해야 합니다
+    public ProjectResDto deleteLike(@AuthenticationPrincipal Long userId, @PathVariable Long projectId) {
         return deleteProjectLikeService.execute(userId, projectId);
     }
 }
