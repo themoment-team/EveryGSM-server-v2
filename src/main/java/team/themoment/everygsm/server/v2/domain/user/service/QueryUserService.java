@@ -19,7 +19,7 @@ public class QueryUserService {
 
     public UserResDto execute(Long userId) {
         UserJpaEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new ExpectedException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ExpectedException("해당 유저가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
         return new UserResDto(user.getId(), user.getEmail(), user.getName(), user.getStudentNumber(), user.getRole());
     }
