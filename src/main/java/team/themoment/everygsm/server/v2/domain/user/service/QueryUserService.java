@@ -21,12 +21,6 @@ public class QueryUserService {
         UserJpaEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ExpectedException(HttpStatus.NOT_FOUND));
 
-        return new UserResDto(
-                user.getId(),
-                user.getEmail(),
-                user.getName(),
-                user.getStudentNumber(),
-                user.getRole()
-        );
+        return new UserResDto(user.getId(), user.getEmail(), user.getName(), user.getStudentNumber(), user.getRole());
     }
 }
