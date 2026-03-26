@@ -46,8 +46,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v2/projects/registration",
                                 "/api/v2/projects/my",
                                 "/api/v2/projects/my/pending",
-                                "/api/v2/projects/my/rejected")
-                        .hasAnyAuthority("USER", "ADMIN").requestMatchers("/api/v2/projects/like/**")
+                                "/api/v2/projects/my/rejected",
+                                "/api/v2/users/me",
+                                "/api/v2/projects/like/**")
                         .hasAnyAuthority("USER", "ADMIN").requestMatchers(HttpMethod.GET, "/api/v2/projects")
                         .permitAll().requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
 
