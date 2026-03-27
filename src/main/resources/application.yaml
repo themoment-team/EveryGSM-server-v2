@@ -36,3 +36,8 @@ oauth:
     client-id: ${DATAGSM_CLIENT_ID}
     client-secret: ${DATAGSM_CLIENT_SECRET}
     redirect-uris: ${DATAGSM_REDIRECT_URIS:http://localhost:3000,http://localhost:3001}
+
+datagsm:
+  api:
+    url: ${DATAGSM_API_URL}
+    key: ${DATAGSM_OPENAPI_KEY}
