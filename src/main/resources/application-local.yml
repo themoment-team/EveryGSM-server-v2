@@ -17,8 +17,3 @@ jwt:
 sdk:
   exception:
     use-english-message: false
-
-datagsm:
-  api:
-    url: https://api.datagsm.example.com
-    key: local-api-key
