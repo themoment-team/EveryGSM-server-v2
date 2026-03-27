@@ -22,8 +22,7 @@ public class AdminQueryPendingProjectService {
 
     @Transactional(readOnly = true)
     public ProjectResDto execute(Long projectId) {
-        ProjectJpaEntity project = projectRepository.findProjectWithCollectionsById(projectId)
-                .filter(p -> p.getStatus() == PENDING)
+        ProjectJpaEntity project = projectRepository.findProjectWithCollectionsByIdAndStatus(projectId, PENDING)
                 .orElseThrow(() -> new ExpectedException("해당 승인 대기 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
         return projectMapper.toRes(project, false);

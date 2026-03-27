@@ -15,4 +15,5 @@ public interface ProjectRepositoryCustom {
     void markUnseenProjectsAsInactive(Set<Long> seenIds);
     Optional<ProjectJpaEntity> findProjectWithCollectionsById(Long projectId);
     Optional<ProjectJpaEntity> findProjectWithCollectionsByIdAndUserId(Long projectId, Long userId);
+    Optional<ProjectJpaEntity> findProjectWithCollectionsByIdAndStatus(Long projectId, Status status);
 }
