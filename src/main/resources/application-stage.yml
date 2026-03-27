@@ -18,8 +18,3 @@ jwt:
 sdk:
   exception:
     use-english-message: false
-
-datagsm:
-  api:
-    url: ${DATAGSM_API_URL}
-    key: ${DATAGSM_OPENAPI_KEY}
