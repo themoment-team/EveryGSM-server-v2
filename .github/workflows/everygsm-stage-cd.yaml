@@ -57,6 +57,8 @@ jobs:
                   value: ${{ secrets.DATAGSM_CLIENT_SECRET }}
                 - name: DATAGSM_REDIRECT_URIS
                   value: ${{ secrets.DATAGSM_REDIRECT_URIS }}
+                - name: DATAGSM_API_URL
+                  value: ${{ secrets.DATAGSM_API_URL }}
               ports: 8080
               dockerfile: deploy/Dockerfile.stage
             context:
