@@ -1,13 +1,13 @@
-package team.themoment.everygsm.server.v2.global.client.datagsm.dto;
+package team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class QueryStudentReqDto {
+public class QueryClubReqDto {
 
-    private final String email;
+    private final String clubName;
 
     @Builder.Default
     private final int page = 0;

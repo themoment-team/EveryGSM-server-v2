@@ -1,4 +1,4 @@
-package team.themoment.everygsm.server.v2.global.client.datagsm.dto;
+package team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
