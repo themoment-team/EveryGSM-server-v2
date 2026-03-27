@@ -45,12 +45,8 @@ public class AdminApproveProjectService {
         Long clubId = resolveClubId(project.getAffiliation());
         List<Long> participantIds = resolveParticipantIds(project.getUser().getEmail());
 
-        ProjectReqDto reqDto = ProjectReqDto.builder()
-                .name(project.getTitle())
-                .description(project.getDescription())
-                .clubId(clubId)
-                .participantIds(participantIds)
-                .build();
+        ProjectReqDto reqDto = ProjectReqDto.builder().name(project.getTitle()).description(project.getDescription())
+                .clubId(clubId).participantIds(participantIds).build();
 
         Long externalProjectId = datagsmApiClient.createProject(reqDto).getId();
         project.assignExternalProjectId(externalProjectId);
@@ -60,8 +56,7 @@ public class AdminApproveProjectService {
         if (affiliation == null || affiliation.isBlank()) {
             return null;
         }
-        ClubListResDto res = datagsmApiClient.getClubs(
-                QueryClubReqDto.builder().clubName(affiliation).build());
+        ClubListResDto res = datagsmApiClient.getClubs(QueryClubReqDto.builder().clubName(affiliation).build());
         if (res.getClubs() == null || res.getClubs().isEmpty()) {
             return null;
         }
@@ -69,8 +64,7 @@ public class AdminApproveProjectService {
     }
 
     private List<Long> resolveParticipantIds(String email) {
-        StudentListResDto res = datagsmApiClient.getStudents(
-                QueryStudentReqDto.builder().email(email).build());
+        StudentListResDto res = datagsmApiClient.getStudents(QueryStudentReqDto.builder().email(email).build());
         if (res.getStudents() == null || res.getStudents().isEmpty()) {
             return List.of();
         }
