@@ -50,7 +50,8 @@ public class SecurityConfig {
                                 "/api/v2/users/me",
                                 "/api/v2/projects/like/**")
                         .hasAnyAuthority("USER", "ADMIN").requestMatchers(HttpMethod.GET, "/api/v2/projects")
-                        .permitAll().requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
+                        .permitAll().requestMatchers("/api/v2/images").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
 
                         .anyRequest().authenticated())
 
