@@ -24,8 +24,8 @@ import team.themoment.everygsm.server.v2.global.exception.error.ExpectedExceptio
 @RequiredArgsConstructor
 public class UploadImageService {
 
-    private static final Set<String> ALLOWED_CONTENT_TYPES =
-            Set.of("image/jpeg", "image/png", "image/gif", "image/webp");
+    private static final Set<String> ALLOWED_CONTENT_TYPES = Set
+            .of("image/jpeg", "image/png", "image/gif", "image/webp");
 
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
@@ -61,12 +61,8 @@ public class UploadImageService {
 
     private void upload(MultipartFile image, String key) {
         try {
-            PutObjectRequest putRequest = PutObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(key)
-                    .contentType(image.getContentType())
-                    .contentLength(image.getSize())
-                    .build();
+            PutObjectRequest putRequest = PutObjectRequest.builder().bucket(bucket).key(key)
+                    .contentType(image.getContentType()).contentLength(image.getSize()).build();
             s3Client.putObject(putRequest, RequestBody.fromBytes(image.getBytes()));
         } catch (IOException e) {
             throw new ExpectedException("이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -75,9 +71,7 @@ public class UploadImageService {
 
     private String generatePresignedUrl(String key) {
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofHours(1))
-                .getObjectRequest(req -> req.bucket(bucket).key(key))
-                .build();
+                .signatureDuration(Duration.ofHours(1)).getObjectRequest(req -> req.bucket(bucket).key(key)).build();
         PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
         return presignedRequest.url().toString();
     }

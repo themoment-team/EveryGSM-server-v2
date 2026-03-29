@@ -44,9 +44,7 @@ public class ProjectMapper {
 
     private String generatePresignedUrl(String key) {
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofHours(1))
-                .getObjectRequest(req -> req.bucket(bucket).key(key))
-                .build();
+                .signatureDuration(Duration.ofHours(1)).getObjectRequest(req -> req.bucket(bucket).key(key)).build();
         PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
         return presignedRequest.url().toString();
     }
