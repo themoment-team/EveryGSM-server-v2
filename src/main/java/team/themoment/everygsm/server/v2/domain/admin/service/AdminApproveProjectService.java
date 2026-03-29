@@ -43,7 +43,9 @@ public class AdminApproveProjectService {
 
     private void registerToDatagsm(ProjectJpaEntity project) {
         Long clubId = resolveClubId(project.getAffiliation());
-        List<Long> participantIds = resolveParticipantIds(project.getUser().getEmail());
+        List<Long> participantIds = project.getUser() != null
+                ? resolveParticipantIds(project.getUser().getEmail())
+                : List.of();
 
         ProjectReqDto reqDto = ProjectReqDto.builder().name(project.getTitle()).description(project.getDescription())
                 .clubId(clubId).participantIds(participantIds).build();
