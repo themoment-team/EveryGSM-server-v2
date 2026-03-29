@@ -63,7 +63,7 @@ public class UploadImageService {
         try {
             PutObjectRequest putRequest = PutObjectRequest.builder().bucket(bucket).key(key)
                     .contentType(image.getContentType()).contentLength(image.getSize()).build();
-            s3Client.putObject(putRequest, RequestBody.fromBytes(image.getBytes()));
+            s3Client.putObject(putRequest, RequestBody.fromInputStream(image.getInputStream(), image.getSize()));
         } catch (IOException e) {
             throw new ExpectedException("이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
