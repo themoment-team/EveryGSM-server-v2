@@ -2,7 +2,7 @@
 
 APP_NAME="everygsm"
 HEALTH_URL="http://localhost:8080/actuator/health"
-MAX_RETRIES=20
+MAX_RETRIES=40
 SLEEP_INTERVAL=5
 
 echo ">>> Health check for $APP_NAME"
