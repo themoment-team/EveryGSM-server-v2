@@ -22,8 +22,6 @@ public class QueryPendingProjectService {
     public ProjectListResDto execute(Long userId) {
         List<ProjectJpaEntity> projects = projectRepository.findByUserIdAndStatus(userId, Status.PENDING);
 
-        return new ProjectListResDto(projects.stream()
-                .map(project -> projectMapper.toRes(project, false))
-                .toList());
+        return new ProjectListResDto(projects.stream().map(project -> projectMapper.toRes(project, false)).toList());
     }
 }
