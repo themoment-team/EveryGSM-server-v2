@@ -8,7 +8,7 @@ SLEEP_INTERVAL=5
 echo ">>> Health check for $APP_NAME"
 
 for i in $(seq 1 $MAX_RETRIES); do
-  if docker compose -f $DEPLOY_DIR/deploy/docker/compose.prod.yaml ps app 2>/dev/null | grep -q "running"; then
+  if docker compose -f $DEPLOY_DIR/deploy/docker/compose.prod.yaml ps app 2>/dev/null | grep -qiE "running|up"; then
     echo ">>> Health check passed (attempt $i/$MAX_RETRIES)"
     exit 0
   fi

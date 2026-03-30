@@ -26,12 +26,6 @@ jobs:
           cache-read-only: false
           gradle-home-cache-cleanup: true
 
-      - name: Make YML Files
-        run: |
-          touch ./src/main/resources/application-prod.yml
-          echo "${{ secrets.PROD_APPLICATION_YAML }}" > ./src/main/resources/application-prod.yml
-        shell: bash
-
       - name: Build with Gradle
         run: ./gradlew build -x test --parallel --build-cache
 
