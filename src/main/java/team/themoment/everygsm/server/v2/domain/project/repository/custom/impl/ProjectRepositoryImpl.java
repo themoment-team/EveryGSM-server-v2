@@ -28,13 +28,6 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     }
 
     @Override
-    public List<ProjectJpaEntity> findRegisteredProjectsByUserId(Long userId) {
-        return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
-                .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.user.id.eq(userId))
-                .orderBy(projectJpaEntity.createdAt.desc()).distinct().fetch();
-    }
-
-    @Override
     public List<ProjectJpaEntity> findByUserIdAndStatus(Long userId, Status status) {
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
                 .leftJoin(projectJpaEntity.repoUrls).fetchJoin()
@@ -49,6 +42,23 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                 .distinct().fetchOne());
     }
 
+    @Override
+    public Optional<ProjectJpaEntity> findProjectWithCollectionsByIdAndUserId(Long projectId, Long userId) {
+        return Optional.ofNullable(queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames)
+                .fetchJoin().leftJoin(projectJpaEntity.repoUrls).fetchJoin()
+                .where(projectJpaEntity.id.eq(projectId).and(projectJpaEntity.user.id.eq(userId))).distinct()
+                .fetchOne());
+    }
+
+    @Override
+    public Optional<ProjectJpaEntity> findProjectWithCollectionsByIdAndStatus(Long projectId, Status status) {
+        return Optional.ofNullable(queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames)
+                .fetchJoin().leftJoin(projectJpaEntity.repoUrls).fetchJoin()
+                .where(projectJpaEntity.id.eq(projectId).and(projectJpaEntity.status.eq(status))).distinct()
+                .fetchOne());
+    }
+
+    @Override
     public List<ProjectJpaEntity> findAllByStatusWithCollections(Status status) {
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
                 .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.status.eq(status))

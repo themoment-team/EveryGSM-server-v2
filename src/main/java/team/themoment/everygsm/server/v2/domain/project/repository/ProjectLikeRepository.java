@@ -22,4 +22,6 @@ public interface ProjectLikeRepository extends JpaRepository<LikeJpaEntity, Long
     void deleteByUserIdAndProjectId(Long userId, Long projectId);
 
     Optional<LikeJpaEntity> findByUserIdAndProjectId(Long userId, Long projectId);
+
+    boolean existsByProjectIdAndUserId(Long projectId, Long userId);
 }

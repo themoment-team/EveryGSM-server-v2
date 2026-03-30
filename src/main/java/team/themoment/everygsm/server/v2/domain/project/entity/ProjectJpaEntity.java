@@ -110,4 +110,8 @@ public class ProjectJpaEntity {
     public void markInactive() {
         this.status = Status.INACTIVE;
     }
+
+    public void assignExternalProjectId(Long externalProjectId) {
+        this.externalProjectId = externalProjectId;
+    }
 }

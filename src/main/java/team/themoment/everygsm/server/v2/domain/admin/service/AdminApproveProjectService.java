@@ -2,6 +2,8 @@ package team.themoment.everygsm.server.v2.domain.admin.service;
 
 import static team.themoment.everygsm.server.v2.domain.project.entity.constant.Status.APPROVED;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,22 +14,62 @@ import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
+import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.DatagsmApiClient;
+import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto.ClubListResDto;
+import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto.ProjectReqDto;
+import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto.QueryClubReqDto;
+import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto.QueryStudentReqDto;
+import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto.StudentListResDto;
 
 @Service
 @RequiredArgsConstructor
 public class AdminApproveProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
+    private final DatagsmApiClient datagsmApiClient;
 
     @Transactional
     public ProjectResDto execute(Long projectId) {
-        return projectMapper.toRes(approveProject(projectId), false);
-    }
-
-    private ProjectJpaEntity approveProject(Long projectId) {
         ProjectJpaEntity project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ExpectedException("해당 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+
+        if (project.getExternalProjectId() == null) {
+            registerToDatagsm(project);
+        }
+
         project.updateStatus(APPROVED, null);
-        return project;
+        return projectMapper.toRes(project, false);
+    }
+
+    private void registerToDatagsm(ProjectJpaEntity project) {
+        Long clubId = resolveClubId(project.getAffiliation());
+        List<Long> participantIds = project.getUser() != null
+                ? resolveParticipantIds(project.getUser().getEmail())
+                : List.of();
+
+        ProjectReqDto reqDto = ProjectReqDto.builder().name(project.getTitle()).description(project.getDescription())
+                .clubId(clubId).participantIds(participantIds).build();
+
+        Long externalProjectId = datagsmApiClient.createProject(reqDto).getId();
+        project.assignExternalProjectId(externalProjectId);
+    }
+
+    private Long resolveClubId(String affiliation) {
+        if (affiliation == null || affiliation.isBlank()) {
+            return null;
+        }
+        ClubListResDto res = datagsmApiClient.getClubs(QueryClubReqDto.builder().clubName(affiliation).build());
+        if (res.getClubs() == null || res.getClubs().isEmpty()) {
+            return null;
+        }
+        return res.getClubs().get(0).getId();
+    }
+
+    private List<Long> resolveParticipantIds(String email) {
+        StudentListResDto res = datagsmApiClient.getStudents(QueryStudentReqDto.builder().email(email).build());
+        if (res.getStudents() == null || res.getStudents().isEmpty()) {
+            return List.of();
+        }
+        return List.of(res.getStudents().get(0).getId());
     }
 }

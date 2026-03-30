@@ -22,10 +22,35 @@ spring:
         bucket: ${AWS_S3_BUCKET}
       stack:
         auto: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 server:
   shutdown: graceful
   port: ${PORT:8080}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
 jwt:
+  secret: ${JWT_SECRET}
   expiration: 60
+
+oauth:
+  datagsm:
+    client-id: ${DATAGSM_CLIENT_ID}
+    client-secret: ${DATAGSM_CLIENT_SECRET}
+    redirect-uris: ${DATAGSM_REDIRECT_URIS:http://localhost:3000,http://localhost:3001}
+
+datagsm:
+  api:
+    url: ${DATAGSM_API_URL}
+    key: ${DATAGSM_OPENAPI_KEY}

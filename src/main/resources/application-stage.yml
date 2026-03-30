@@ -13,7 +13,7 @@ spring:
         - "http://localhost:3001"
 
 jwt:
-  secret: ${JWT_SECRET_KEY}
+  secret: ${JWT_SECRET}
 
 sdk:
   exception:

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.admin.dto.request.AdminRejectReqDto;
 import team.themoment.everygsm.server.v2.domain.admin.service.AdminApproveProjectService;
+import team.themoment.everygsm.server.v2.domain.admin.service.AdminQueryPendingProjectService;
 import team.themoment.everygsm.server.v2.domain.admin.service.AdminQueryProjectService;
 import team.themoment.everygsm.server.v2.domain.admin.service.AdminRejectProjectService;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
@@ -20,6 +21,7 @@ import team.themoment.everygsm.server.v2.domain.project.dto.response.QueryProjec
 @RequiredArgsConstructor
 public class AdminController {
     private final AdminQueryProjectService adminQueryProjectService;
+    private final AdminQueryPendingProjectService adminQueryPendingProjectService;
     private final AdminApproveProjectService adminApproveProjectService;
     private final AdminRejectProjectService adminRejectProjectService;
 
@@ -27,6 +29,12 @@ public class AdminController {
     @GetMapping("/requests")
     public QueryProjectResDto adminQuery() {
         return adminQueryProjectService.execute();
+    }
+
+    @Operation(summary = "승인 대기 프로젝트 단건 조회", description = "승인 대기 중인 프로젝트를 ID로 조회합니다")
+    @GetMapping("/requests/{id}")
+    public ProjectResDto adminQueryPendingProject(@Parameter(description = "프로젝트 ID") @PathVariable Long id) {
+        return adminQueryPendingProjectService.execute(id);
     }
 
     @Operation(summary = "프로젝트 승인", description = "프로젝트를 승인합니다")
