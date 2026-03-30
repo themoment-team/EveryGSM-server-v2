@@ -59,8 +59,6 @@ public class OAuthSignInService {
         try {
             TokenResponse tokenResponse = dataGsmClient
                     .exchangeCodeForToken(reqDto.authCode(), redirectUri, reqDto.codeVerifier());
-            log.info("엑세스 토큰 : %s, 리프레시 토큰 : %s".formatted(tokenResponse.getAccessToken(),
-                    tokenResponse.getRefreshToken()));
             UserInfo userInfo = dataGsmClient.getUserInfo(tokenResponse.getAccessToken());
 
             if (!userInfo.isStudent()) {
