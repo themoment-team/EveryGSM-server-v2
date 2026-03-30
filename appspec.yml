@@ -1,0 +1,47 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /home/ec2-user/everygsm
+    overwrite: yes
+
+permissions:
+  - object: /home/ec2-user/everygsm
+    owner: ec2-user
+    group: ec2-user
+    mode: 755
+    type:
+      - directory
+  - object: /home/ec2-user/everygsm/scripts/stop.sh
+    owner: ec2-user
+    group: ec2-user
+    mode: 755
+    type:
+      - file
+  - object: /home/ec2-user/everygsm/scripts/start.sh
+    owner: ec2-user
+    group: ec2-user
+    mode: 755
+    type:
+      - file
+  - object: /home/ec2-user/everygsm/scripts/health-check.sh
+    owner: ec2-user
+    group: ec2-user
+    mode: 755
+    type:
+      - file
+
+hooks:
+  AfterInstall:
+    - location: scripts/stop.sh
+      timeout: 60
+      runas: ec2-user
+  ApplicationStart:
+    - location: scripts/start.sh
+      timeout: 120
+      runas: ec2-user
+  ValidateService:
+    - location: scripts/health-check.sh
+      timeout: 60
+      runas: ec2-user

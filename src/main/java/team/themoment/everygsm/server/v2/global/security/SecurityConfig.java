@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .permitAll().requestMatchers("/api/v2/images").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
 
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
