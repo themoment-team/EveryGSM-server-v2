@@ -33,9 +33,9 @@ public class AdminApproveProjectService {
         ProjectJpaEntity project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ExpectedException("해당 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
-        if (project.getExternalProjectId() == null) {
-            registerToDatagsm(project);
-        }
+        // if (project.getExternalProjectId() == null) {
+        // registerToDatagsm(project);
+        // }
 
         project.updateStatus(APPROVED, null);
         return projectMapper.toRes(project, false);
