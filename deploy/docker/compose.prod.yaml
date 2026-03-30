@@ -9,14 +9,44 @@ services:
       DB_PORT: ${DB_PORT}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_SECRET: ${JWT_SECRET}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      DATAGSM_OPENAPI_KEY: ${DATAGSM_OPENAPI_KEY}
+      DATAGSM_CLIENT_ID: ${DATAGSM_CLIENT_ID}
+      DATAGSM_CLIENT_SECRET: ${DATAGSM_CLIENT_SECRET}
+      DATAGSM_REDIRECT_URIS: ${DATAGSM_REDIRECT_URIS}
+      DATAGSM_API_URL: ${DATAGSM_API_URL}
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+    mem_limit: 512m
+    memswap_limit: 512m
     depends_on:
       mysql:
         condition: service_healthy
 
   mysql:
+    image: 'mysql:8.0'
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: everygsm
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../../deploy/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    mem_limit: 320m
+    memswap_limit: 320m
+
+volumes:
+  mysql_data:
