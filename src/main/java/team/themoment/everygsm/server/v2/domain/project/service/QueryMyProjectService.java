@@ -5,10 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto;
-import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectLikeRepository;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
@@ -18,6 +17,7 @@ import team.themoment.everygsm.server.v2.global.exception.error.ExpectedExceptio
 public class QueryMyProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectLikeRepository projectLikeRepository;
+    private final ProjectMapper projectMapper;
 
     @Transactional(readOnly = true)
     public ProjectResDto execute(Long userId, Long projectId) {
@@ -26,17 +26,6 @@ public class QueryMyProjectService {
 
         boolean liked = projectLikeRepository.existsByProjectIdAndUserId(project.getId(), userId);
 
-        return new ProjectResDto(project.getId(),
-                project.getLogo(),
-                project.getTitle(),
-                project.getAffiliation(),
-                project.getDescription(),
-                project.getProdUrl(),
-                project.getStatus(),
-                project.getReason(),
-                project.getCreatedAt(),
-                project.getStackNames().stream().map(TechStackDto::new).toList(),
-                project.getRepoUrls().stream().map(RepositoryDto::new).toList(),
-                liked);
+        return projectMapper.toRes(project, liked);
     }
 }
