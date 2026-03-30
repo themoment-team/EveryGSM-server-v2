@@ -28,13 +28,6 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     }
 
     @Override
-    public List<ProjectJpaEntity> findRegisteredProjectsByUserId(Long userId) {
-        return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
-                .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.user.id.eq(userId))
-                .orderBy(projectJpaEntity.createdAt.desc()).distinct().fetch();
-    }
-
-    @Override
     public List<ProjectJpaEntity> findByUserIdAndStatus(Long userId, Status status) {
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
                 .leftJoin(projectJpaEntity.repoUrls).fetchJoin()
