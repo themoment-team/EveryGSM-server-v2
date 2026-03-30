@@ -26,10 +26,8 @@ public class QueryMypageService {
         List<ProjectJpaEntity> likedProjects = projectRepository.findLikedProjectsByUserId(userId);
         Set<Long> likedProjectIds = likedProjects.stream().map(ProjectJpaEntity::getId).collect(Collectors.toSet());
 
-        // 좋아요한 프로젝트
         List<ProjectResDto> liked = likedProjects.stream().map(project -> projectMapper.toRes(project, true)).toList();
 
-        // 내가 등록한 프로젝트
         List<ProjectJpaEntity> registered = projectRepository.findByUserIdAndStatus(userId, Status.APPROVED);
 
         List<ProjectResDto> registeredDtos = registered.stream()
