@@ -21,8 +21,8 @@ services:
     ports:
       - '8080:8080'
     restart: unless-stopped
-    mem_limit: 512m
-    memswap_limit: 512m
+    mem_limit: 480m
+    memswap_limit: 480m
     depends_on:
       mysql:
         condition: service_healthy
@@ -45,8 +45,8 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
-    mem_limit: 320m
-    memswap_limit: 320m
+    mem_limit: 280m
+    memswap_limit: 280m
 
 volumes:
   mysql_data:
