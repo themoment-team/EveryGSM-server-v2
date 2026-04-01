@@ -64,11 +64,11 @@ with Diagram(
             prod = EC2("everygsm-prod\nt3.micro\n10.10.0.60")
 
     # 사용자 트래픽 흐름
-    user >> Edge(xlabel="HTTPS/HTTP", color="#4caf50") >> igw
-    igw >> Edge(color="#4caf50") >> nat
-    nat - Edge(style="dotted", color="#999999") - nginx
+    user >> Edge(xlabel="HTTPS/HTTP", color="#4caf50") >> igw >> nginx
     nginx >> Edge(xlabel=":8080", color="#2196f3") >> prod
-    prod >> Edge(xlabel="outbound", color="#795548") >> nat
+
+    # 아웃바운드 트래픽 흐름
+    prod >> Edge(xlabel="outbound", color="#795548") >> nat >> igw
 
     # CI/CD 배포 흐름
     codedeploy >> Edge(xlabel="deploy", color="#ff5722") >> prod
