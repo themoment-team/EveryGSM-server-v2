@@ -26,7 +26,6 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
-
 server:
   shutdown: graceful
   port: ${PORT:8080}
