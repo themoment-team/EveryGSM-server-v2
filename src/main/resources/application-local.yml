@@ -14,9 +14,6 @@ spring:
 jwt:
   secret: local-secret-key
 
-discord:
-  webhook:
-    url: ""
 
 sdk:
   exception:

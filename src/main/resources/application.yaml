@@ -53,3 +53,7 @@ datagsm:
   api:
     url: ${DATAGSM_API_URL}
     key: ${DATAGSM_OPENAPI_KEY}
+
+discord:
+  webhook:
+    url: ${DISCORD_ERROR_WEBHOOK_URL}

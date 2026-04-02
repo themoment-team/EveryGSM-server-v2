@@ -18,7 +18,3 @@ jwt:
 sdk:
   exception:
     use-english-message: false
-
-discord:
-  webhook:
-    url: ${DISCORD_ERROR_WEBHOOK_URL}
