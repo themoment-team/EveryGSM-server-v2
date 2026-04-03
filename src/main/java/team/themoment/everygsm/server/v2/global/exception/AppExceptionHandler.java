@@ -20,6 +20,7 @@ public class AppExceptionHandler {
 
     @ExceptionHandler(ExpectedException.class)
     public ResponseEntity handleExpectedException(ExpectedException e) {
+        // ExpectedException을 사용하는 의도적인 5xx 에러 반환에 대해서도 디스코드 메시지 전송
         if (e.getStatusCode().is5xxServerError()) {
             discordWebhookService.sendServerError("서버 오류 발생", e.getMessage());
         }
