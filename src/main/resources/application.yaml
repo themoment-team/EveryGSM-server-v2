@@ -56,4 +56,4 @@ datagsm:
 
 discord:
   webhook:
-    url: ${DISCORD_ERROR_WEBHOOK_URL}
+    url: ${DISCORD_ERROR_WEBHOOK_URL:http://localhost}
