@@ -59,6 +59,8 @@ jobs:
                   value: ${{ secrets.DATAGSM_REDIRECT_URIS }}
                 - name: DATAGSM_API_URL
                   value: ${{ secrets.DATAGSM_API_URL }}
+                - name: DISCORD_ERROR_WEBHOOK_URL
+                  value: ${{ secrets.DISCORD_ERROR_WEBHOOK_URL }}
               ports: 8080
               dockerfile: deploy/Dockerfile.stage
             context:

@@ -53,6 +53,7 @@ jobs:
             echo "DATAGSM_CLIENT_SECRET=${{ secrets.DATAGSM_CLIENT_SECRET }}"
             echo "DATAGSM_REDIRECT_URIS=${{ secrets.DATAGSM_REDIRECT_URIS }}"
             echo "DATAGSM_API_URL=${{ secrets.DATAGSM_API_URL }}"
+            echo "DISCORD_ERROR_WEBHOOK_URL=${{ secrets.DISCORD_ERROR_WEBHOOK_URL }}"
           } > .env
         shell: bash
 
