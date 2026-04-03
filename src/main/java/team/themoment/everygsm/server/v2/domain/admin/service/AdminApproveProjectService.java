@@ -14,12 +14,12 @@ import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
-import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.DatagsmApiClient;
-import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto.ClubListResDto;
-import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto.ProjectReqDto;
-import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto.QueryClubReqDto;
-import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto.QueryStudentReqDto;
-import team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto.StudentListResDto;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.DatagsmApiClient;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ClubListResDto;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ProjectReqDto;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryClubReqDto;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryStudentReqDto;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.StudentListResDto;
 
 @Service
 @RequiredArgsConstructor

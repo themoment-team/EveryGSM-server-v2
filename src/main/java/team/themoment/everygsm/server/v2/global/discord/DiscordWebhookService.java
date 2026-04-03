@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import team.themoment.everygsm.server.v2.thirdparty.feign.discord.DiscordWebhookClient;
-import team.themoment.everygsm.server.v2.thirdparty.feign.discord.dto.DiscordWebhookPayload;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.discord.DiscordWebhookClient;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.discord.dto.DiscordWebhookPayload;
 
 @Slf4j
 @Service
