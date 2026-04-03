@@ -22,6 +22,9 @@ spring:
         bucket: ${AWS_S3_BUCKET}
       stack:
         auto: false
+    discord:
+      webhook:
+        url: ${DISCORD_ERROR_WEBHOOK_URL:http://localhost}
   servlet:
     multipart:
       max-file-size: 5MB
@@ -54,6 +57,3 @@ datagsm:
     url: ${DATAGSM_API_URL}
     key: ${DATAGSM_OPENAPI_KEY}
 
-discord:
-  webhook:
-    url: ${DISCORD_ERROR_WEBHOOK_URL:http://localhost}
