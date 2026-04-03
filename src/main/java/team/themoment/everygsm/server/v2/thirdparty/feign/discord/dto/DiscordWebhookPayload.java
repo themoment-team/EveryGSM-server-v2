@@ -1,4 +1,4 @@
-package team.themoment.everygsm.server.v2.global.discord;
+package team.themoment.everygsm.server.v2.thirdparty.feign.discord.dto;
 
 import java.util.List;
 
