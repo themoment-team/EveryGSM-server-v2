@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.request.CreateProjectReqDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
@@ -45,7 +44,7 @@ public class CreateProjectService {
                 .map(TechStackDto::stackName).collect(Collectors.toSet());
 
         Set<String> repoUrls = Optional.ofNullable(reqDto.repository()).stream().flatMap(Collection::stream)
-                .map(RepositoryDto::repoUrl).collect(Collectors.toSet());
+                .collect(Collectors.toSet());
 
         return ProjectJpaEntity.builder().user(user).logo(reqDto.logo()).title(reqDto.title())
                 .affiliation(reqDto.affiliation()).description(reqDto.description()).prodUrl(reqDto.prodUrl())
