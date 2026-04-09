@@ -12,5 +12,5 @@ import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 
 public record CreateProjectReqDto(@NotBlank String logo, @NotBlank String title, @NotBlank String affiliation,
         @NotBlank @Size(max = 200) String description, @URL String prodUrl, @NotNull List<TechStackDto> techStack,
-        @Valid List<@URL String> repository) {
+        @Valid List<@NotBlank @URL String> repository) {
 }
