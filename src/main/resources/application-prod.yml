@@ -12,7 +12,7 @@ spring:
   security:
     cors:
       allowed-origins:
-        - "https://everygsm.datagsm.kr"
+        - "https://every.datagsm.kr"
 jwt:
   secret: ${JWT_SECRET}
 
