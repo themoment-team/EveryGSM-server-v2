@@ -4,16 +4,15 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
-      maximum-pool-size: 20
-      minimum-idle: 5
+      maximum-pool-size: 10
+      minimum-idle: 2
   jpa:
     hibernate:
       ddl-auto: none
   security:
     cors:
       allowed-origins:
-        - "https://everygsm.kr"
-
+        - "https://every.datagsm.kr"
 jwt:
   secret: ${JWT_SECRET}
 
@@ -22,3 +21,7 @@ sdk:
     enabled: false
   exception:
     use-english-message: false
+
+springdoc:
+  api-docs:
+    enabled: false

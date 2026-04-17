@@ -1,4 +1,4 @@
-package team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.dto;
+package team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto;
 
 import java.util.List;
 

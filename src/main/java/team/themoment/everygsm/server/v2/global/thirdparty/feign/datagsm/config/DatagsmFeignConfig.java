@@ -1,4 +1,4 @@
-package team.themoment.everygsm.server.v2.thirdparty.feign.datagsm.config;
+package team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
