@@ -33,11 +33,8 @@ public class AppExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity handleUnexpectedException(Exception e, HttpServletRequest request) {
         log.error("[UNHANDLED-EXCEPTION]", e);
-        discordWebhookService.sendServerError("예상치 못한 서버 오류 발생",
-                e.getClass().getSimpleName() + ": " + e.getMessage(),
-                request.getMethod(),
-                request.getRequestURI(),
-                e);
+        discordWebhookService
+                .sendServerError("예상치 못한 서버 오류 발생", e.getMessage(), request.getMethod(), request.getRequestURI(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
