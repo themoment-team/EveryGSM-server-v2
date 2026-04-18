@@ -53,8 +53,7 @@ public class DiscordWebhookService {
                 httpMethod,
                 requestUri,
                 Thread.currentThread().getName(),
-                cause.getClass().getName(),
-                cause.getMessage(),
+                cause.toString(),
                 stackTrace);
     }
 }
