@@ -29,7 +29,7 @@ public class DiscordWebhookService {
             String detail = buildDetail(description, httpMethod, requestUri, cause);
             discordWebhookClient.send(DiscordWebhookPayload.serverError(title, detail));
         } catch (Exception e) {
-            log.warn("[DISCORD-WEBHOOK] 알림 전송 실패: {}", e.getMessage());
+            log.warn("[DISCORD-WEBHOOK] 알림 전송 실패", e);
         }
     }
 
