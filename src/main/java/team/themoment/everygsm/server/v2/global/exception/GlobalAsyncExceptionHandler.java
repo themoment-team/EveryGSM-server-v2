@@ -20,6 +20,9 @@ public class GlobalAsyncExceptionHandler implements AsyncUncaughtExceptionHandle
     public void handleUncaughtException(Throwable ex, Method method, Object... params) {
         log.error("[ASYNC-DISCORD-ERROR] method: {}, exception: {}", method.getName(), ex);
         discordWebhookService.sendServerError("비동기 서버 오류 발생",
-                "method: " + method.getName() + "\n" + ex.getClass().getSimpleName() + ": " + ex.getMessage());
+                ex.getClass().getSimpleName() + ": " + ex.getMessage(),
+                "ASYNC",
+                method.getDeclaringClass().getSimpleName() + "." + method.getName(),
+                ex);
     }
 }
