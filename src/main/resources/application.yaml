@@ -57,3 +57,7 @@ datagsm:
     url: ${DATAGSM_API_URL}
     key: ${DATAGSM_OPENAPI_KEY}
 
+rate-limit:
+  max-requests: 100
+  window-seconds: 60
+
