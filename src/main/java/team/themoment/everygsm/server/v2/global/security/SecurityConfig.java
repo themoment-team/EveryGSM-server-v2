@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
+import team.themoment.everygsm.server.v2.global.ratelimit.RateLimitFilter;
 import team.themoment.everygsm.server.v2.global.security.data.CorsEnvironment;
 import team.themoment.everygsm.server.v2.global.security.filter.JwtAuthenticationFilter;
 import team.themoment.everygsm.server.v2.global.security.handler.JwtAccessDeniedHandler;
@@ -27,6 +28,7 @@ import team.themoment.everygsm.server.v2.global.security.handler.JwtAuthenticati
 public class SecurityConfig {
 
     private final CorsEnvironment corsEnvironment;
+    private final RateLimitFilter rateLimitFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -55,7 +57,8 @@ public class SecurityConfig {
 
                         .anyRequest().permitAll())
 
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }
