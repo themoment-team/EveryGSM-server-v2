@@ -34,7 +34,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String ip = resolveClientIp(request);
-        long windowSeconds = properties.getWindowSeconds();
+        long windowSeconds = properties.windowSeconds();
         long currentWindow = System.currentTimeMillis() / (windowSeconds * 1000);
 
         int[] countHolder = new int[1];
@@ -46,7 +46,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return counter;
         });
 
-        if (countHolder[0] > properties.getMaxRequests()) {
+        if (countHolder[0] > properties.maxRequests()) {
             log.warn("Rate limit 초과 - IP: {}, 요청 수: {}", ip, countHolder[0]);
             writeRateLimitResponse(response);
             return;
@@ -76,7 +76,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @Scheduled(fixedDelay = 60_000)
     public void evictStaleCounters() {
-        long currentWindow = System.currentTimeMillis() / (properties.getWindowSeconds() * 1000);
+        long currentWindow = System.currentTimeMillis() / (properties.windowSeconds() * 1000);
         counterMap.entrySet().removeIf(entry -> entry.getValue().window() < currentWindow);
     }
 

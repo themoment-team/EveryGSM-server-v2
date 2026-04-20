@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationPropertiesScan(basePackages = {"team.themoment.everygsm.server.v2.global.security.data"})
+@ConfigurationPropertiesScan(basePackages = {"team.themoment.everygsm.server.v2.global.security.data",
+        "team.themoment.everygsm.server.v2.global.ratelimit"})
 public class PropertiesScanConfig {
 }

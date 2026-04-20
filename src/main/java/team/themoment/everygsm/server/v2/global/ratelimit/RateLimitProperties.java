@@ -1,17 +1,14 @@
 package team.themoment.everygsm.server.v2.global.ratelimit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-@Component
 @ConfigurationProperties(prefix = "rate-limit")
-public class RateLimitProperties {
+public record RateLimitProperties(int maxRequests, long windowSeconds) {
 
-    private int maxRequests = 100;
-    private long windowSeconds = 60;
+    public RateLimitProperties {
+        if (maxRequests <= 0)
+            maxRequests = 100;
+        if (windowSeconds <= 0)
+            windowSeconds = 60;
+    }
 }
