@@ -25,24 +25,45 @@ public class DiscordWebhookService {
             String httpMethod,
             String requestUri,
             Throwable cause) {
+        sendServerError(title, description, httpMethod, requestUri, null, null, cause);
+    }
+
+    @Async
+    public void sendServerError(String title,
+            String description,
+            String httpMethod,
+            String requestUri,
+            String clientIp,
+            String host,
+            Throwable cause) {
         try {
-            String detail = buildDetail(description, httpMethod, requestUri, cause);
+            String detail = buildDetail(description, httpMethod, requestUri, clientIp, host, cause);
             discordWebhookClient.send(DiscordWebhookPayload.serverError(title, detail));
         } catch (Exception e) {
             log.warn("[DISCORD-WEBHOOK] 알림 전송 실패", e);
         }
     }
 
-    private String buildDetail(String description, String httpMethod, String requestUri, Throwable cause) {
+    private String buildDetail(String description,
+            String httpMethod,
+            String requestUri,
+            String clientIp,
+            String host,
+            Throwable cause) {
         StackTraceElement[] frames = cause.getStackTrace();
         String stackTrace = frames.length == 0
                 ? "(스택트레이스 없음)"
                 : Arrays.stream(frames).limit(5).map(StackTraceElement::toString)
                         .collect(Collectors.joining("\n  at "));
 
+        String ipInfo = clientIp != null ? clientIp : "N/A";
+        String hostInfo = host != null ? host : "N/A";
+
         return String.format("""
                 **메시지:** %s
                 **API:** `[%s] %s`
+                **클라이언트 IP:** `%s`
+                **Host:** `%s`
                 **쓰레드:** `%s`
                 **발생 지점:**
                 ```
@@ -52,6 +73,8 @@ public class DiscordWebhookService {
                 description,
                 httpMethod,
                 requestUri,
+                ipInfo,
+                hostInfo,
                 Thread.currentThread().getName(),
                 cause.toString(),
                 stackTrace);
