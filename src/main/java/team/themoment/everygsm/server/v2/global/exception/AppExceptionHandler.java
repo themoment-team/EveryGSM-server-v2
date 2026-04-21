@@ -54,8 +54,7 @@ public class AppExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        String message = e.getBindingResult().getFieldErrors().stream()
-                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage()).findFirst()
+        String message = e.getBindingResult().getAllErrors().stream().map(err -> err.getDefaultMessage()).findFirst()
                 .orElse(HttpStatus.BAD_REQUEST.getReasonPhrase());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(CommonApiResponse.error(message, HttpStatus.BAD_REQUEST));
