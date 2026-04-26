@@ -33,7 +33,7 @@ public class ProjectJpaEntity {
     @Column(length = 512)
     private String affiliation;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false, length = 500)
     private String description;
 
     @Column(name = "prod_url", nullable = false, length = 512)

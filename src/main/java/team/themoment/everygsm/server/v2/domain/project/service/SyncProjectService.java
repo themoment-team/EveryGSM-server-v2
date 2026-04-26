@@ -5,7 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -32,20 +35,38 @@ public class SyncProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
-    @Transactional
+    @Autowired
+    @Lazy
+    private SyncProjectService self;
+
     public void execute() {
         List<Project> allExternalProjects = fetchAllProjects();
         Set<Long> seenExternalIds = new HashSet<>();
 
         for (Project externalProject : allExternalProjects) {
             try {
-                syncProject(externalProject);
+                self.syncProject(externalProject);
                 seenExternalIds.add(externalProject.getId());
             } catch (RuntimeException e) {
                 log.error("Failed to sync project id={}", externalProject.getId(), e);
             }
         }
 
+        self.markUnseenInactive(seenExternalIds);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void syncProject(Project externalProject) {
+        String affiliation = externalProject.getClub() != null ? externalProject.getClub().getName() : null;
+        UserJpaEntity owner = findOrCreateOwner(externalProject);
+        projectRepository.findByExternalProjectId(externalProject.getId())
+                .ifPresentOrElse(entity -> entity
+                        .syncUpdate(externalProject.getName(), externalProject.getDescription(), affiliation, owner),
+                        () -> projectRepository.save(buildNewProject(externalProject, affiliation, owner)));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void markUnseenInactive(Set<Long> seenExternalIds) {
         projectRepository.markUnseenProjectsAsInactive(seenExternalIds);
     }
 
@@ -61,15 +82,6 @@ public class SyncProjectService {
             page++;
         } while (page < totalPages);
         return all;
-    }
-
-    private void syncProject(Project externalProject) {
-        String affiliation = externalProject.getClub() != null ? externalProject.getClub().getName() : null;
-        UserJpaEntity owner = findOrCreateOwner(externalProject);
-        projectRepository.findByExternalProjectId(externalProject.getId())
-                .ifPresentOrElse(entity -> entity
-                        .syncUpdate(externalProject.getName(), externalProject.getDescription(), affiliation, owner),
-                        () -> projectRepository.save(buildNewProject(externalProject, affiliation, owner)));
     }
 
     private ProjectJpaEntity buildNewProject(Project externalProject, String affiliation, UserJpaEntity owner) {
