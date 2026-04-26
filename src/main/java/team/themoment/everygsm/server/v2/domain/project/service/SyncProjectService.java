@@ -44,9 +44,9 @@ public class SyncProjectService {
         Set<Long> seenExternalIds = new HashSet<>();
 
         for (Project externalProject : allExternalProjects) {
+            seenExternalIds.add(externalProject.getId());
             try {
                 self.syncProject(externalProject);
-                seenExternalIds.add(externalProject.getId());
             } catch (RuntimeException e) {
                 log.error("Failed to sync project id={}", externalProject.getId(), e);
             }
