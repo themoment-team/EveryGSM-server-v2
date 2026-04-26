@@ -34,6 +34,7 @@ public class AppExceptionHandler {
                     request.getRequestURI(),
                     getClientIp(request),
                     request.getServerName(),
+                    Thread.currentThread().getName(),
                     e);
         }
         return ResponseEntity.status(e.getStatusCode())
@@ -81,6 +82,7 @@ public class AppExceptionHandler {
                 request.getRequestURI(),
                 getClientIp(request),
                 request.getServerName(),
+                Thread.currentThread().getName(),
                 e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), HttpStatus.INTERNAL_SERVER_ERROR));

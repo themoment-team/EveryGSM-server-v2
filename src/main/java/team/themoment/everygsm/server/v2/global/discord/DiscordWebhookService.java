@@ -24,8 +24,9 @@ public class DiscordWebhookService {
             String description,
             String httpMethod,
             String requestUri,
+            String threadName,
             Throwable cause) {
-        sendServerError(title, description, httpMethod, requestUri, null, null, cause);
+        sendServerError(title, description, httpMethod, requestUri, null, null, threadName, cause);
     }
 
     @Async
@@ -35,9 +36,10 @@ public class DiscordWebhookService {
             String requestUri,
             String clientIp,
             String host,
+            String threadName,
             Throwable cause) {
         try {
-            String detail = buildDetail(description, httpMethod, requestUri, clientIp, host, cause);
+            String detail = buildDetail(description, httpMethod, requestUri, clientIp, host, threadName, cause);
             discordWebhookClient.send(DiscordWebhookPayload.serverError(title, detail));
         } catch (Exception e) {
             log.warn("[DISCORD-WEBHOOK] 알림 전송 실패", e);
@@ -49,6 +51,7 @@ public class DiscordWebhookService {
             String requestUri,
             String clientIp,
             String host,
+            String threadName,
             Throwable cause) {
         StackTraceElement[] frames = cause.getStackTrace();
         String stackTrace = frames.length == 0
@@ -75,8 +78,9 @@ public class DiscordWebhookService {
                 requestUri,
                 ipInfo,
                 hostInfo,
-                Thread.currentThread().getName(),
-                cause.toString(),
+                threadName,
+                cause.getClass().getName(),
+                cause.getMessage(),
                 stackTrace);
     }
 }
