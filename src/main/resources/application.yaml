@@ -11,7 +11,7 @@ spring:
     datagsm:
       openapi:
         api-key: ${DATAGSM_OPENAPI_KEY}
-        sync-cron: "0 0 3 * * *"
+        sync-cron: "0 1 14 * * *"
     aws:
       credentials:
         access-key: ${AWS_ACCESS_KEY_ID}
