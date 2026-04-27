@@ -23,6 +23,7 @@ public class GlobalAsyncExceptionHandler implements AsyncUncaughtExceptionHandle
                 ex.getClass().getSimpleName() + ": " + ex.getMessage(),
                 "ASYNC",
                 method.getDeclaringClass().getSimpleName() + "." + method.getName(),
+                Thread.currentThread().getName(),
                 ex);
     }
 }
