@@ -48,7 +48,7 @@ public class AdminApproveProjectService {
                 : List.of();
 
         ProjectReqDto reqDto = ProjectReqDto.builder().name(project.getTitle()).description(project.getDescription())
-                .clubId(clubId).participantIds(participantIds).build();
+                .startYear(project.getStartYear()).clubId(clubId).participantIds(participantIds).build();
 
         Long externalProjectId = datagsmApiClient.createProject(reqDto).getId();
         project.assignExternalProjectId(externalProjectId);

@@ -11,6 +11,6 @@ import jakarta.validation.constraints.Size;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 
 public record CreateProjectReqDto(@NotBlank String logo, @NotBlank String title, @NotBlank String affiliation,
-        @NotBlank @Size(max = 200) String description, @URL String prodUrl, @NotNull List<TechStackDto> techStack,
-        @Valid List<@NotBlank @URL String> repository) {
+        @NotBlank @Size(max = 200) String description, @URL String prodUrl, @NotNull int startYear,
+        @NotNull List<TechStackDto> techStack, @Valid List<@NotBlank @URL String> repository) {
 }

@@ -57,11 +57,15 @@ public class SyncProjectService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void syncProject(Project externalProject) {
-        String affiliation = externalProject.getClub() != null ? externalProject.getClub().getName() : null;
+        String affiliation = externalProject.getClub().map(club -> club.getName()).orElse(null);
         UserJpaEntity owner = findOrCreateOwner(externalProject);
         projectRepository.findByExternalProjectId(externalProject.getId())
-                .ifPresentOrElse(entity -> entity
-                        .syncUpdate(externalProject.getName(), externalProject.getDescription(), affiliation, owner),
+                .ifPresentOrElse(
+                        entity -> entity.syncUpdate(externalProject.getName(),
+                                externalProject.getDescription(),
+                                affiliation,
+                                externalProject.getStartYear(),
+                                owner),
                         () -> projectRepository.save(buildNewProject(externalProject, affiliation, owner)));
     }
 
@@ -87,18 +91,20 @@ public class SyncProjectService {
     private ProjectJpaEntity buildNewProject(Project externalProject, String affiliation, UserJpaEntity owner) {
         return ProjectJpaEntity.builder().user(owner).title(externalProject.getName())
                 .description(externalProject.getDescription()).affiliation(affiliation).logo("").prodUrl("")
-                .status(Status.APPROVED).stackNames(new HashSet<>()).externalProjectId(externalProject.getId()).build();
+                .startYear(externalProject.getStartYear()).status(Status.APPROVED).stackNames(new HashSet<>())
+                .externalProjectId(externalProject.getId()).build();
     }
 
     private UserJpaEntity findOrCreateOwner(Project externalProject) {
-        if (externalProject.getClub() != null) {
+        if (externalProject.getClub().isPresent()) {
+            long clubId = externalProject.getClub().get().getId();
             try {
-                ClubDetail clubDetail = dataGsmOpenApiClient.clubs().getClub(externalProject.getClub().getId());
-                return findOrCreateUser(clubDetail.getLeader());
+                ClubDetail clubDetail = dataGsmOpenApiClient.clubs().getClub(clubId);
+                if (clubDetail.getLeader().isPresent()) {
+                    return findOrCreateUser(clubDetail.getLeader().get());
+                }
             } catch (RuntimeException e) {
-                log.warn("Failed to fetch club leader for clubId={}, falling back to project participants",
-                        externalProject.getClub().getId(),
-                        e);
+                log.warn("Failed to fetch club leader for clubId={}, falling back to project participants", clubId, e);
             }
         }
 

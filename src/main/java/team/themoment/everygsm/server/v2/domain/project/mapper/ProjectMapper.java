@@ -34,6 +34,7 @@ public class ProjectMapper {
                 project.getAffiliation(),
                 project.getDescription(),
                 project.getProdUrl(),
+                project.getStartYear(),
                 project.getStatus(),
                 project.getReason(),
                 project.getCreatedAt(),
