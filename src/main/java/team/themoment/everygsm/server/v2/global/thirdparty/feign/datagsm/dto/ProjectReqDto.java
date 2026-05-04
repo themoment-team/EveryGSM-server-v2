@@ -11,7 +11,7 @@ public class ProjectReqDto {
 
     private final String name;
     private final String description;
-    private int startYear;
+    private final int startYear;
     private final Long clubId;
     private final List<Long> participantIds;
 }
