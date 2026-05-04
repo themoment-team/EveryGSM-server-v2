@@ -61,7 +61,7 @@ public class ProjectJpaEntity {
     private Set<String> stackNames;
 
     @Column(name = "start_year", nullable = false)
-    private int startYear;
+    private Integer startYear;
 
     @Column(name = "external_project_id", unique = true)
     private Long externalProjectId;
@@ -80,7 +80,7 @@ public class ProjectJpaEntity {
             String prodUrl,
             Status status,
             String reason,
-            int startYear,
+            Integer startYear,
             Set<String> repoUrls,
             Set<String> stackNames,
             Long externalProjectId) {
@@ -103,7 +103,11 @@ public class ProjectJpaEntity {
         this.reason = reason;
     }
 
-    public void syncUpdate(String title, String description, String affiliation, int startYear, UserJpaEntity user) {
+    public void syncUpdate(String title,
+            String description,
+            String affiliation,
+            Integer startYear,
+            UserJpaEntity user) {
         this.title = title;
         this.description = description;
         this.affiliation = affiliation;
