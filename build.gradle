@@ -88,7 +88,7 @@ dependencies {
 	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 
 	// DataGSM OpenAPI SDK
-	implementation 'com.github.themoment-team:datagsm-openapi-sdk-java:1.1.1'
+	implementation 'com.github.themoment-team:datagsm-openapi-sdk-java:1.7.0'
 
 	// OpenFeign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'

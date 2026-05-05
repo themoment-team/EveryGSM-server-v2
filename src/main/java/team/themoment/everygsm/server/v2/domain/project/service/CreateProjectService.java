@@ -48,6 +48,6 @@ public class CreateProjectService {
 
         return ProjectJpaEntity.builder().user(user).logo(reqDto.logo()).title(reqDto.title())
                 .affiliation(reqDto.affiliation()).description(reqDto.description()).prodUrl(reqDto.prodUrl())
-                .status(PENDING).stackNames(stackNames).repoUrls(repoUrls).build();
+                .startYear(reqDto.startYear()).status(PENDING).stackNames(stackNames).repoUrls(repoUrls).build();
     }
 }
