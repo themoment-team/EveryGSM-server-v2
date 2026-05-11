@@ -2,55 +2,39 @@
 <configuration>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <springProfile name="prod">
-        <appender name="CLOUDWATCH" class="ca.pjer.logback.AwsLogsAppender">
-            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-                <level>INFO</level>
-            </filter>
-            <layout>
-                <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level %logger{36} - %msg%n</pattern>
-            </layout>
-            <logGroupName>/everygsm/prod</logGroupName>
-            <logStreamUuidPrefix>everygsm-prod-</logStreamUuidPrefix>
-            <logRegion>ap-northeast-2</logRegion>
-            <maxBatchLogEvents>50</maxBatchLogEvents>
-            <maxFlushTimeMillis>30000</maxFlushTimeMillis>
-            <maxBlockTimeMillis>5000</maxBlockTimeMillis>
-            <retentionTimeDays>30</retentionTimeDays>
-        </appender>
-
-        <appender name="ASYNC_CLOUDWATCH" class="ch.qos.logback.classic.AsyncAppender">
-            <queueSize>512</queueSize>
-            <discardingThreshold>0</discardingThreshold>
-            <neverBlock>true</neverBlock>
-            <appender-ref ref="CLOUDWATCH"/>
-        </appender>
-
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="ASYNC_CLOUDWATCH"/>
-        </root>
+        <property name="LOG_LEVEL" value="INFO"/>
+        <property name="LOG_GROUP" value="/everygsm/prod"/>
+        <property name="LOG_PREFIX" value="everygsm-prod-"/>
+        <property name="RETENTION" value="30"/>
     </springProfile>
 
     <springProfile name="stage">
+        <property name="LOG_LEVEL" value="DEBUG"/>
+        <property name="LOG_GROUP" value="/everygsm/stage"/>
+        <property name="LOG_PREFIX" value="everygsm-stage-"/>
+        <property name="RETENTION" value="14"/>
+    </springProfile>
+
+    <springProfile name="prod | stage">
         <appender name="CLOUDWATCH" class="ca.pjer.logback.AwsLogsAppender">
             <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-                <level>DEBUG</level>
+                <level>${LOG_LEVEL}</level>
             </filter>
             <layout>
                 <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level %logger{36} - %msg%n</pattern>
             </layout>
-            <logGroupName>/everygsm/stage</logGroupName>
-            <logStreamUuidPrefix>everygsm-stage-</logStreamUuidPrefix>
-            <logRegion>ap-northeast-2</logRegion>
+            <logGroupName>${LOG_GROUP}</logGroupName>
+            <logStreamUuidPrefix>${LOG_PREFIX}</logStreamUuidPrefix>
+            <logRegion>${spring.cloud.aws.region.static:-ap-northeast-2}</logRegion>
             <maxBatchLogEvents>50</maxBatchLogEvents>
             <maxFlushTimeMillis>30000</maxFlushTimeMillis>
             <maxBlockTimeMillis>5000</maxBlockTimeMillis>
-            <retentionTimeDays>14</retentionTimeDays>
+            <retentionTimeDays>${RETENTION}</retentionTimeDays>
         </appender>
 
         <appender name="ASYNC_CLOUDWATCH" class="ch.qos.logback.classic.AsyncAppender">
@@ -60,7 +44,7 @@
             <appender-ref ref="CLOUDWATCH"/>
         </appender>
 
-        <root level="DEBUG">
+        <root level="${LOG_LEVEL}">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="ASYNC_CLOUDWATCH"/>
         </root>
