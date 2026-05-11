@@ -21,6 +21,10 @@
     </springProfile>
 
     <springProfile name="prod | stage">
+        <logger name="org.apache.http" level="OFF" additivity="false"/>
+        <logger name="com.amazonaws" level="WARN" additivity="false"/>
+        <logger name="ca.pjer.logback" level="WARN" additivity="false"/>
+
         <appender name="CLOUDWATCH" class="ca.pjer.logback.AwsLogsAppender">
             <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
                 <level>${LOG_LEVEL}</level>
