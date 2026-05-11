@@ -20,6 +20,12 @@
         <property name="RETENTION" value="14"/>
     </springProfile>
 
+    <springProfile name="stage">
+        <logger name="org.springframework" level="INFO" additivity="false"/>
+        <logger name="com.zaxxer.hikari" level="INFO" additivity="false"/>
+        <logger name="org.hibernate" level="WARN" additivity="false"/>
+    </springProfile>
+
     <springProfile name="prod | stage">
         <logger name="org.apache.http" level="OFF" additivity="false"/>
         <logger name="com.amazonaws" level="WARN" additivity="false"/>
