@@ -19,6 +19,8 @@ public interface ProjectLikeRepository extends JpaRepository<LikeJpaEntity, Long
             """)
     List<Long> findByProjectId(@Param("userId") Long userId, @Param("projectIds") List<Long> projectIds);
 
+    void deleteByProjectId(Long projectId);
+
     void deleteByUserIdAndProjectId(Long userId, Long projectId);
 
     Optional<LikeJpaEntity> findByUserIdAndProjectId(Long userId, Long projectId);

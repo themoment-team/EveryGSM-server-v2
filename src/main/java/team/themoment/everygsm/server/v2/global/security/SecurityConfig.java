@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/v2/auth/**", "/error").permitAll()
                         .requestMatchers("/api/v2/projects/registration",
                                 "/api/v2/projects/my",
+                                "/api/v2/projects/my/**",
                                 "/api/v2/projects/my/pending",
                                 "/api/v2/projects/my/rejected",
                                 "/api/v2/users/me",
