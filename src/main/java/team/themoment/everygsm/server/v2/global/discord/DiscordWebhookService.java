@@ -1,6 +1,7 @@
 package team.themoment.everygsm.server.v2.global.discord;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.scheduling.annotation.Async;
@@ -44,6 +45,65 @@ public class DiscordWebhookService {
         } catch (Exception e) {
             log.warn("[DISCORD-WEBHOOK] 알림 전송 실패", e);
         }
+    }
+
+    @Async
+    public void sendProjectRegistered(String projectTitle,
+            String affiliation,
+            String description,
+            int startYear,
+            String prodUrl,
+            Set<String> stackNames,
+            Set<String> repoUrls,
+            String userName,
+            String studentNumber,
+            String userEmail) {
+        try {
+            String detail = buildProjectRegisteredDetail(projectTitle, affiliation, description, startYear, prodUrl,
+                    stackNames, repoUrls, userName, studentNumber, userEmail);
+            discordWebhookClient.send(DiscordWebhookPayload.projectRegistered("새로운 프로젝트 등록 요청", detail));
+        } catch (Exception e) {
+            log.warn("[DISCORD-WEBHOOK] 알림 전송 실패", e);
+        }
+    }
+
+    private String buildProjectRegisteredDetail(String projectTitle,
+            String affiliation,
+            String description,
+            int startYear,
+            String prodUrl,
+            Set<String> stackNames,
+            Set<String> repoUrls,
+            String userName,
+            String studentNumber,
+            String userEmail) {
+        String stacks = (stackNames == null || stackNames.isEmpty())
+                ? "(없음)"
+                : String.join(", ", stackNames);
+        String repos = (repoUrls == null || repoUrls.isEmpty())
+                ? "(없음)"
+                : String.join(", ", repoUrls);
+        String prod = (prodUrl == null || prodUrl.isBlank()) ? "(없음)" : prodUrl;
+
+        return String.format("""
+                **프로젝트:** %s
+                **소속:** %s
+                **시작연도:** %d
+                **설명:** %s
+                **기술스택:** %s
+                **배포 URL:** %s
+                **저장소:** %s
+                **신청자:** %s (%s, %s)""",
+                projectTitle,
+                affiliation,
+                startYear,
+                description,
+                stacks,
+                prod,
+                repos,
+                userName,
+                studentNumber,
+                userEmail);
     }
 
     private String buildDetail(String description,
