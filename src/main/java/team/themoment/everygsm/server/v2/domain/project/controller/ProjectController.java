@@ -86,8 +86,8 @@ public class ProjectController {
     }
 
     @Operation(summary = "프로젝트 삭제", description = "자신이 등록한 프로젝트를 삭제합니다")
-    @DeleteMapping("/my/{id}")
-    public void delete(@AuthenticationPrincipal Long userId, @PathVariable Long id) {
-        deleteProjectService.execute(userId, id);
+    @DeleteMapping("/my/{projectId}")
+    public void delete(@AuthenticationPrincipal Long userId, @PathVariable Long projectId) {
+        deleteProjectService.execute(userId, projectId);
     }
 }

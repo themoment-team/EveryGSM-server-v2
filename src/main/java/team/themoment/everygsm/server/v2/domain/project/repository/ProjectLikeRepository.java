@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -19,7 +20,9 @@ public interface ProjectLikeRepository extends JpaRepository<LikeJpaEntity, Long
             """)
     List<Long> findByProjectId(@Param("userId") Long userId, @Param("projectIds") List<Long> projectIds);
 
-    void deleteByProjectId(Long projectId);
+    @Modifying
+    @Query("DELETE FROM LikeJpaEntity l WHERE l.project.id = :projectId")
+    void deleteByProjectId(@Param("projectId") Long projectId);
 
     void deleteByUserIdAndProjectId(Long userId, Long projectId);
 
