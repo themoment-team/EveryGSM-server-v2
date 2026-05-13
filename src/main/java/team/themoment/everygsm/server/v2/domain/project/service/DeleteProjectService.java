@@ -19,8 +19,7 @@ public class DeleteProjectService {
 
     @Transactional
     public void execute(Long userId, Long projectId) {
-        ProjectJpaEntity project = projectRepository
-                .findProjectWithCollectionsByIdAndUserId(projectId, userId)
+        ProjectJpaEntity project = projectRepository.findProjectWithCollectionsByIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new ExpectedException("프로젝트를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
         projectLikeRepository.deleteByProjectId(projectId);
