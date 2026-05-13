@@ -39,8 +39,7 @@ public class CreateProjectService {
 
         ProjectJpaEntity project = projectRepository.save(buildProject(reqDto, user));
 
-        discordWebhookService.sendProjectRegistered(
-                project.getTitle(),
+        discordWebhookService.sendProjectRegistered(project.getTitle(),
                 project.getAffiliation(),
                 project.getDescription(),
                 project.getStartYear(),
@@ -49,8 +48,7 @@ public class CreateProjectService {
                 project.getRepoUrls(),
                 user.getName(),
                 user.getStudentNumber(),
-                user.getEmail()
-        );
+                user.getEmail());
 
         return projectMapper.toRes(project, false);
     }

@@ -59,8 +59,16 @@ public class DiscordWebhookService {
             String studentNumber,
             String userEmail) {
         try {
-            String detail = buildProjectRegisteredDetail(projectTitle, affiliation, description, startYear, prodUrl,
-                    stackNames, repoUrls, userName, studentNumber, userEmail);
+            String detail = buildProjectRegisteredDetail(projectTitle,
+                    affiliation,
+                    description,
+                    startYear,
+                    prodUrl,
+                    stackNames,
+                    repoUrls,
+                    userName,
+                    studentNumber,
+                    userEmail);
             discordWebhookClient.send(DiscordWebhookPayload.projectRegistered("새로운 프로젝트 등록 요청", detail));
         } catch (Exception e) {
             log.warn("[DISCORD-WEBHOOK] 알림 전송 실패", e);
@@ -77,12 +85,8 @@ public class DiscordWebhookService {
             String userName,
             String studentNumber,
             String userEmail) {
-        String stacks = (stackNames == null || stackNames.isEmpty())
-                ? "(없음)"
-                : String.join(", ", stackNames);
-        String repos = (repoUrls == null || repoUrls.isEmpty())
-                ? "(없음)"
-                : String.join(", ", repoUrls);
+        String stacks = (stackNames == null || stackNames.isEmpty()) ? "(없음)" : String.join(", ", stackNames);
+        String repos = (repoUrls == null || repoUrls.isEmpty()) ? "(없음)" : String.join(", ", repoUrls);
         String prod = (prodUrl == null || prodUrl.isBlank()) ? "(없음)" : prodUrl;
 
         return String.format("""
