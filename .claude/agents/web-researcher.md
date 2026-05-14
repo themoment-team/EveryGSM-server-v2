@@ -47,16 +47,18 @@ For complex topics, break into focused sub-queries. Example for "Spring Boot 4.1
 - Use **WebSearch** for discovery, **WebFetch** for full content of specific pages
 - Cross-verify findings from ≥ 2 sources before reporting
 
+Use "latest" / "최신" instead of hardcoded years so queries do not become stale; only inject a year when the user explicitly asks about a specific release timeframe. If you do need a year, derive it from `date +%Y` rather than embedding it in the prompt.
+
 ```
 # Korean query example
-WebSearch: "Spring Boot 4.1 마이그레이션 가이드 2026"
+WebSearch: "Spring Boot 4.1 마이그레이션 가이드 최신"
 
-# English query example  
-WebSearch: "Spring Boot 4.1 migration guide breaking changes 2026"
+# English query example
+WebSearch: "Spring Boot 4.1 migration guide breaking changes latest"
 
-# Specific CVE
-WebSearch: "CVE-2026-XXXXX spring framework"
-WebSearch: "spring framework CVE 2026 critical"
+# Specific CVE — embed the CVE ID directly, not a free-form year
+WebSearch: "CVE-XXXX-XXXXX spring framework"
+WebSearch: "spring framework latest critical CVE"
 ```
 
 ## Step 4 — Output Report
