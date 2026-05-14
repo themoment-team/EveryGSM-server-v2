@@ -33,9 +33,9 @@ public class ProjectController {
     private final QueryPendingProjectService queryPendingProjectService;
     private final QueryRejectedProjectService queryRejectedProjectService;
     private final QueryProjectService queryProjectService;
+    private final DeleteProjectService deleteProjectService;
     private final CreateProjectLikeService createProjectLikeService;
     private final DeleteProjectLikeService deleteProjectLikeService;
-    private final DeleteProjectService deleteProjectService;
 
     @Operation(summary = "마이페이지 조회", description = "좋아요한 프로젝트와 등록한 프로젝트를 조회합니다")
     @GetMapping("/my")
@@ -73,6 +73,12 @@ public class ProjectController {
         return queryProjectService.execute(userId);
     }
 
+    @Operation(summary = "프로젝트 삭제", description = "자신이 등록한 프로젝트를 삭제합니다")
+    @DeleteMapping("/my/{projectId}")
+    public void delete(@AuthenticationPrincipal Long userId, @PathVariable Long projectId) {
+        deleteProjectService.execute(userId, projectId);
+    }
+
     @Operation(summary = "프로젝트 좋아요", description = "프로젝트에 좋아요를 추가합니다")
     @PostMapping("/like/{projectId}")
     public ProjectResDto createLike(@AuthenticationPrincipal Long userId, @PathVariable Long projectId) {
@@ -83,11 +89,5 @@ public class ProjectController {
     @DeleteMapping("/like/{projectId}")
     public ProjectResDto deleteLike(@AuthenticationPrincipal Long userId, @PathVariable Long projectId) {
         return deleteProjectLikeService.execute(userId, projectId);
-    }
-
-    @Operation(summary = "프로젝트 삭제", description = "자신이 등록한 프로젝트를 삭제합니다")
-    @DeleteMapping("/my/{projectId}")
-    public void delete(@AuthenticationPrincipal Long userId, @PathVariable Long projectId) {
-        deleteProjectService.execute(userId, projectId);
     }
 }
