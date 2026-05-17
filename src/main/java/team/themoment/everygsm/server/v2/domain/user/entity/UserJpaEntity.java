@@ -2,11 +2,12 @@ package team.themoment.everygsm.server.v2.domain.user.entity;
 
 import java.util.Objects;
 
+import org.hibernate.proxy.HibernateProxy;
+
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.proxy.HibernateProxy;
 import team.themoment.everygsm.server.v2.domain.user.entity.constant.Role;
 
 @Entity

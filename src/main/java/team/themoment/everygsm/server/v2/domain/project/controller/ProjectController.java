@@ -88,7 +88,8 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 참여자 교체", description = "프로젝트 참여자 목록을 전달된 ID 목록으로 교체합니다. 신청자 본인은 항상 포함됩니다.")
     @PatchMapping("/{projectId}/participants")
-    public ProjectResDto updateParticipants(@AuthenticationPrincipal Long userId, @PathVariable Long projectId,
+    public ProjectResDto updateParticipants(@AuthenticationPrincipal Long userId,
+            @PathVariable Long projectId,
             @RequestBody @Valid UpdateParticipantsReqDto reqDto) {
         return updateProjectParticipantsService.execute(userId, projectId, reqDto);
     }
