@@ -1,13 +1,13 @@
 ---
 name: commit
-description: Git Flow-aware commit skill that auto-detects branch context, separates changes into logical units, and writes messages following project conventions loaded from .claude/rules/commit-convention.md
+description: Git Flow-aware commit skill that auto-detects branch context, separates changes into logical units, and writes messages following project conventions loaded from .claude/skills/commit/references/commit-convention.md
 ---
 
 You are executing the **commit** skill for EveryGSM-server-v2.
 
 ## Step 1 — Load Commit Rules
 
-Read `.claude/rules/commit-convention.md` and extract:
+Read `.claude/skills/commit/references/commit-convention.md` and extract:
 - Allowed commit types
 - Allowed scopes
 - Message format

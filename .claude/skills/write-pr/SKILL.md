@@ -33,7 +33,7 @@ Read the full diff to understand:
 
 ## Step 3 — Load Commit Convention
 
-Read `.claude/rules/commit-convention.md` for context on scope names. Note that **PR titles in this project do NOT follow the commit message format** — they use a different `[domain]` prefix style described in Step 4.
+Read `.claude/skills/commit/references/commit-convention.md` for context on scope names. Note that **PR titles in this project do NOT follow the commit message format** — they use a different `[domain]` prefix style described in Step 4.
 
 ## Step 4 — Compose PR Title
 
