@@ -68,7 +68,7 @@ Check instruction body for:
 
 Verify trigger phrases are specific enough:
 - Include at least one Korean natural language example
-- Include the slash command form if applicable (`/code-review`)
+- Include the slash command form if applicable (`/commit`)
 - Include a constraint: what input or context is needed
 
 ### Check 5 — Internal Contradictions

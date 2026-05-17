@@ -1,6 +1,6 @@
 ---
 name: contradiction-finder
-description: "Audits the entire project for consistency across 4 layers: doc↔doc, doc↔code, doc↔agents/skills, agent↔agent. Read-only — never modifies any file. Runs on: 모순 찾아줘, 충돌 검사해줘, 일관성 검사해줘. DO NOT trigger when: asked to do general code review (code-review skill), fix conventions (convention-validator), or polish documentation content (doc-polisher)."
+description: "Audits the entire project for consistency across 4 layers: doc↔doc, doc↔code, doc↔agents/skills, agent↔agent. Read-only — never modifies any file. Runs on: 모순 찾아줘, 충돌 검사해줘, 일관성 검사해줘. DO NOT trigger when: asked to fix conventions (convention-validator) or polish documentation content (doc-polisher)."
 tools: Bash, Glob, Grep, Read
 model: sonnet
 color: purple
@@ -123,7 +123,7 @@ Check for conflicts between agent definitions:
 ## L4: Agent ↔ Agent
 | ID | Agent A | Agent B | Conflict Type | Detail |
 |----|---------|---------|---------------|--------|
-| L4-1 | convention-validator | code-review skill | Trigger overlap | Both claim "컨벤션 검사" |
+| L4-1 | convention-validator | doc-polisher | Trigger overlap | Both claim "검사" 관련 트리거 |
 
 ## Summary
 - Total contradictions: N
