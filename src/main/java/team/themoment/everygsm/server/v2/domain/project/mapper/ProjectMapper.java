@@ -1,6 +1,7 @@
 package team.themoment.everygsm.server.v2.domain.project.mapper;
 
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -69,6 +70,8 @@ public class ProjectMapper {
             return List.of();
         }
         return project.getParticipants().stream()
-                .map(u -> new ParticipantDto(u.getId(), u.getName(), u.getStudentNumber())).toList();
+                .map(u -> new ParticipantDto(u.getId(), u.getName(), u.getStudentNumber()))
+                .sorted(Comparator.comparing(ParticipantDto::studentNumber).thenComparing(ParticipantDto::userId))
+                .toList();
     }
 }
