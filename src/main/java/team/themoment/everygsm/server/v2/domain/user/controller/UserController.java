@@ -3,13 +3,16 @@ package team.themoment.everygsm.server.v2.domain.user.controller;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.user.dto.response.UserResDto;
+import team.themoment.everygsm.server.v2.domain.user.dto.response.UserSearchResDto;
 import team.themoment.everygsm.server.v2.domain.user.service.QueryUserService;
+import team.themoment.everygsm.server.v2.domain.user.service.SearchUserService;
 
 @Tag(name = "User", description = "사용자 API")
 @RestController
@@ -18,10 +21,17 @@ import team.themoment.everygsm.server.v2.domain.user.service.QueryUserService;
 public class UserController {
 
     private final QueryUserService queryUserService;
+    private final SearchUserService searchUserService;
 
     @Operation(summary = "내 정보 조회", description = "현재 로그인된 사용자의 정보를 조회합니다")
     @GetMapping("/me")
     public UserResDto queryMe(@AuthenticationPrincipal Long userId) {
         return queryUserService.execute(userId);
+    }
+
+    @Operation(summary = "사용자 이름 검색", description = "이름의 앞부분이 일치하는 사용자를 검색합니다 (최대 20명)")
+    @GetMapping("/search")
+    public UserSearchResDto search(@RequestParam String name) {
+        return searchUserService.execute(name);
     }
 }
