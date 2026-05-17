@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+import team.themoment.everygsm.server.v2.domain.project.dto.common.ParticipantDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
@@ -27,6 +28,7 @@ public class ProjectMapper {
     public ProjectResDto toRes(ProjectJpaEntity project, boolean liked) {
         List<TechStackDto> techStacks = extractTechStacks(project);
         List<RepositoryDto> repositories = extractRepositories(project);
+        List<ParticipantDto> participants = extractParticipants(project);
 
         return new ProjectResDto(project.getId(),
                 generatePresignedUrl(project.getLogo()),
@@ -40,6 +42,7 @@ public class ProjectMapper {
                 project.getCreatedAt(),
                 techStacks,
                 repositories,
+                participants,
                 liked);
     }
 
@@ -59,5 +62,13 @@ public class ProjectMapper {
 
     public List<RepositoryDto> extractRepositories(ProjectJpaEntity project) {
         return project.getRepoUrls().stream().map(RepositoryDto::new).toList();
+    }
+
+    public List<ParticipantDto> extractParticipants(ProjectJpaEntity project) {
+        if (project.getParticipants() == null) {
+            return List.of();
+        }
+        return project.getParticipants().stream()
+                .map(u -> new ParticipantDto(u.getId(), u.getName(), u.getStudentNumber())).toList();
     }
 }

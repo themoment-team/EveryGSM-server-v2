@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
 
@@ -66,6 +67,12 @@ public class ProjectJpaEntity {
     @Column(name = "external_project_id", unique = true)
     private Long externalProjectId;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "project_participants", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+            "project_id", "user_id"}))
+    @BatchSize(size = 100)
+    private Set<UserJpaEntity> participants;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -83,7 +90,8 @@ public class ProjectJpaEntity {
             Integer startYear,
             Set<String> repoUrls,
             Set<String> stackNames,
-            Long externalProjectId) {
+            Long externalProjectId,
+            Set<UserJpaEntity> participants) {
         this.user = user;
         this.logo = logo;
         this.title = title;
@@ -96,6 +104,14 @@ public class ProjectJpaEntity {
         this.repoUrls = repoUrls != null ? repoUrls : new HashSet<>();
         this.stackNames = stackNames != null ? stackNames : new HashSet<>();
         this.externalProjectId = externalProjectId;
+        this.participants = participants != null ? participants : new HashSet<>();
+    }
+
+    public void replaceParticipants(Set<UserJpaEntity> newParticipants) {
+        this.participants.clear();
+        if (newParticipants != null) {
+            this.participants.addAll(newParticipants);
+        }
     }
 
     public void updateStatus(Status status, String reason) {

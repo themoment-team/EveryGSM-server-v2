@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.project.dto.request.CreateProjectReqDto;
+import team.themoment.everygsm.server.v2.domain.project.dto.request.UpdateParticipantsReqDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.MyPageResDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectListResDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
@@ -20,6 +21,7 @@ import team.themoment.everygsm.server.v2.domain.project.service.QueryMypageServi
 import team.themoment.everygsm.server.v2.domain.project.service.QueryPendingProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryRejectedProjectService;
+import team.themoment.everygsm.server.v2.domain.project.service.UpdateProjectParticipantsService;
 
 @Tag(name = "Project", description = "프로젝트 API")
 @RestController
@@ -34,6 +36,7 @@ public class ProjectController {
     private final QueryProjectService queryProjectService;
     private final CreateProjectLikeService createProjectLikeService;
     private final DeleteProjectLikeService deleteProjectLikeService;
+    private final UpdateProjectParticipantsService updateProjectParticipantsService;
 
     @Operation(summary = "마이페이지 조회", description = "좋아요한 프로젝트와 등록한 프로젝트를 조회합니다")
     @GetMapping("/my")
@@ -81,5 +84,12 @@ public class ProjectController {
     @DeleteMapping("/like/{projectId}")
     public ProjectResDto deleteLike(@AuthenticationPrincipal Long userId, @PathVariable Long projectId) {
         return deleteProjectLikeService.execute(userId, projectId);
+    }
+
+    @Operation(summary = "프로젝트 참여자 교체", description = "프로젝트 참여자 목록을 전달된 ID 목록으로 교체합니다. 신청자 본인은 항상 포함됩니다.")
+    @PatchMapping("/{projectId}/participants")
+    public ProjectResDto updateParticipants(@AuthenticationPrincipal Long userId, @PathVariable Long projectId,
+            @RequestBody @Valid UpdateParticipantsReqDto reqDto) {
+        return updateProjectParticipantsService.execute(userId, projectId, reqDto);
     }
 }

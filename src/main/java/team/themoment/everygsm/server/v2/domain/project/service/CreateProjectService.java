@@ -18,6 +18,7 @@ import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResD
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
+import team.themoment.everygsm.server.v2.domain.project.service.util.ParticipantResolver;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
 import team.themoment.everygsm.server.v2.domain.user.repository.UserRepository;
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
@@ -29,6 +30,7 @@ public class CreateProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ProjectMapper projectMapper;
+    private final ParticipantResolver participantResolver;
 
     @Transactional
     public ProjectResDto execute(Long userId, CreateProjectReqDto reqDto) {
@@ -46,8 +48,11 @@ public class CreateProjectService {
         Set<String> repoUrls = Optional.ofNullable(reqDto.repository()).stream().flatMap(Collection::stream)
                 .collect(Collectors.toSet());
 
+        Set<UserJpaEntity> participants = participantResolver.resolve(reqDto.participantIds(), user);
+
         return ProjectJpaEntity.builder().user(user).logo(reqDto.logo()).title(reqDto.title())
                 .affiliation(reqDto.affiliation()).description(reqDto.description()).prodUrl(reqDto.prodUrl())
-                .startYear(reqDto.startYear()).status(PENDING).stackNames(stackNames).repoUrls(repoUrls).build();
+                .startYear(reqDto.startYear()).status(PENDING).stackNames(stackNames).repoUrls(repoUrls)
+                .participants(participants).build();
     }
 }
