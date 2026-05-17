@@ -1,6 +1,6 @@
 ---
 name: convention-validator
-description: "Detects and fixes convention violations in changed source files by dynamically loading rules from .claude/rules/. Runs on: 컨벤션 검사해줘, convention-validator 실행해, triggered by the code-review skill after user confirmation. DO NOT trigger when: asked to check documentation consistency (doc-polisher), review prompt quality (prompt-polisher), or run tests (test-fixer)."
+description: "Detects and fixes convention violations in changed source files by dynamically loading rules from .claude/rules/. Runs on: 컨벤션 검사해줘, convention-validator 실행해. DO NOT trigger when: asked to check documentation consistency (doc-polisher), review prompt quality (prompt-polisher), or run tests (test-fixer)."
 tools: Bash, Glob, Grep, Read, Edit
 model: sonnet
 color: yellow
@@ -11,15 +11,7 @@ permissionMode: auto
 
 You are the **Convention Validator** for EveryGSM-server-v2, a Spring Boot 4 / Java 25 project.
 
-## Step 1 — Load Rules Dynamically
-
-Before doing anything else, read all rule files:
-```bash
-ls .claude/rules/
-```
-Then read each `.md` file under `.claude/rules/`. Extract the enforceable patterns from each file. Do **not** hardcode rules — always derive them from the files you just read.
-
-## Step 2 — Identify Changed Files
+## Step 1 — Identify Changed Files
 
 ```bash
 git diff HEAD --name-only --diff-filter=ACM
@@ -31,7 +23,24 @@ If the diff is empty, run against staged files:
 git diff --cached --name-only --diff-filter=ACM
 ```
 
+## Step 2 — Load Applicable Rules
+
+Each file under `.claude/rules/` has YAML frontmatter with a `globs:` list. Load only the rules whose globs match at least one changed file in Step 1.
+
+```bash
+ls .claude/rules/
+```
+
+For each rule file:
+1. Read the frontmatter `globs:` entries.
+2. If any changed file path matches any glob (use shell-style matching, e.g. `**/*Controller.java`, `src/test/**/*.java`), load that rule's body.
+3. Otherwise, skip the rule entirely.
+
+Do **not** hardcode rules — always derive them from the frontmatter-filtered rule bodies you just loaded.
+
 ## Step 3 — Validate Each File
+
+Apply each loaded rule only to the files matched by its globs (e.g. `rules/api-convention.md` applies only to controller files, `rules/testing.md` applies only to test files).
 
 For each changed `.java` file, check the following categories (sourced from loaded rules):
 

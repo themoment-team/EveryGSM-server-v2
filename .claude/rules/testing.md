@@ -1,3 +1,10 @@
+---
+description: 테스트 파일 작성/수정 시에만 적용되는 규칙
+globs:
+  - "src/test/**/*.java"
+  - "**/*Test.java"
+---
+
 # Testing Rules — EveryGSM-server-v2
 
 ## Framework

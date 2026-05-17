@@ -1,3 +1,9 @@
+---
+description: 로깅 관련 규칙 (SLF4J / @Slf4j 사용 시)
+globs:
+  - "**/*.java"
+---
+
 # Logging Rules — EveryGSM-server-v2
 
 ## Library

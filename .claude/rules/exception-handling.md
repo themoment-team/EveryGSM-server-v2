@@ -1,3 +1,9 @@
+---
+description: 예외 처리 관련 규칙 (서비스/컨트롤러/핸들러)
+globs:
+  - "**/*.java"
+---
+
 # Exception Handling Rules — EveryGSM-server-v2
 
 ## Exception Hierarchy

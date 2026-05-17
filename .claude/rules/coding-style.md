@@ -1,3 +1,9 @@
+---
+description: 모든 Java 소스 파일에 적용되는 공통 코딩 스타일 규칙
+globs:
+  - "**/*.java"
+---
+
 # Coding Style Rules — EveryGSM-server-v2
 
 ## Language & Framework

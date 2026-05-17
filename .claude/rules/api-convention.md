@@ -1,3 +1,10 @@
+---
+description: 컨트롤러/엔드포인트 작성 시에만 적용되는 규칙
+globs:
+  - "**/controller/**/*.java"
+  - "**/*Controller.java"
+---
+
 # API Convention Rules — EveryGSM-server-v2
 
 ## URL Structure
