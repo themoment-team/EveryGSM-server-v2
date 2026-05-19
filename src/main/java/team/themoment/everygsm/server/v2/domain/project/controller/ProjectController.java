@@ -15,6 +15,7 @@ import team.themoment.everygsm.server.v2.domain.project.dto.response.QueryProjec
 import team.themoment.everygsm.server.v2.domain.project.service.CreateProjectLikeService;
 import team.themoment.everygsm.server.v2.domain.project.service.CreateProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.DeleteProjectLikeService;
+import team.themoment.everygsm.server.v2.domain.project.service.DeleteProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryMyProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryMypageService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryPendingProjectService;
@@ -32,6 +33,7 @@ public class ProjectController {
     private final QueryPendingProjectService queryPendingProjectService;
     private final QueryRejectedProjectService queryRejectedProjectService;
     private final QueryProjectService queryProjectService;
+    private final DeleteProjectService deleteProjectService;
     private final CreateProjectLikeService createProjectLikeService;
     private final DeleteProjectLikeService deleteProjectLikeService;
 
@@ -69,6 +71,12 @@ public class ProjectController {
     @GetMapping
     public QueryProjectResDto query(@AuthenticationPrincipal Long userId) {
         return queryProjectService.execute(userId);
+    }
+
+    @Operation(summary = "프로젝트 삭제", description = "자신이 등록한 프로젝트를 삭제합니다")
+    @DeleteMapping("/my/{projectId}")
+    public void delete(@AuthenticationPrincipal Long userId, @PathVariable Long projectId) {
+        deleteProjectService.execute(userId, projectId);
     }
 
     @Operation(summary = "프로젝트 좋아요", description = "프로젝트에 좋아요를 추가합니다")

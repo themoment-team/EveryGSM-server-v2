@@ -60,6 +60,9 @@ public class ProjectJpaEntity {
     @Column(name = "stack_name", nullable = false)
     private Set<String> stackNames;
 
+    @Column(name = "start_year", nullable = false)
+    private Integer startYear;
+
     @Column(name = "external_project_id", unique = true)
     private Long externalProjectId;
 
@@ -77,6 +80,7 @@ public class ProjectJpaEntity {
             String prodUrl,
             Status status,
             String reason,
+            Integer startYear,
             Set<String> repoUrls,
             Set<String> stackNames,
             Long externalProjectId) {
@@ -88,6 +92,7 @@ public class ProjectJpaEntity {
         this.prodUrl = prodUrl;
         this.status = status;
         this.reason = reason;
+        this.startYear = startYear;
         this.repoUrls = repoUrls != null ? repoUrls : new HashSet<>();
         this.stackNames = stackNames != null ? stackNames : new HashSet<>();
         this.externalProjectId = externalProjectId;
@@ -98,10 +103,15 @@ public class ProjectJpaEntity {
         this.reason = reason;
     }
 
-    public void syncUpdate(String title, String description, String affiliation, UserJpaEntity user) {
+    public void syncUpdate(String title,
+            String description,
+            String affiliation,
+            Integer startYear,
+            UserJpaEntity user) {
         this.title = title;
         this.description = description;
         this.affiliation = affiliation;
+        this.startYear = startYear;
         if (user != null) {
             this.user = user;
         }

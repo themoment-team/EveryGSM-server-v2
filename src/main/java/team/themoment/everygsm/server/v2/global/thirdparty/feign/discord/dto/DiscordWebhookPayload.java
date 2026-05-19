@@ -10,4 +10,8 @@ public record DiscordWebhookPayload(List<Embed> embeds) {
     public static DiscordWebhookPayload serverError(String title, String description) {
         return new DiscordWebhookPayload(List.of(new Embed(title, description, 0xFF4C4C)));
     }
+
+    public static DiscordWebhookPayload projectRegistered(String title, String description) {
+        return new DiscordWebhookPayload(List.of(new Embed(title, description, 0x5865F2)));
+    }
 }

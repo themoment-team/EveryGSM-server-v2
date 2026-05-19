@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.request.CreateProjectReqDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.event.ProjectRegisteredEvent;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
@@ -29,6 +31,7 @@ public class CreateProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ProjectMapper projectMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public ProjectResDto execute(Long userId, CreateProjectReqDto reqDto) {
@@ -36,6 +39,18 @@ public class CreateProjectService {
                 .orElseThrow(() -> new ExpectedException("해당 유저가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
         ProjectJpaEntity project = projectRepository.save(buildProject(reqDto, user));
+
+        eventPublisher.publishEvent(new ProjectRegisteredEvent(project.getTitle(),
+                project.getAffiliation(),
+                project.getDescription(),
+                project.getStartYear(),
+                project.getProdUrl(),
+                project.getStackNames(),
+                project.getRepoUrls(),
+                user.getName(),
+                user.getStudentNumber(),
+                user.getEmail()));
+
         return projectMapper.toRes(project, false);
     }
 
@@ -48,6 +63,6 @@ public class CreateProjectService {
 
         return ProjectJpaEntity.builder().user(user).logo(reqDto.logo()).title(reqDto.title())
                 .affiliation(reqDto.affiliation()).description(reqDto.description()).prodUrl(reqDto.prodUrl())
-                .status(PENDING).stackNames(stackNames).repoUrls(repoUrls).build();
+                .startYear(reqDto.startYear()).status(PENDING).stackNames(stackNames).repoUrls(repoUrls).build();
     }
 }
