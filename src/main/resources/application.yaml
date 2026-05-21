@@ -61,3 +61,6 @@ rate-limit:
   max-requests: 100
   window-seconds: 60
 
+disender:
+  webhook-url: ${DISCORD_ERROR_WEBHOOK_URL:}
+
