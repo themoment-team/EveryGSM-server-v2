@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.project.dto.request.CreateProjectReqDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.request.UpdateParticipantsReqDto;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.ProjectSortType;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.MyPageResDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectListResDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
@@ -70,10 +71,12 @@ public class ProjectController {
         return createProjectService.execute(userId, reqDto);
     }
 
-    @Operation(summary = "승인된 프로젝트 전체 조회", description = "승인된 모든 프로젝트를 조회합니다")
+    @Operation(summary = "승인된 프로젝트 전체 조회", description = "승인된 모든 프로젝트를 조회합니다. sort: NEWEST(기본값), OLDEST, LIKES")
     @GetMapping
-    public QueryProjectResDto query(@AuthenticationPrincipal Long userId) {
-        return queryProjectService.execute(userId);
+    public QueryProjectResDto query(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam(name = "sort", defaultValue = "NEWEST") ProjectSortType sortType) {
+        return queryProjectService.execute(userId, sortType);
     }
 
     @Operation(summary = "프로젝트 삭제", description = "자신이 등록한 프로젝트를 삭제합니다")

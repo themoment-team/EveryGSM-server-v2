@@ -29,4 +29,12 @@ public interface ProjectLikeRepository extends JpaRepository<LikeJpaEntity, Long
     Optional<LikeJpaEntity> findByUserIdAndProjectId(Long userId, Long projectId);
 
     boolean existsByProjectIdAndUserId(Long projectId, Long userId);
+
+    @Query("""
+                SELECT pl.project.id AS projectId, COUNT(pl.id) AS likeCount
+                FROM LikeJpaEntity pl
+                WHERE pl.project.id IN :projectIds
+                GROUP BY pl.project.id
+            """)
+    List<ProjectLikeCountProjection> countByProjectIds(@Param("projectIds") List<Long> projectIds);
 }
