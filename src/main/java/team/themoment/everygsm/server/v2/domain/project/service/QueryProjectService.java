@@ -69,17 +69,12 @@ public class QueryProjectService {
 
         List<Long> projectIds = projects.stream().map(ProjectJpaEntity::getId).toList();
 
-        Map<Long, Long> likeCountMap = projectLikeRepository.countByProjectIds(projectIds)
-                .stream()
-                .collect(Collectors.toMap(
-                        p -> p.getProjectId(),
-                        p -> p.getLikeCount()
-                ));
+        Map<Long, Long> likeCountMap = projectLikeRepository.countByProjectIds(projectIds).stream()
+                .collect(Collectors.toMap(p -> p.getProjectId(), p -> p.getLikeCount()));
 
-        return projects.stream()
-                .sorted(Comparator.comparingLong(
-                        (ProjectJpaEntity p) -> likeCountMap.getOrDefault(p.getId(), 0L)
-                ).reversed())
+        return projects
+                .stream().sorted(Comparator
+                        .comparingLong((ProjectJpaEntity p) -> likeCountMap.getOrDefault(p.getId(), 0L)).reversed())
                 .toList();
     }
 }
