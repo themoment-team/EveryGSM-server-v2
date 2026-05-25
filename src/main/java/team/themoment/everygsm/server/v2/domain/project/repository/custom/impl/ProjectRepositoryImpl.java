@@ -84,8 +84,8 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
             condition = condition.and(projectJpaEntity.title.containsIgnoreCase(keyword));
         }
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
-                .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(condition).orderBy(resolveOrder(sortType))
-                .distinct().fetch();
+                .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(condition)
+                .orderBy(resolveOrder(sortType), projectJpaEntity.id.asc()).distinct().fetch();
     }
 
     private OrderSpecifier<?> resolveOrder(ProjectSortType sortType) {
