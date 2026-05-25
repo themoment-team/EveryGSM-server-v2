@@ -76,14 +76,16 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     }
 
     @Override
-    public List<ProjectJpaEntity> findAllByStatusWithCollections(Status status, ProjectSortType sortType, String keyword) {
+    public List<ProjectJpaEntity> findAllByStatusWithCollections(Status status,
+            ProjectSortType sortType,
+            String keyword) {
         BooleanExpression condition = projectJpaEntity.status.eq(status);
         if (keyword != null && !keyword.isBlank()) {
             condition = condition.and(projectJpaEntity.title.containsIgnoreCase(keyword));
         }
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
-                .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(condition)
-                .orderBy(resolveOrder(sortType)).distinct().fetch();
+                .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(condition).orderBy(resolveOrder(sortType))
+                .distinct().fetch();
     }
 
     private OrderSpecifier<?> resolveOrder(ProjectSortType sortType) {

@@ -34,7 +34,9 @@ public class QueryProjectService {
         return buildQueryResDto(userId, sortType, keyword);
     }
 
-    private QueryProjectResDto buildQueryResDto(@Nullable Long userId, ProjectSortType sortType, @Nullable String keyword) {
+    private QueryProjectResDto buildQueryResDto(@Nullable Long userId,
+            ProjectSortType sortType,
+            @Nullable String keyword) {
         if (userId == null) {
             return buildGuestQuery(sortType, keyword);
         }
