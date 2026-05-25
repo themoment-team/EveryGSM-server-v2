@@ -30,19 +30,19 @@ public class QueryProjectService {
     private final ProjectMapper projectMapper;
 
     @Transactional(readOnly = true)
-    public QueryProjectResDto execute(@Nullable Long userId, ProjectSortType sortType) {
-        return buildQueryResDto(userId, sortType);
+    public QueryProjectResDto execute(@Nullable Long userId, ProjectSortType sortType, @Nullable String keyword) {
+        return buildQueryResDto(userId, sortType, keyword);
     }
 
-    private QueryProjectResDto buildQueryResDto(@Nullable Long userId, ProjectSortType sortType) {
+    private QueryProjectResDto buildQueryResDto(@Nullable Long userId, ProjectSortType sortType, @Nullable String keyword) {
         if (userId == null) {
-            return buildGuestQuery(sortType);
+            return buildGuestQuery(sortType, keyword);
         }
-        return buildUserQuery(userId, sortType);
+        return buildUserQuery(userId, sortType, keyword);
     }
 
-    private QueryProjectResDto buildGuestQuery(ProjectSortType sortType) {
-        List<ProjectJpaEntity> projects = projectRepository.findAllByStatusWithCollections(APPROVED, sortType);
+    private QueryProjectResDto buildGuestQuery(ProjectSortType sortType, @Nullable String keyword) {
+        List<ProjectJpaEntity> projects = projectRepository.findAllByStatusWithCollections(APPROVED, sortType, keyword);
         List<Long> projectIds = projects.stream().map(ProjectJpaEntity::getId).toList();
         projects = applySortIfNeeded(projects, projectIds, sortType);
 
@@ -50,8 +50,8 @@ public class QueryProjectService {
         return new QueryProjectResDto(res);
     }
 
-    private QueryProjectResDto buildUserQuery(Long userId, ProjectSortType sortType) {
-        List<ProjectJpaEntity> projects = projectRepository.findAllByStatusWithCollections(APPROVED, sortType);
+    private QueryProjectResDto buildUserQuery(Long userId, ProjectSortType sortType, @Nullable String keyword) {
+        List<ProjectJpaEntity> projects = projectRepository.findAllByStatusWithCollections(APPROVED, sortType, keyword);
         List<Long> projectIds = projects.stream().map(ProjectJpaEntity::getId).toList();
         projects = applySortIfNeeded(projects, projectIds, sortType);
 
