@@ -13,6 +13,7 @@ public interface ProjectRepositoryCustom {
     List<ProjectJpaEntity> findByUserIdAndStatus(Long userId, Status status);
     List<ProjectJpaEntity> findAllByStatusWithCollections(Status status);
     List<ProjectJpaEntity> findAllByStatusWithCollections(Status status, ProjectSortType sortType);
+    List<ProjectJpaEntity> findAllByStatusWithCollections(Status status, ProjectSortType sortType, String keyword);
     void markUnseenProjectsAsInactive(Set<Long> seenIds);
     Optional<ProjectJpaEntity> findProjectWithCollectionsById(Long projectId);
     Optional<ProjectJpaEntity> findProjectWithCollectionsByIdAndUserId(Long projectId, Long userId);

@@ -71,11 +71,12 @@ public class ProjectController {
         return createProjectService.execute(userId, reqDto);
     }
 
-    @Operation(summary = "승인된 프로젝트 전체 조회", description = "승인된 모든 프로젝트를 조회합니다. sort: NEWEST(기본값), OLDEST, LIKES")
+    @Operation(summary = "승인된 프로젝트 전체 조회", description = "승인된 모든 프로젝트를 조회합니다. sort: NEWEST(기본값), OLDEST, LIKES / keyword: 프로젝트 이름 검색(선택)")
     @GetMapping
     public QueryProjectResDto query(@AuthenticationPrincipal Long userId,
-            @RequestParam(name = "sort", defaultValue = "NEWEST") ProjectSortType sortType) {
-        return queryProjectService.execute(userId, sortType);
+            @RequestParam(name = "sort", defaultValue = "NEWEST") ProjectSortType sortType,
+            @RequestParam(name = "keyword", required = false) String keyword) {
+        return queryProjectService.execute(userId, sortType, keyword);
     }
 
     @Operation(summary = "프로젝트 삭제", description = "자신이 등록한 프로젝트를 삭제합니다")
