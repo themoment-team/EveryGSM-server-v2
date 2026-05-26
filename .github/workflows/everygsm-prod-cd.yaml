@@ -13,34 +13,27 @@ jobs:
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
+        env:
+          APPLICATION_YML: ${{ secrets.APPLICATION_YML }}
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          envs: APPLICATION_YML,DB_ROOT_PASSWORD,DB_USERNAME,DB_PASSWORD
           script: |
-            cd /opt/everygsm
-            git pull origin main
+            git config --global --add safe.directory /opt/everygsm
+            git -C /opt/everygsm config pull.rebase false
+            git -C /opt/everygsm pull origin main
 
-            cat > .env << 'EOF'
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_PORT=${{ secrets.DB_PORT }}
-            DB_USERNAME=${{ secrets.DB_USERNAME }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
-            DATAGSM_OPENAPI_KEY=${{ secrets.DATAGSM_OPENAPI_KEY }}
-            DATAGSM_CLIENT_ID=${{ secrets.DATAGSM_CLIENT_ID }}
-            DATAGSM_CLIENT_SECRET=${{ secrets.DATAGSM_CLIENT_SECRET }}
-            DATAGSM_REDIRECT_URIS=${{ secrets.DATAGSM_REDIRECT_URIS }}
-            DATAGSM_API_URL=${{ secrets.DATAGSM_API_URL }}
-            DISCORD_ERROR_WEBHOOK_URL=${{ secrets.DISCORD_ERROR_WEBHOOK_URL }}
-            EOF
+            echo "$APPLICATION_YML" > /opt/everygsm/src/main/resources/application-prod.yml
 
-            docker compose -f deploy/docker/compose.prod.yaml up --build -d
+            printf 'DB_ROOT_PASSWORD=%s\nDB_USERNAME=%s\nDB_PASSWORD=%s\n' "$DB_ROOT_PASSWORD" "$DB_USERNAME" "$DB_PASSWORD" > /opt/everygsm/.env
+
+            docker compose -f /opt/everygsm/deploy/docker/compose.prod.yaml up --build -d
             docker image prune -f
 
       - name: CD Success Notification
