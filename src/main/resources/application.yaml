@@ -16,6 +16,9 @@ spring:
         static: ap-northeast-2
       stack:
         auto: false
+    discord:
+      webhook:
+        url: ${DISCORD_ERROR_WEBHOOK_URL:http://localhost}
   servlet:
     multipart:
       max-file-size: 5MB
@@ -35,6 +38,10 @@ management:
 
 jwt:
   expiration: 60
+
+datagsm:
+  api:
+    url: ${DATAGSM_API_URL:http://localhost}
 
 rate-limit:
   max-requests: 100
