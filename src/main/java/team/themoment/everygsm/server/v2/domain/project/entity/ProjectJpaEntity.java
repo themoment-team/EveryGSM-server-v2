@@ -146,8 +146,10 @@ public class ProjectJpaEntity {
         this.description = copy.description;
         this.prodUrl = copy.prodUrl;
         this.startYear = copy.startYear;
-        this.repoUrls = new HashSet<>(copy.repoUrls);
-        this.stackNames = new HashSet<>(copy.stackNames);
+        this.repoUrls.clear();
+        this.repoUrls.addAll(copy.repoUrls);
+        this.stackNames.clear();
+        this.stackNames.addAll(copy.stackNames);
         this.participants.clear();
         this.participants.addAll(copy.participants);
     }
@@ -167,8 +169,10 @@ public class ProjectJpaEntity {
         this.description = description;
         this.prodUrl = prodUrl;
         this.startYear = startYear;
-        this.stackNames = new HashSet<>(stackNames);
-        this.repoUrls = new HashSet<>(repoUrls);
+        this.stackNames.clear();
+        this.stackNames.addAll(stackNames);
+        this.repoUrls.clear();
+        this.repoUrls.addAll(repoUrls);
         this.participants.clear();
         this.participants.addAll(participants);
     }
