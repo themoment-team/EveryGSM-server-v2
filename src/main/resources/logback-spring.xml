@@ -6,40 +6,7 @@
         </encoder>
     </appender>
 
-    <springProfile name="prod">
-        <property name="LOG_LEVEL" value="INFO"/>
-        <property name="LOG_GROUP" value="/everygsm/prod"/>
-        <property name="LOG_PREFIX" value="everygsm-prod-"/>
-        <property name="RETENTION" value="30"/>
-    </springProfile>
-
-    <springProfile name="stage">
-        <property name="LOG_LEVEL" value="DEBUG"/>
-        <property name="LOG_GROUP" value="/everygsm/stage"/>
-        <property name="LOG_PREFIX" value="everygsm-stage-"/>
-        <property name="RETENTION" value="14"/>
-    </springProfile>
-
-    <springProfile name="stage">
-        <logger name="org.springframework" level="INFO" additivity="false"/>
-        <logger name="com.zaxxer.hikari" level="INFO" additivity="false"/>
-        <logger name="org.hibernate" level="WARN" additivity="false"/>
-    </springProfile>
-
-    <springProfile name="prod | stage">
-        <logger name="org.apache.http" level="OFF" additivity="false"/>
-        <logger name="com.amazonaws" level="WARN" additivity="false"/>
-        <logger name="software.amazon.awssdk" level="WARN" additivity="false"/>
-        <logger name="ca.pjer.logback" level="WARN" additivity="false"/>
-
-        <root level="${LOG_LEVEL}">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
-
-    <springProfile name="local">
-        <root level="DEBUG">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+    </root>
 </configuration>
