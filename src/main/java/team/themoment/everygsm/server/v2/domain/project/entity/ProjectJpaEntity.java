@@ -68,6 +68,9 @@ public class ProjectJpaEntity {
     @Column(name = "external_project_id", unique = true)
     private Long externalProjectId;
 
+    @Column(name = "original_project_id")
+    private Long originalProjectId;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "project_participants", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
             "project_id", "user_id"}))
@@ -92,6 +95,7 @@ public class ProjectJpaEntity {
             Set<String> repoUrls,
             Set<String> stackNames,
             Long externalProjectId,
+            Long originalProjectId,
             Set<UserJpaEntity> participants) {
         this.user = user;
         this.logo = logo;
@@ -105,6 +109,7 @@ public class ProjectJpaEntity {
         this.repoUrls = repoUrls != null ? repoUrls : new HashSet<>();
         this.stackNames = stackNames != null ? stackNames : new HashSet<>();
         this.externalProjectId = externalProjectId;
+        this.originalProjectId = originalProjectId;
         this.participants = participants != null ? participants : new HashSet<>();
     }
 
@@ -132,6 +137,34 @@ public class ProjectJpaEntity {
         if (user != null) {
             this.user = user;
         }
+    }
+
+    public void applyFrom(ProjectJpaEntity copy) {
+        this.logo = copy.logo;
+        this.title = copy.title;
+        this.affiliation = copy.affiliation;
+        this.description = copy.description;
+        this.prodUrl = copy.prodUrl;
+        this.startYear = copy.startYear;
+        this.repoUrls = new HashSet<>(copy.repoUrls);
+        this.stackNames = new HashSet<>(copy.stackNames);
+        this.participants.clear();
+        this.participants.addAll(copy.participants);
+    }
+
+    public void updateContent(String logo, String title, String affiliation, String description,
+            String prodUrl, int startYear, Set<String> stackNames, Set<String> repoUrls,
+            Set<UserJpaEntity> participants) {
+        this.logo = logo;
+        this.title = title;
+        this.affiliation = affiliation;
+        this.description = description;
+        this.prodUrl = prodUrl;
+        this.startYear = startYear;
+        this.stackNames = new HashSet<>(stackNames);
+        this.repoUrls = new HashSet<>(repoUrls);
+        this.participants.clear();
+        this.participants.addAll(participants);
     }
 
     public void markInactive() {
