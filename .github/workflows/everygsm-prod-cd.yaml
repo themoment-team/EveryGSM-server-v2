@@ -18,12 +18,14 @@ jobs:
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          envs: APPLICATION_YML,DB_ROOT_PASSWORD,DB_USERNAME,DB_PASSWORD
+          envs: APPLICATION_YML,DB_ROOT_PASSWORD,DB_USERNAME,DB_PASSWORD,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY
           script: |
             git config --global --add safe.directory /opt/everygsm
             git -C /opt/everygsm config pull.rebase false
@@ -31,7 +33,7 @@ jobs:
 
             echo "$APPLICATION_YML" > /opt/everygsm/src/main/resources/application-prod.yml
 
-            printf 'DB_ROOT_PASSWORD=%s\nDB_USERNAME=%s\nDB_PASSWORD=%s\n' "$DB_ROOT_PASSWORD" "$DB_USERNAME" "$DB_PASSWORD" > /opt/everygsm/.env
+            printf 'DB_ROOT_PASSWORD=%s\nDB_USERNAME=%s\nDB_PASSWORD=%s\nAWS_ACCESS_KEY_ID=%s\nAWS_SECRET_ACCESS_KEY=%s\n' "$DB_ROOT_PASSWORD" "$DB_USERNAME" "$DB_PASSWORD" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" > /opt/everygsm/.env
 
             docker compose -f /opt/everygsm/deploy/docker/compose.prod.yaml up --build -d
             docker image prune -f

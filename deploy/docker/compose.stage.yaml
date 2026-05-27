@@ -5,6 +5,8 @@ services:
       dockerfile: deploy/Dockerfile.stage
     environment:
       SPRING_PROFILES_ACTIVE: stage
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     depends_on:
       mysql:
         condition: service_healthy

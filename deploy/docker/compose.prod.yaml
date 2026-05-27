@@ -5,6 +5,8 @@ services:
       dockerfile: deploy/Dockerfile.prod
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     ports:
       - '8080:8080'
     restart: unless-stopped
