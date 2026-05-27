@@ -8,7 +8,7 @@ spring:
       minimum-idle: 2
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
   security:
     cors:
       allowed-origins:

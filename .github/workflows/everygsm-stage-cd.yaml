@@ -11,62 +11,30 @@ jobs:
     runs-on: ubuntu-latest
     environment: stage
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v6
-
-      - name: Connect deploy key
-        uses: cloudtype-github-actions/connect@v1
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        env:
+          APPLICATION_YML: ${{ secrets.APPLICATION_YML }}
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         with:
-          token: ${{ secrets.CLOUDTYPE_TOKEN }}
-          ghtoken: ${{ secrets.GHP_TOKEN }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          envs: APPLICATION_YML,DB_ROOT_PASSWORD,DB_USERNAME,DB_PASSWORD
+          script: |
+            git config --global --add safe.directory /opt/everygsm
+            git -C /opt/everygsm config pull.rebase false
+            git -C /opt/everygsm pull origin develop
 
-      - name: Deploy
-        uses: cloudtype-github-actions/deploy@v1
-        with:
-          token: ${{ secrets.CLOUDTYPE_TOKEN }}
-          project: themoment/everygsm
-          stage: main
-          yaml: |
-            name: everygsm-stage
-            app: dockerfile
-            options:
-              env:
-                - name: SPRING_PROFILES_ACTIVE
-                  value: stage
-                - name: DB_HOST
-                  value: ${{ secrets.DB_HOST }}
-                - name: DB_PORT
-                  value: ${{ secrets.DB_PORT }}
-                - name: DB_USERNAME
-                  value: ${{ secrets.DB_USERNAME }}
-                - name: DB_PASSWORD
-                  value: ${{ secrets.DB_PASSWORD }}
-                - name: JWT_SECRET
-                  value: ${{ secrets.JWT_SECRET }}
-                - name: AWS_ACCESS_KEY_ID
-                  value: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                - name: AWS_SECRET_ACCESS_KEY
-                  value: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                - name: AWS_S3_BUCKET
-                  value: ${{ secrets.AWS_S3_BUCKET }}
-                - name: DATAGSM_OPENAPI_KEY
-                  value: ${{ secrets.DATAGSM_OPENAPI_KEY }}
-                - name: DATAGSM_CLIENT_ID
-                  value: ${{ secrets.DATAGSM_CLIENT_ID }}
-                - name: DATAGSM_CLIENT_SECRET
-                  value: ${{ secrets.DATAGSM_CLIENT_SECRET }}
-                - name: DATAGSM_REDIRECT_URIS
-                  value: ${{ secrets.DATAGSM_REDIRECT_URIS }}
-                - name: DATAGSM_API_URL
-                  value: ${{ secrets.DATAGSM_API_URL }}
-                - name: DISCORD_ERROR_WEBHOOK_URL
-                  value: ${{ secrets.DISCORD_ERROR_WEBHOOK_URL }}
-              ports: 8080
-              dockerfile: deploy/Dockerfile.stage
-            context:
-              git:
-                url: git@github.com:${{ github.repository }}.git
-                ref: ${{ github.ref }}
+            echo "$APPLICATION_YML" > /opt/everygsm/src/main/resources/application-stage.yml
+
+            printf 'DB_ROOT_PASSWORD=%s\nDB_USERNAME=%s\nDB_PASSWORD=%s\n' "$DB_ROOT_PASSWORD" "$DB_USERNAME" "$DB_PASSWORD" > /opt/everygsm/.env
+
+            docker compose -f /opt/everygsm/deploy/docker/compose.stage.yaml up --build -d
+            docker image prune -f
 
       - name: CD Success Notification
         uses: sarisia/actions-status-discord@v1
