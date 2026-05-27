@@ -8,8 +8,8 @@ import team.themoment.everygsm.server.v2.domain.project.dto.common.RepositoryDto
 import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 
-public record ProjectResDto(Long projectId, String logo, String title, String affiliation, String description,
-        String prodUrl, Integer startYear, Status status, String reason, LocalDateTime createdAt,
+public record ProjectResDto(Long projectId, Long originalProjectId, String logo, String title, String affiliation,
+        String description, String prodUrl, Integer startYear, Status status, String reason, LocalDateTime createdAt,
         List<TechStackDto> techStack, List<RepositoryDto> repository, List<ParticipantDto> participants,
         boolean liked) {
 }

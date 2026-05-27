@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.project.dto.request.CreateProjectReqDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.request.UpdateParticipantsReqDto;
+import team.themoment.everygsm.server.v2.domain.project.dto.request.UpdateProjectReqDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.MyPageResDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectListResDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
@@ -24,6 +25,7 @@ import team.themoment.everygsm.server.v2.domain.project.service.QueryPendingProj
 import team.themoment.everygsm.server.v2.domain.project.service.QueryProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryRejectedProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.UpdateProjectParticipantsService;
+import team.themoment.everygsm.server.v2.domain.project.service.UpdateProjectService;
 
 @Tag(name = "Project", description = "프로젝트 API")
 @RestController
@@ -40,6 +42,7 @@ public class ProjectController {
     private final CreateProjectLikeService createProjectLikeService;
     private final DeleteProjectLikeService deleteProjectLikeService;
     private final UpdateProjectParticipantsService updateProjectParticipantsService;
+    private final UpdateProjectService updateProjectService;
 
     @Operation(summary = "마이페이지 조회", description = "좋아요한 프로젝트와 등록한 프로젝트를 조회합니다")
     @GetMapping("/my")
@@ -95,6 +98,14 @@ public class ProjectController {
     @DeleteMapping("/like/{projectId}")
     public ProjectResDto deleteLike(@AuthenticationPrincipal Long userId, @PathVariable Long projectId) {
         return deleteProjectLikeService.execute(userId, projectId);
+    }
+
+    @Operation(summary = "프로젝트 정보 수정", description = "프로젝트 정보를 수정합니다. APPROVED 상태이면 수정 사본이 PENDING으로 생성되고, PENDING/REJECTED 상태이면 직접 수정됩니다.")
+    @PatchMapping("/my/{projectId}")
+    public ProjectResDto update(@AuthenticationPrincipal Long userId,
+            @PathVariable Long projectId,
+            @RequestBody @Valid UpdateProjectReqDto reqDto) {
+        return updateProjectService.execute(userId, projectId, reqDto);
     }
 
     @Operation(summary = "프로젝트 참여자 교체", description = "프로젝트 참여자 목록을 전달된 ID 목록으로 교체합니다. 신청자 본인은 항상 포함됩니다.")

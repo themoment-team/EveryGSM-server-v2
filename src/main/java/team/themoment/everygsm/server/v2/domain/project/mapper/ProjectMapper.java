@@ -32,6 +32,7 @@ public class ProjectMapper {
         List<ParticipantDto> participants = extractParticipants(project);
 
         return new ProjectResDto(project.getId(),
+                project.getOriginalProjectId(),
                 generatePresignedUrl(project.getLogo()),
                 project.getTitle(),
                 project.getAffiliation(),
