@@ -11,9 +11,33 @@ spring:
     cors:
       allowed-origins: "*"
 
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY_ID:}
+        secret-key: ${AWS_SECRET_ACCESS_KEY:}
+      s3:
+        bucket: ${AWS_S3_BUCKET:everygsm-local-bucket}
+    discord:
+      webhook:
+        url: ${DISCORD_ERROR_WEBHOOK_URL:http://localhost}
+
 jwt:
   secret: local-secret-key
 
+oauth:
+  datagsm:
+    client-id: ${DATAGSM_CLIENT_ID:local-client-id}
+    client-secret: ${DATAGSM_CLIENT_SECRET:local-client-secret}
+    redirect-uris: ${DATAGSM_REDIRECT_URIS:http://localhost:3000,http://localhost:3001}
+
+datagsm:
+  api:
+    url: ${DATAGSM_API_URL:http://localhost}
+    key: ${DATAGSM_OPENAPI_KEY:local-openapi-key}
+
+disender:
+  webhook-url: ${DISCORD_ERROR_WEBHOOK_URL:}
 
 sdk:
   exception:

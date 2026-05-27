@@ -10,21 +10,12 @@ spring:
   cloud:
     datagsm:
       openapi:
-        api-key: ${DATAGSM_OPENAPI_KEY}
         sync-cron: "0 0 3 * * *"
     aws:
-      credentials:
-        access-key: ${AWS_ACCESS_KEY_ID}
-        secret-key: ${AWS_SECRET_ACCESS_KEY}
       region:
         static: ap-northeast-2
-      s3:
-        bucket: ${AWS_S3_BUCKET}
       stack:
         auto: false
-    discord:
-      webhook:
-        url: ${DISCORD_ERROR_WEBHOOK_URL:http://localhost}
   servlet:
     multipart:
       max-file-size: 5MB
@@ -43,24 +34,8 @@ management:
       show-details: never
 
 jwt:
-  secret: ${JWT_SECRET}
   expiration: 60
-
-oauth:
-  datagsm:
-    client-id: ${DATAGSM_CLIENT_ID}
-    client-secret: ${DATAGSM_CLIENT_SECRET}
-    redirect-uris: ${DATAGSM_REDIRECT_URIS:http://localhost:3000,http://localhost:3001}
-
-datagsm:
-  api:
-    url: ${DATAGSM_API_URL}
-    key: ${DATAGSM_OPENAPI_KEY}
 
 rate-limit:
   max-requests: 100
   window-seconds: 60
-
-disender:
-  webhook-url: ${DISCORD_ERROR_WEBHOOK_URL:}
-
