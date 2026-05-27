@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.discord.dto.DiscordWebhookPayload;
 
-@FeignClient(name = "discordWebhook", url = "${spring.cloud.discord.webhook.url}")
+@FeignClient(name = "discordWebhook", url = "${spring.cloud.discord.webhook.url:http://localhost}")
 public interface DiscordWebhookClient {
 
     @PostMapping
