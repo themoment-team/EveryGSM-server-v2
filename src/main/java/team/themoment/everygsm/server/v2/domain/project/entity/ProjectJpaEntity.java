@@ -152,8 +152,14 @@ public class ProjectJpaEntity {
         this.participants.addAll(copy.participants);
     }
 
-    public void updateContent(String logo, String title, String affiliation, String description,
-            String prodUrl, int startYear, Set<String> stackNames, Set<String> repoUrls,
+    public void updateContent(String logo,
+            String title,
+            String affiliation,
+            String description,
+            String prodUrl,
+            int startYear,
+            Set<String> stackNames,
+            Set<String> repoUrls,
             Set<UserJpaEntity> participants) {
         this.logo = logo;
         this.title = title;

@@ -17,7 +17,6 @@ import team.themoment.everygsm.server.v2.domain.project.dto.common.TechStackDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.request.UpdateProjectReqDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
-import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectLikeRepository;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
@@ -47,44 +46,46 @@ public class UpdateProjectService {
         return switch (project.getStatus()) {
             case INACTIVE -> throw new ExpectedException("비활성화된 프로젝트는 수정할 수 없습니다.", HttpStatus.BAD_REQUEST);
             case PENDING, REJECTED -> {
-                project.updateContent(reqDto.logo(), reqDto.title(), reqDto.affiliation(),
-                        reqDto.description(), reqDto.prodUrl(), reqDto.startYear(),
-                        stackNames, repoUrls, participants);
+                project.updateContent(reqDto.logo(),
+                        reqDto.title(),
+                        reqDto.affiliation(),
+                        reqDto.description(),
+                        reqDto.prodUrl(),
+                        reqDto.startYear(),
+                        stackNames,
+                        repoUrls,
+                        participants);
                 boolean liked = projectLikeRepository.existsByProjectIdAndUserId(projectId, userId);
                 yield projectMapper.toRes(project, liked);
             }
             case APPROVED -> {
-                ProjectJpaEntity copy = projectRepository
-                        .findByOriginalProjectIdAndStatus(projectId, PENDING)
+                ProjectJpaEntity copy = projectRepository.findByOriginalProjectIdAndStatus(projectId, PENDING)
                         .orElseGet(() -> projectRepository.save(buildCopy(project, owner)));
-                copy.updateContent(reqDto.logo(), reqDto.title(), reqDto.affiliation(),
-                        reqDto.description(), reqDto.prodUrl(), reqDto.startYear(),
-                        stackNames, repoUrls, participants);
+                copy.updateContent(reqDto.logo(),
+                        reqDto.title(),
+                        reqDto.affiliation(),
+                        reqDto.description(),
+                        reqDto.prodUrl(),
+                        reqDto.startYear(),
+                        stackNames,
+                        repoUrls,
+                        participants);
                 yield projectMapper.toRes(copy, false);
             }
         };
     }
 
     private ProjectJpaEntity buildCopy(ProjectJpaEntity original, UserJpaEntity owner) {
-        return ProjectJpaEntity.builder()
-                .user(owner)
-                .logo(original.getLogo())
-                .title(original.getTitle())
-                .affiliation(original.getAffiliation())
-                .description(original.getDescription())
-                .prodUrl(original.getProdUrl())
-                .startYear(original.getStartYear())
-                .status(PENDING)
-                .stackNames(new HashSet<>(original.getStackNames()))
-                .repoUrls(new HashSet<>(original.getRepoUrls()))
-                .participants(new HashSet<>(original.getParticipants()))
-                .originalProjectId(original.getId())
-                .build();
+        return ProjectJpaEntity.builder().user(owner).logo(original.getLogo()).title(original.getTitle())
+                .affiliation(original.getAffiliation()).description(original.getDescription())
+                .prodUrl(original.getProdUrl()).startYear(original.getStartYear()).status(PENDING)
+                .stackNames(new HashSet<>(original.getStackNames())).repoUrls(new HashSet<>(original.getRepoUrls()))
+                .participants(new HashSet<>(original.getParticipants())).originalProjectId(original.getId()).build();
     }
 
     private Set<String> extractStackNames(UpdateProjectReqDto reqDto) {
-        return Optional.ofNullable(reqDto.techStack()).stream().flatMap(Collection::stream)
-                .map(TechStackDto::stackName).collect(Collectors.toSet());
+        return Optional.ofNullable(reqDto.techStack()).stream().flatMap(Collection::stream).map(TechStackDto::stackName)
+                .collect(Collectors.toSet());
     }
 
     private Set<String> extractRepoUrls(UpdateProjectReqDto reqDto) {
