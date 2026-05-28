@@ -29,6 +29,7 @@ jobs:
           script: |
             git config --global --add safe.directory /opt/everygsm
             git -C /opt/everygsm config pull.rebase false
+            git -C /opt/everygsm checkout -- . 2>/dev/null || true
             git -C /opt/everygsm pull origin main
 
             echo "$APPLICATION_YML" > /opt/everygsm/src/main/resources/application-prod.yml
