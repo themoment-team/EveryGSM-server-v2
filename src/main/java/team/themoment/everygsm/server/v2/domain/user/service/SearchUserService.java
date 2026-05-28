@@ -24,7 +24,7 @@ public class SearchUserService {
             throw new ExpectedException("검색어를 입력해주세요.", HttpStatus.BAD_REQUEST);
         }
 
-        List<UserSummaryDto> users = userRepository.findTop20ByNameStartingWithOrderByNameAsc(name).stream()
+        List<UserSummaryDto> users = userRepository.findTop20ByNameContainingOrderByNameAsc(name).stream()
                 .map(u -> new UserSummaryDto(u.getId(), u.getName(), u.getStudentNumber())).toList();
         return new UserSearchResDto(users);
     }

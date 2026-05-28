@@ -10,5 +10,5 @@ import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
 public interface UserRepository extends JpaRepository<UserJpaEntity, Long> {
     Optional<UserJpaEntity> findByEmail(String email);
 
-    List<UserJpaEntity> findTop20ByNameStartingWithOrderByNameAsc(String name);
+    List<UserJpaEntity> findTop20ByNameContainingOrderByNameAsc(String name);
 }
