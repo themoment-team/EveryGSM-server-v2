@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'team.themoment'
-version = '20260518.0'
+version = '20260529.0'
 
 java {
 	toolchain {
