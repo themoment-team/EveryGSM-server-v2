@@ -12,6 +12,8 @@ services:
     restart: unless-stopped
     mem_limit: 480m
     memswap_limit: 480m
+    networks:
+      - everygsm
     depends_on:
       mysql:
         condition: service_healthy
@@ -28,6 +30,8 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ../../deploy/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+    networks:
+      - everygsm
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -36,6 +40,12 @@ services:
     restart: unless-stopped
     mem_limit: 280m
     memswap_limit: 280m
+
+networks:
+  everygsm:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: "1400"
 
 volumes:
   mysql_data:
