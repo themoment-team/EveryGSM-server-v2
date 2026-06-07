@@ -14,7 +14,7 @@ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.Que
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryStudentReqDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.StudentListResDto;
 
-@FeignClient(name = "datagsm-api", url = "${datagsm.api.url}", configuration = DatagsmFeignConfig.class)
+@FeignClient(name = "datagsm-api", url = "${datagsm.api.url:http://localhost}", configuration = DatagsmFeignConfig.class)
 public interface DatagsmApiClient {
 
     @GetMapping("/v1/clubs")

@@ -5,31 +5,21 @@ services:
       dockerfile: deploy/Dockerfile.prod
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
-      DATAGSM_OPENAPI_KEY: ${DATAGSM_OPENAPI_KEY}
-      DATAGSM_CLIENT_ID: ${DATAGSM_CLIENT_ID}
-      DATAGSM_CLIENT_SECRET: ${DATAGSM_CLIENT_SECRET}
-      DATAGSM_REDIRECT_URIS: ${DATAGSM_REDIRECT_URIS}
-      DATAGSM_API_URL: ${DATAGSM_API_URL}
-      DISCORD_ERROR_WEBHOOK_URL: ${DISCORD_ERROR_WEBHOOK_URL}
     ports:
       - '8080:8080'
     restart: unless-stopped
     mem_limit: 480m
     memswap_limit: 480m
+    networks:
+      - everygsm
     depends_on:
       mysql:
         condition: service_healthy
 
   mysql:
-    image: 'mysql:8.0'
+    image: 'mysql:8.0.36'
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: everygsm
@@ -40,6 +30,8 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ../../deploy/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+    networks:
+      - everygsm
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -48,6 +40,12 @@ services:
     restart: unless-stopped
     mem_limit: 280m
     memswap_limit: 280m
+
+networks:
+  everygsm:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: "1400"
 
 volumes:
   mysql_data:

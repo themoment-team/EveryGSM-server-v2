@@ -30,8 +30,20 @@ public class AdminApproveProjectService {
 
     @Transactional
     public ProjectResDto execute(Long projectId) {
-        ProjectJpaEntity project = projectRepository.findById(projectId)
+        ProjectJpaEntity project = projectRepository.findProjectWithCollectionsById(projectId)
                 .orElseThrow(() -> new ExpectedException("해당 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+
+        if (project.getOriginalProjectId() != null) {
+            ProjectJpaEntity original = projectRepository.findProjectWithCollectionsById(project.getOriginalProjectId())
+                    .orElseThrow(() -> new ExpectedException("원본 프로젝트가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+            original.applyFrom(project);
+            if (original.getExternalProjectId() == null) {
+                registerToDatagsm(original);
+            }
+            original.updateStatus(APPROVED, null);
+            project.markInactive();
+            return projectMapper.toRes(original, false);
+        }
 
         if (project.getExternalProjectId() == null) {
             registerToDatagsm(project);

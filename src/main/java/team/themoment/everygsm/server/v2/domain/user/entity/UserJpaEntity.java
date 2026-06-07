@@ -1,5 +1,9 @@
 package team.themoment.everygsm.server.v2.domain.user.entity;
 
+import java.util.Objects;
+
+import org.hibernate.proxy.HibernateProxy;
+
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +11,7 @@ import lombok.NoArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.user.entity.constant.Role;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = @Index(name = "idx_users_name", columnList = "name"))
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Getter
 public class UserJpaEntity {
@@ -34,5 +38,33 @@ public class UserJpaEntity {
         this.name = name;
         this.studentNumber = studentNumber;
         this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        Class<?> thisClass = (this instanceof HibernateProxy hp)
+                ? hp.getHibernateLazyInitializer().getPersistentClass()
+                : this.getClass();
+        Class<?> otherClass = (o instanceof HibernateProxy hp)
+                ? hp.getHibernateLazyInitializer().getPersistentClass()
+                : o.getClass();
+        if (!thisClass.equals(otherClass)) {
+            return false;
+        }
+        UserJpaEntity other = (UserJpaEntity) o;
+        return this.id != null && Objects.equals(this.id, other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return (this instanceof HibernateProxy hp)
+                ? hp.getHibernateLazyInitializer().getPersistentClass().hashCode()
+                : getClass().hashCode();
     }
 }

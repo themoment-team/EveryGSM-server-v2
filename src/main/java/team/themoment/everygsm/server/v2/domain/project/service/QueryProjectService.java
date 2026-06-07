@@ -2,8 +2,11 @@ package team.themoment.everygsm.server.v2.domain.project.service;
 
 import static team.themoment.everygsm.server.v2.domain.project.entity.constant.Status.APPROVED;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.QueryProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.ProjectSortType;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectLikeRepository;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
@@ -26,34 +30,55 @@ public class QueryProjectService {
     private final ProjectMapper projectMapper;
 
     @Transactional(readOnly = true)
-    public QueryProjectResDto execute(@Nullable Long userId) {
-        return buildQueryResDto(userId);
+    public QueryProjectResDto execute(@Nullable Long userId, ProjectSortType sortType, @Nullable String keyword) {
+        return buildQueryResDto(userId, sortType, keyword);
     }
 
-    private QueryProjectResDto buildQueryResDto(@Nullable Long userId) {
+    private QueryProjectResDto buildQueryResDto(@Nullable Long userId,
+            ProjectSortType sortType,
+            @Nullable String keyword) {
         if (userId == null) {
-            return buildGuestQuery();
+            return buildGuestQuery(sortType, keyword);
         }
-        return buildUserQuery(userId);
+        return buildUserQuery(userId, sortType, keyword);
     }
 
-    private QueryProjectResDto buildGuestQuery() {
-        List<ProjectJpaEntity> projects = projectRepository.findAllByStatusWithCollections(APPROVED);
-        List<ProjectResDto> res = projects.stream().map(p -> projectMapper.toRes(p, false)).toList();
+    private QueryProjectResDto buildGuestQuery(ProjectSortType sortType, @Nullable String keyword) {
+        List<ProjectJpaEntity> projects = projectRepository.findAllByStatusWithCollections(APPROVED, sortType, keyword);
+        List<Long> projectIds = projects.stream().map(ProjectJpaEntity::getId).toList();
+        projects = applySortIfNeeded(projects, projectIds, sortType);
 
+        List<ProjectResDto> res = projects.stream().map(p -> projectMapper.toRes(p, false)).toList();
         return new QueryProjectResDto(res);
     }
 
-    private QueryProjectResDto buildUserQuery(Long userId) {
-        List<ProjectJpaEntity> projects = projectRepository.findAllByStatusWithCollections(APPROVED);
-
+    private QueryProjectResDto buildUserQuery(Long userId, ProjectSortType sortType, @Nullable String keyword) {
+        List<ProjectJpaEntity> projects = projectRepository.findAllByStatusWithCollections(APPROVED, sortType, keyword);
         List<Long> projectIds = projects.stream().map(ProjectJpaEntity::getId).toList();
+        projects = applySortIfNeeded(projects, projectIds, sortType);
 
-        Set<Long> likedProjectIds = new java.util.HashSet<>(projectLikeRepository.findByProjectId(userId, projectIds));
+        Set<Long> likedProjectIds = new java.util.HashSet<>(
+                projectIds.isEmpty() ? List.of() : projectLikeRepository.findByProjectId(userId, projectIds));
 
         List<ProjectResDto> res = projects.stream()
                 .map(p -> projectMapper.toRes(p, likedProjectIds.contains(p.getId()))).toList();
 
         return new QueryProjectResDto(res);
+    }
+
+    private List<ProjectJpaEntity> applySortIfNeeded(List<ProjectJpaEntity> projects,
+            List<Long> projectIds,
+            ProjectSortType sortType) {
+        if (sortType != ProjectSortType.LIKES || projects.isEmpty()) {
+            return projects;
+        }
+
+        Map<Long, Long> likeCountMap = projectLikeRepository.countByProjectIds(projectIds).stream()
+                .collect(Collectors.toMap(p -> p.getProjectId(), p -> p.getLikeCount()));
+
+        return projects.stream()
+                .sorted(Comparator.comparingLong((ProjectJpaEntity p) -> likeCountMap.getOrDefault(p.getId(), 0L))
+                        .reversed().thenComparing(ProjectJpaEntity::getId))
+                .toList();
     }
 }

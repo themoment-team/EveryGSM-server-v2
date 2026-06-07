@@ -8,10 +8,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.project.dto.request.CreateProjectReqDto;
+import team.themoment.everygsm.server.v2.domain.project.dto.request.UpdateParticipantsReqDto;
+import team.themoment.everygsm.server.v2.domain.project.dto.request.UpdateProjectReqDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.MyPageResDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectListResDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.QueryProjectResDto;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.ProjectSortType;
 import team.themoment.everygsm.server.v2.domain.project.service.CreateProjectLikeService;
 import team.themoment.everygsm.server.v2.domain.project.service.CreateProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.DeleteProjectLikeService;
@@ -21,6 +24,8 @@ import team.themoment.everygsm.server.v2.domain.project.service.QueryMypageServi
 import team.themoment.everygsm.server.v2.domain.project.service.QueryPendingProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryProjectService;
 import team.themoment.everygsm.server.v2.domain.project.service.QueryRejectedProjectService;
+import team.themoment.everygsm.server.v2.domain.project.service.UpdateProjectParticipantsService;
+import team.themoment.everygsm.server.v2.domain.project.service.UpdateProjectService;
 
 @Tag(name = "Project", description = "프로젝트 API")
 @RestController
@@ -36,6 +41,8 @@ public class ProjectController {
     private final DeleteProjectService deleteProjectService;
     private final CreateProjectLikeService createProjectLikeService;
     private final DeleteProjectLikeService deleteProjectLikeService;
+    private final UpdateProjectParticipantsService updateProjectParticipantsService;
+    private final UpdateProjectService updateProjectService;
 
     @Operation(summary = "마이페이지 조회", description = "좋아요한 프로젝트와 등록한 프로젝트를 조회합니다")
     @GetMapping("/my")
@@ -67,10 +74,12 @@ public class ProjectController {
         return createProjectService.execute(userId, reqDto);
     }
 
-    @Operation(summary = "승인된 프로젝트 전체 조회", description = "승인된 모든 프로젝트를 조회합니다")
+    @Operation(summary = "승인된 프로젝트 전체 조회", description = "승인된 모든 프로젝트를 조회합니다. sort: NEWEST(기본값), OLDEST, LIKES / keyword: 프로젝트 이름 검색(선택)")
     @GetMapping
-    public QueryProjectResDto query(@AuthenticationPrincipal Long userId) {
-        return queryProjectService.execute(userId);
+    public QueryProjectResDto query(@AuthenticationPrincipal Long userId,
+            @RequestParam(name = "sort", defaultValue = "NEWEST") ProjectSortType sortType,
+            @RequestParam(name = "keyword", required = false) String keyword) {
+        return queryProjectService.execute(userId, sortType, keyword);
     }
 
     @Operation(summary = "프로젝트 삭제", description = "자신이 등록한 프로젝트를 삭제합니다")
@@ -89,5 +98,21 @@ public class ProjectController {
     @DeleteMapping("/like/{projectId}")
     public ProjectResDto deleteLike(@AuthenticationPrincipal Long userId, @PathVariable Long projectId) {
         return deleteProjectLikeService.execute(userId, projectId);
+    }
+
+    @Operation(summary = "프로젝트 정보 수정", description = "프로젝트 정보를 수정합니다. APPROVED 상태이면 수정 사본이 PENDING으로 생성되고, PENDING/REJECTED 상태이면 직접 수정됩니다.")
+    @PatchMapping("/my/{projectId}")
+    public ProjectResDto update(@AuthenticationPrincipal Long userId,
+            @PathVariable Long projectId,
+            @RequestBody @Valid UpdateProjectReqDto reqDto) {
+        return updateProjectService.execute(userId, projectId, reqDto);
+    }
+
+    @Operation(summary = "프로젝트 참여자 교체", description = "프로젝트 참여자 목록을 전달된 ID 목록으로 교체합니다. 신청자 본인은 항상 포함됩니다.")
+    @PatchMapping("/{projectId}/participants")
+    public ProjectResDto updateParticipants(@AuthenticationPrincipal Long userId,
+            @PathVariable Long projectId,
+            @RequestBody @Valid UpdateParticipantsReqDto reqDto) {
+        return updateProjectParticipantsService.execute(userId, projectId, reqDto);
     }
 }

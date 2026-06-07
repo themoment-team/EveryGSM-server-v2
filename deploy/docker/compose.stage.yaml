@@ -3,21 +3,41 @@ services:
     build:
       context: ../..
       dockerfile: deploy/Dockerfile.stage
+    ports:
+      - '8080:8080'
     environment:
       SPRING_PROFILES_ACTIVE: stage
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
-      DISCORD_ERROR_WEBHOOK_URL: ${DISCORD_ERROR_WEBHOOK_URL}
+    networks:
+      - everygsm
     depends_on:
       mysql:
         condition: service_healthy
 
   mysql:
+    image: 'mysql:8.0.36'
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: everygsm
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - everygsm
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+networks:
+  everygsm:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: "1400"
+
+volumes:
+  mysql_data:

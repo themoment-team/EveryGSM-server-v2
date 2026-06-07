@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.BatchSize;
+
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -66,6 +68,15 @@ public class ProjectJpaEntity {
     @Column(name = "external_project_id", unique = true)
     private Long externalProjectId;
 
+    @Column(name = "original_project_id")
+    private Long originalProjectId;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "project_participants", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+            "project_id", "user_id"}))
+    @BatchSize(size = 100)
+    private Set<UserJpaEntity> participants;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -83,7 +94,9 @@ public class ProjectJpaEntity {
             Integer startYear,
             Set<String> repoUrls,
             Set<String> stackNames,
-            Long externalProjectId) {
+            Long externalProjectId,
+            Long originalProjectId,
+            Set<UserJpaEntity> participants) {
         this.user = user;
         this.logo = logo;
         this.title = title;
@@ -96,6 +109,15 @@ public class ProjectJpaEntity {
         this.repoUrls = repoUrls != null ? repoUrls : new HashSet<>();
         this.stackNames = stackNames != null ? stackNames : new HashSet<>();
         this.externalProjectId = externalProjectId;
+        this.originalProjectId = originalProjectId;
+        this.participants = participants != null ? participants : new HashSet<>();
+    }
+
+    public void replaceParticipants(Set<UserJpaEntity> newParticipants) {
+        this.participants.clear();
+        if (newParticipants != null) {
+            this.participants.addAll(newParticipants);
+        }
     }
 
     public void updateStatus(Status status, String reason) {
@@ -115,6 +137,44 @@ public class ProjectJpaEntity {
         if (user != null) {
             this.user = user;
         }
+    }
+
+    public void applyFrom(ProjectJpaEntity copy) {
+        this.logo = copy.logo;
+        this.title = copy.title;
+        this.affiliation = copy.affiliation;
+        this.description = copy.description;
+        this.prodUrl = copy.prodUrl;
+        this.startYear = copy.startYear;
+        this.repoUrls.clear();
+        this.repoUrls.addAll(copy.repoUrls);
+        this.stackNames.clear();
+        this.stackNames.addAll(copy.stackNames);
+        this.participants.clear();
+        this.participants.addAll(copy.participants);
+    }
+
+    public void updateContent(String logo,
+            String title,
+            String affiliation,
+            String description,
+            String prodUrl,
+            int startYear,
+            Set<String> stackNames,
+            Set<String> repoUrls,
+            Set<UserJpaEntity> participants) {
+        this.logo = logo;
+        this.title = title;
+        this.affiliation = affiliation;
+        this.description = description;
+        this.prodUrl = prodUrl;
+        this.startYear = startYear;
+        this.stackNames.clear();
+        this.stackNames.addAll(stackNames);
+        this.repoUrls.clear();
+        this.repoUrls.addAll(repoUrls);
+        this.participants.clear();
+        this.participants.addAll(participants);
     }
 
     public void markInactive() {

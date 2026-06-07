@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.ProjectSortType;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.project.repository.custom.ProjectRepositoryCustom;
 
@@ -63,6 +66,33 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
                 .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.status.eq(status))
                 .orderBy(projectJpaEntity.createdAt.desc()).distinct().fetch();
+    }
+
+    @Override
+    public List<ProjectJpaEntity> findAllByStatusWithCollections(Status status, ProjectSortType sortType) {
+        return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
+                .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(projectJpaEntity.status.eq(status))
+                .orderBy(resolveOrder(sortType)).distinct().fetch();
+    }
+
+    @Override
+    public List<ProjectJpaEntity> findAllByStatusWithCollections(Status status,
+            ProjectSortType sortType,
+            String keyword) {
+        BooleanExpression condition = projectJpaEntity.status.eq(status);
+        if (keyword != null && !keyword.isBlank()) {
+            condition = condition.and(projectJpaEntity.title.containsIgnoreCase(keyword));
+        }
+        return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
+                .leftJoin(projectJpaEntity.repoUrls).fetchJoin().where(condition)
+                .orderBy(resolveOrder(sortType), projectJpaEntity.id.asc()).distinct().fetch();
+    }
+
+    private OrderSpecifier<?> resolveOrder(ProjectSortType sortType) {
+        return switch (sortType) {
+            case OLDEST -> projectJpaEntity.createdAt.asc();
+            case NEWEST, LIKES -> projectJpaEntity.createdAt.desc();
+        };
     }
 
     @Override
