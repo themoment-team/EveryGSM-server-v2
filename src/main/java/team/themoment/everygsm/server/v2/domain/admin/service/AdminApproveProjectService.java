@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
+import team.themoment.datagsm.sdk.openapi.client.ProjectApi;
+import team.themoment.datagsm.sdk.openapi.model.Project;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
@@ -27,6 +30,7 @@ public class AdminApproveProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
     private final DatagsmApiClient datagsmApiClient;
+    private final DataGsmOpenApiClient dataGsmOpenApiClient;
 
     @Transactional
     public ProjectResDto execute(Long projectId) {
@@ -54,6 +58,13 @@ public class AdminApproveProjectService {
     }
 
     private void registerToDatagsm(ProjectJpaEntity project) {
+        // datagsm에는 프로젝트 update API가 없으므로, 이미 같은 이름이 등록돼 있으면 그 id를 매핑하고 생성을 생략한다.
+        Long existingId = findExistingExternalId(project.getTitle());
+        if (existingId != null) {
+            project.assignExternalProjectId(existingId);
+            return;
+        }
+
         Long clubId = resolveClubId(project.getAffiliation());
         List<Long> participantIds = project.getUser() != null
                 ? resolveParticipantIds(project.getUser().getEmail())
@@ -63,7 +74,17 @@ public class AdminApproveProjectService {
                 .startYear(project.getStartYear()).clubId(clubId).participantIds(participantIds).build();
 
         Long externalProjectId = datagsmApiClient.createProject(reqDto).getId();
+        if (externalProjectId == null) {
+            throw new ExpectedException("datagsm 프로젝트 등록 응답에 id가 없습니다. title=" + project.getTitle(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         project.assignExternalProjectId(externalProjectId);
+    }
+
+    private Long findExistingExternalId(String title) {
+        return dataGsmOpenApiClient.projects().getProjects(new ProjectApi.ProjectRequest().projectName(title).size(100))
+                .getProjects().stream().filter(p -> title.equals(p.getName())).map(Project::getId).findFirst()
+                .orElse(null);
     }
 
     private Long resolveClubId(String affiliation) {
