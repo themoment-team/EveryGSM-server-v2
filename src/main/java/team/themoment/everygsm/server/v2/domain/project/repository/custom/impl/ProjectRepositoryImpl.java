@@ -34,7 +34,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     public List<ProjectJpaEntity> findByUserIdAndStatus(Long userId, Status status) {
         return queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames).fetchJoin()
                 .leftJoin(projectJpaEntity.repoUrls).fetchJoin()
-                .where(projectJpaEntity.user.id.eq(userId).and(projectJpaEntity.status.eq(status)))
+                .where(ownerOrParticipant(userId).and(projectJpaEntity.status.eq(status)))
                 .orderBy(projectJpaEntity.createdAt.desc()).distinct().fetch();
     }
 
@@ -49,8 +49,12 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     public Optional<ProjectJpaEntity> findProjectWithCollectionsByIdAndUserId(Long projectId, Long userId) {
         return Optional.ofNullable(queryFactory.selectFrom(projectJpaEntity).leftJoin(projectJpaEntity.stackNames)
                 .fetchJoin().leftJoin(projectJpaEntity.repoUrls).fetchJoin()
-                .where(projectJpaEntity.id.eq(projectId).and(projectJpaEntity.user.id.eq(userId))).distinct()
-                .fetchOne());
+                .where(projectJpaEntity.id.eq(projectId).and(ownerOrParticipant(userId))).distinct().fetchOne());
+    }
+
+    // 소유자(등록자) 또는 참여자(participants)이면 접근 권한이 있다.
+    private BooleanExpression ownerOrParticipant(Long userId) {
+        return projectJpaEntity.user.id.eq(userId).or(projectJpaEntity.participants.any().id.eq(userId));
     }
 
     @Override
