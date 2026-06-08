@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
 import team.themoment.datagsm.sdk.openapi.client.ProjectApi;
 import team.themoment.datagsm.sdk.openapi.model.Project;
+import team.themoment.datagsm.sdk.openapi.model.ProjectResponse;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
@@ -19,6 +20,7 @@ import team.themoment.everygsm.server.v2.domain.project.repository.ProjectReposi
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.DatagsmApiClient;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ClubListResDto;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.DatagsmProjectResDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ProjectReqDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryClubReqDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryStudentReqDto;
@@ -73,17 +75,21 @@ public class AdminApproveProjectService {
         ProjectReqDto reqDto = ProjectReqDto.builder().name(project.getTitle()).description(project.getDescription())
                 .startYear(project.getStartYear()).clubId(clubId).participantIds(participantIds).build();
 
-        Long externalProjectId = datagsmApiClient.createProject(reqDto).getId();
-        if (externalProjectId == null) {
+        DatagsmProjectResDto response = datagsmApiClient.createProject(reqDto);
+        if (response == null || response.getId() == null) {
             throw new ExpectedException("datagsm 프로젝트 등록 응답에 id가 없습니다. title=" + project.getTitle(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        project.assignExternalProjectId(externalProjectId);
+        project.assignExternalProjectId(response.getId());
     }
 
     private Long findExistingExternalId(String title) {
-        return dataGsmOpenApiClient.projects().getProjects(new ProjectApi.ProjectRequest().projectName(title).size(100))
-                .getProjects().stream().filter(p -> title.equals(p.getName())).map(Project::getId).findFirst()
+        ProjectResponse response = dataGsmOpenApiClient.projects()
+                .getProjects(new ProjectApi.ProjectRequest().projectName(title).size(100));
+        if (response == null || response.getProjects() == null) {
+            return null;
+        }
+        return response.getProjects().stream().filter(p -> title.equals(p.getName())).map(Project::getId).findFirst()
                 .orElse(null);
     }
 
