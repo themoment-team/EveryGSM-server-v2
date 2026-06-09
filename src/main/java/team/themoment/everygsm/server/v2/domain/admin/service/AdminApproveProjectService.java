@@ -78,7 +78,10 @@ public class AdminApproveProjectService {
 
         DatagsmApiResponse<DatagsmProjectResDto> response = datagsmApiClient.createProject(reqDto);
         if (response == null || response.getData() == null || response.getData().getId() == null) {
-            throw new ExpectedException("datagsm 프로젝트 등록 응답에 id가 없습니다. title=" + project.getTitle(),
+            String cause = (response != null && response.getMessage() != null)
+                    ? response.getMessage()
+                    : "응답 바디가 비어있거나 id가 누락되었습니다.";
+            throw new ExpectedException("datagsm 프로젝트 등록에 실패했습니다. 원인=" + cause + ", title=" + project.getTitle(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
         project.assignExternalProjectId(response.getData().getId());

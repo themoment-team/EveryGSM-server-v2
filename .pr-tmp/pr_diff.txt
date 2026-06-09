@@ -1,0 +1,84 @@
+diff --git a/src/main/java/team/themoment/everygsm/server/v2/domain/admin/service/AdminApproveProjectService.java b/src/main/java/team/themoment/everygsm/server/v2/domain/admin/service/AdminApproveProjectService.java
+index 9b18aa1..9326ba6 100644
+--- a/src/main/java/team/themoment/everygsm/server/v2/domain/admin/service/AdminApproveProjectService.java
++++ b/src/main/java/team/themoment/everygsm/server/v2/domain/admin/service/AdminApproveProjectService.java
+@@ -20,6 +20,7 @@ import team.themoment.everygsm.server.v2.domain.project.repository.ProjectReposi
+ import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
+ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.DatagsmApiClient;
+ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ClubListResDto;
++import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.DatagsmApiResponse;
+ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.DatagsmProjectResDto;
+ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ProjectReqDto;
+ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryClubReqDto;
+@@ -75,12 +76,12 @@ public class AdminApproveProjectService {
+         ProjectReqDto reqDto = ProjectReqDto.builder().name(project.getTitle()).description(project.getDescription())
+                 .startYear(project.getStartYear()).clubId(clubId).participantIds(participantIds).build();
+ 
+-        DatagsmProjectResDto response = datagsmApiClient.createProject(reqDto);
+-        if (response == null || response.getId() == null) {
++        DatagsmApiResponse<DatagsmProjectResDto> response = datagsmApiClient.createProject(reqDto);
++        if (response == null || response.getData() == null || response.getData().getId() == null) {
+             throw new ExpectedException("datagsm 프로젝트 등록 응답에 id가 없습니다. title=" + project.getTitle(),
+                     HttpStatus.INTERNAL_SERVER_ERROR);
+         }
+-        project.assignExternalProjectId(response.getId());
++        project.assignExternalProjectId(response.getData().getId());
+     }
+ 
+     private Long findExistingExternalId(String title) {
+diff --git a/src/main/java/team/themoment/everygsm/server/v2/global/config/DataGsmOpenApiConfig.java b/src/main/java/team/themoment/everygsm/server/v2/global/config/DataGsmOpenApiConfig.java
+index 744c213..8913829 100644
+--- a/src/main/java/team/themoment/everygsm/server/v2/global/config/DataGsmOpenApiConfig.java
++++ b/src/main/java/team/themoment/everygsm/server/v2/global/config/DataGsmOpenApiConfig.java
+@@ -10,8 +10,7 @@ import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
+ public class DataGsmOpenApiConfig {
+ 
+     @Bean
+-    public DataGsmOpenApiClient dataGsmOpenApiClient(
+-            @Value("${spring.cloud.datagsm.openapi.api-key}") String apiKey,
++    public DataGsmOpenApiClient dataGsmOpenApiClient(@Value("${spring.cloud.datagsm.openapi.api-key}") String apiKey,
+             @Value("${spring.cloud.datagsm.openapi.base-url}") String baseUrl) {
+         return DataGsmOpenApiClient.builder(apiKey).baseUrl(baseUrl).build();
+     }
+diff --git a/src/main/java/team/themoment/everygsm/server/v2/global/thirdparty/feign/datagsm/DatagsmApiClient.java b/src/main/java/team/themoment/everygsm/server/v2/global/thirdparty/feign/datagsm/DatagsmApiClient.java
+index 65e1646..d839755 100644
+--- a/src/main/java/team/themoment/everygsm/server/v2/global/thirdparty/feign/datagsm/DatagsmApiClient.java
++++ b/src/main/java/team/themoment/everygsm/server/v2/global/thirdparty/feign/datagsm/DatagsmApiClient.java
+@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
+ 
+ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.config.DatagsmFeignConfig;
+ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ClubListResDto;
++import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.DatagsmApiResponse;
+ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.DatagsmProjectResDto;
+ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ProjectReqDto;
+ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryClubReqDto;
+@@ -24,5 +25,5 @@ public interface DatagsmApiClient {
+     StudentListResDto getStudents(@SpringQueryMap QueryStudentReqDto req);
+ 
+     @PostMapping("/v1/projects")
+-    DatagsmProjectResDto createProject(@RequestBody ProjectReqDto req);
++    DatagsmApiResponse<DatagsmProjectResDto> createProject(@RequestBody ProjectReqDto req);
+ }
+diff --git a/src/main/java/team/themoment/everygsm/server/v2/global/thirdparty/feign/datagsm/dto/DatagsmApiResponse.java b/src/main/java/team/themoment/everygsm/server/v2/global/thirdparty/feign/datagsm/dto/DatagsmApiResponse.java
+new file mode 100644
+index 0000000..868a2bb
+--- /dev/null
++++ b/src/main/java/team/themoment/everygsm/server/v2/global/thirdparty/feign/datagsm/dto/DatagsmApiResponse.java
+@@ -0,0 +1,17 @@
++package team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto;
++
++import lombok.Getter;
++import lombok.NoArgsConstructor;
++
++/**
++ * DataGSM OpenAPI 공통 응답 래퍼. 실제 페이로드는 {@code data} 필드에 담겨 온다.
++ */
++@Getter
++@NoArgsConstructor
++public class DatagsmApiResponse<T> {
++
++    private String status;
++    private int code;
++    private String message;
++    private T data;
++}
