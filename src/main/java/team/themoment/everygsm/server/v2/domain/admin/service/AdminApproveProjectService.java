@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
+import team.themoment.datagsm.sdk.openapi.client.ProjectApi;
+import team.themoment.datagsm.sdk.openapi.model.Project;
+import team.themoment.datagsm.sdk.openapi.model.ProjectResponse;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
@@ -16,6 +20,7 @@ import team.themoment.everygsm.server.v2.domain.project.repository.ProjectReposi
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.DatagsmApiClient;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ClubListResDto;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.DatagsmProjectResDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ProjectReqDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryClubReqDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryStudentReqDto;
@@ -27,6 +32,7 @@ public class AdminApproveProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
     private final DatagsmApiClient datagsmApiClient;
+    private final DataGsmOpenApiClient dataGsmOpenApiClient;
 
     @Transactional
     public ProjectResDto execute(Long projectId) {
@@ -54,6 +60,13 @@ public class AdminApproveProjectService {
     }
 
     private void registerToDatagsm(ProjectJpaEntity project) {
+        // datagsm에는 프로젝트 update API가 없으므로, 이미 같은 이름이 등록돼 있으면 그 id를 매핑하고 생성을 생략한다.
+        Long existingId = findExistingExternalId(project.getTitle());
+        if (existingId != null) {
+            project.assignExternalProjectId(existingId);
+            return;
+        }
+
         Long clubId = resolveClubId(project.getAffiliation());
         List<Long> participantIds = project.getUser() != null
                 ? resolveParticipantIds(project.getUser().getEmail())
@@ -62,8 +75,22 @@ public class AdminApproveProjectService {
         ProjectReqDto reqDto = ProjectReqDto.builder().name(project.getTitle()).description(project.getDescription())
                 .startYear(project.getStartYear()).clubId(clubId).participantIds(participantIds).build();
 
-        Long externalProjectId = datagsmApiClient.createProject(reqDto).getId();
-        project.assignExternalProjectId(externalProjectId);
+        DatagsmProjectResDto response = datagsmApiClient.createProject(reqDto);
+        if (response == null || response.getId() == null) {
+            throw new ExpectedException("datagsm 프로젝트 등록 응답에 id가 없습니다. title=" + project.getTitle(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        project.assignExternalProjectId(response.getId());
+    }
+
+    private Long findExistingExternalId(String title) {
+        ProjectResponse response = dataGsmOpenApiClient.projects()
+                .getProjects(new ProjectApi.ProjectRequest().projectName(title).size(100));
+        if (response == null || response.getProjects() == null) {
+            return null;
+        }
+        return response.getProjects().stream().filter(p -> title.equals(p.getName())).map(Project::getId).findFirst()
+                .orElse(null);
     }
 
     private Long resolveClubId(String affiliation) {
