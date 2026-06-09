@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.config.DatagsmFeignConfig;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ClubListResDto;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.DatagsmApiResponse;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.DatagsmProjectResDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ProjectReqDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryClubReqDto;
@@ -24,5 +25,5 @@ public interface DatagsmApiClient {
     StudentListResDto getStudents(@SpringQueryMap QueryStudentReqDto req);
 
     @PostMapping("/v1/projects")
-    DatagsmProjectResDto createProject(@RequestBody ProjectReqDto req);
+    DatagsmApiResponse<DatagsmProjectResDto> createProject(@RequestBody ProjectReqDto req);
 }

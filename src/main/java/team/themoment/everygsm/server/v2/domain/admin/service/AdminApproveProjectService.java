@@ -20,6 +20,7 @@ import team.themoment.everygsm.server.v2.domain.project.repository.ProjectReposi
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.DatagsmApiClient;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ClubListResDto;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.DatagsmApiResponse;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.DatagsmProjectResDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.ProjectReqDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryClubReqDto;
@@ -75,12 +76,12 @@ public class AdminApproveProjectService {
         ProjectReqDto reqDto = ProjectReqDto.builder().name(project.getTitle()).description(project.getDescription())
                 .startYear(project.getStartYear()).clubId(clubId).participantIds(participantIds).build();
 
-        DatagsmProjectResDto response = datagsmApiClient.createProject(reqDto);
-        if (response == null || response.getId() == null) {
+        DatagsmApiResponse<DatagsmProjectResDto> response = datagsmApiClient.createProject(reqDto);
+        if (response == null || response.getData() == null || response.getData().getId() == null) {
             throw new ExpectedException("datagsm 프로젝트 등록 응답에 id가 없습니다. title=" + project.getTitle(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        project.assignExternalProjectId(response.getId());
+        project.assignExternalProjectId(response.getData().getId());
     }
 
     private Long findExistingExternalId(String title) {
