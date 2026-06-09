@@ -1,4 +1,0 @@
-src/main/java/team/themoment/everygsm/server/v2/domain/admin/service/AdminApproveProjectService.java
-src/main/java/team/themoment/everygsm/server/v2/global/config/DataGsmOpenApiConfig.java
-src/main/java/team/themoment/everygsm/server/v2/global/thirdparty/feign/datagsm/DatagsmApiClient.java
-src/main/java/team/themoment/everygsm/server/v2/global/thirdparty/feign/datagsm/dto/DatagsmApiResponse.java

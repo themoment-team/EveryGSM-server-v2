@@ -44,3 +44,4 @@ out/
 
 ### Claude Code ###
 .claude/command.log
+.pr-tmp/
