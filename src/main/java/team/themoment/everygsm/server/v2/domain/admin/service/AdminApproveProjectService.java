@@ -105,7 +105,7 @@ public class AdminApproveProjectService {
             return null;
         }
         ClubListResDto res = datagsmApiClient.getClubs(QueryClubReqDto.builder().clubName(affiliation).build());
-        if (res.getClubs() == null || res.getClubs().isEmpty()) {
+        if (res == null || res.getClubs() == null || res.getClubs().isEmpty()) {
             return null;
         }
         return res.getClubs().getFirst().getId();
@@ -134,7 +134,7 @@ public class AdminApproveProjectService {
 
     private Long resolveStudentId(String email) {
         StudentListResDto res = datagsmApiClient.getStudents(QueryStudentReqDto.builder().email(email).build());
-        if (res.getStudents() == null || res.getStudents().isEmpty()) {
+        if (res == null || res.getStudents() == null || res.getStudents().isEmpty()) {
             return null;
         }
         return res.getStudents().get(0).getId();
