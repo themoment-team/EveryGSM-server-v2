@@ -2,13 +2,17 @@ package team.themoment.everygsm.server.v2.domain.admin.service;
 
 import static team.themoment.everygsm.server.v2.domain.project.entity.constant.Status.APPROVED;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
 import team.themoment.datagsm.sdk.openapi.client.ProjectApi;
 import team.themoment.datagsm.sdk.openapi.model.Project;
@@ -27,6 +31,7 @@ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.Que
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryStudentReqDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.StudentListResDto;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminApproveProjectService {
@@ -69,9 +74,7 @@ public class AdminApproveProjectService {
         }
 
         Long clubId = resolveClubId(project.getAffiliation());
-        List<Long> participantIds = project.getUser() != null
-                ? resolveParticipantIds(project.getUser().getEmail())
-                : List.of();
+        List<Long> participantIds = resolveParticipantIds(project);
 
         ProjectReqDto reqDto = ProjectReqDto.builder().name(project.getTitle()).description(project.getDescription())
                 .startYear(project.getStartYear()).clubId(clubId).participantIds(participantIds).build();
@@ -102,17 +105,38 @@ public class AdminApproveProjectService {
             return null;
         }
         ClubListResDto res = datagsmApiClient.getClubs(QueryClubReqDto.builder().clubName(affiliation).build());
-        if (res.getClubs() == null || res.getClubs().isEmpty()) {
+        if (res == null || res.getClubs() == null || res.getClubs().isEmpty()) {
             return null;
         }
-        return res.getClubs().get(0).getId();
+        return res.getClubs().getFirst().getId();
     }
 
-    private List<Long> resolveParticipantIds(String email) {
-        StudentListResDto res = datagsmApiClient.getStudents(QueryStudentReqDto.builder().email(email).build());
-        if (res.getStudents() == null || res.getStudents().isEmpty()) {
-            return List.of();
+    private List<Long> resolveParticipantIds(ProjectJpaEntity project) {
+        Set<String> emails = new LinkedHashSet<>();
+        if (project.getUser() != null) {
+            emails.add(project.getUser().getEmail());
         }
-        return List.of(res.getStudents().get(0).getId());
+        if (project.getParticipants() != null) {
+            project.getParticipants().forEach(participant -> emails.add(participant.getEmail()));
+        }
+
+        List<Long> studentIds = new ArrayList<>();
+        for (String email : emails) {
+            Long studentId = resolveStudentId(email);
+            if (studentId != null) {
+                studentIds.add(studentId);
+            } else {
+                log.warn("datagsm에서 참여자 학생을 찾지 못해 동기화에서 제외합니다. email={}, projectId={}", email, project.getId());
+            }
+        }
+        return studentIds;
+    }
+
+    private Long resolveStudentId(String email) {
+        StudentListResDto res = datagsmApiClient.getStudents(QueryStudentReqDto.builder().email(email).build());
+        if (res == null || res.getStudents() == null || res.getStudents().isEmpty()) {
+            return null;
+        }
+        return res.getStudents().get(0).getId();
     }
 }
