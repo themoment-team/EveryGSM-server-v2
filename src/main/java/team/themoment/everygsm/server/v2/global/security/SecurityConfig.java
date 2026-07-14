@@ -43,18 +43,19 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler))
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/v2/auth/**", "/error").permitAll()
-                        .requestMatchers("/api/v2/projects/registration",
-                                "/api/v2/projects/my",
-                                "/api/v2/projects/my/**",
-                                "/api/v2/users/me",
-                                "/api/v2/projects/like/**")
-                        .hasAnyAuthority("USER", "ADMIN").requestMatchers(HttpMethod.GET, "/api/v2/projects")
-                        .permitAll().requestMatchers("/api/v2/images").hasAnyAuthority("USER", "ADMIN")
-                        .requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
+                .authorizeHttpRequests(
+                        auth -> auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/v2/auth/**", "/error")
+                                .permitAll().requestMatchers("/api/v2/test/**").permitAll()
+                                .requestMatchers("/api/v2/projects/registration",
+                                        "/api/v2/projects/my",
+                                        "/api/v2/projects/my/**",
+                                        "/api/v2/users/me",
+                                        "/api/v2/projects/like/**")
+                                .hasAnyAuthority("USER", "ADMIN").requestMatchers(HttpMethod.GET, "/api/v2/projects")
+                                .permitAll().requestMatchers("/api/v2/images").hasAnyAuthority("USER", "ADMIN")
+                                .requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
 
-                        .anyRequest().permitAll())
+                                .anyRequest().permitAll())
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(rateLimitFilter, JwtAuthenticationFilter.class);
