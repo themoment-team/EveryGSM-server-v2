@@ -6,9 +6,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,7 +21,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
+import team.themoment.datagsm.sdk.openapi.client.ProjectApi;
 import team.themoment.datagsm.sdk.openapi.model.Project;
+import team.themoment.datagsm.sdk.openapi.model.ProjectResponse;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
@@ -57,6 +62,67 @@ class SyncProjectServiceTest {
     private ProjectJpaEntity localProject() {
         return ProjectJpaEntity.builder().title(TITLE).description("설명").logo("logo.png").prodUrl("https://a.b")
                 .startYear(START_YEAR).status(Status.APPROVED).build();
+    }
+
+    @Nested
+    @DisplayName("execute 메서드는")
+    class Describe_execute {
+
+        @Mock
+        private ProjectApi projectApi;
+
+        /** execute()는 @Lazy self 프록시를 통해 호출하므로 자기 자신을 주입해준다. */
+        @BeforeEach
+        void injectSelf() throws Exception {
+            Field self = SyncProjectService.class.getDeclaredField("self");
+            self.setAccessible(true);
+            self.set(syncProjectService, syncProjectService);
+            given(dataGsmOpenApiClient.projects()).willReturn(projectApi);
+        }
+
+        @Nested
+        @DisplayName("프로젝트 목록을 일부만 가져온 경우")
+        class Context_with_partial_fetch {
+
+            @Test
+            @DisplayName("미조회 프로젝트를 비활성화하지 않는다")
+            void it_skips_deactivation() {
+                // 첫 페이지는 정상, 두 번째 페이지는 응답이 비어있는 상황
+                ProjectResponse first = new ProjectResponse();
+                first.setProjects(List.of(externalProject()));
+                first.setTotalPages(2);
+
+                ProjectResponse broken = new ProjectResponse();
+                broken.setProjects(null);
+                broken.setTotalPages(2);
+
+                given(projectApi.getProjects(any(ProjectApi.ProjectRequest.class))).willReturn(first, broken);
+
+                syncProjectService.execute();
+
+                verify(projectRepository, never()).markUnseenProjectsAsInactive(any());
+            }
+        }
+
+        @Nested
+        @DisplayName("프로젝트 목록 전체를 정상적으로 가져온 경우")
+        class Context_with_complete_fetch {
+
+            @Test
+            @DisplayName("미조회 프로젝트를 비활성화한다")
+            void it_marks_unseen_inactive() {
+                ProjectResponse only = new ProjectResponse();
+                only.setProjects(List.of(externalProject()));
+                only.setTotalPages(1);
+
+                given(projectApi.getProjects(any(ProjectApi.ProjectRequest.class))).willReturn(only);
+                given(projectRepository.findByExternalProjectId(EXTERNAL_ID)).willReturn(Optional.of(localProject()));
+
+                syncProjectService.execute();
+
+                verify(projectRepository).markUnseenProjectsAsInactive(Set.of(EXTERNAL_ID));
+            }
+        }
     }
 
     @Nested
