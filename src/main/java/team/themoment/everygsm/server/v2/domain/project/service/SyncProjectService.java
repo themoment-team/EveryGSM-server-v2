@@ -59,14 +59,45 @@ public class SyncProjectService {
     public void syncProject(Project externalProject) {
         String affiliation = externalProject.getClub().map(club -> club.getName()).orElse(null);
         UserJpaEntity owner = findOrCreateOwner(externalProject);
-        projectRepository.findByExternalProjectId(externalProject.getId())
-                .ifPresentOrElse(
-                        entity -> entity.syncUpdate(externalProject.getName(),
-                                externalProject.getDescription(),
-                                affiliation,
-                                externalProject.getStartYear(),
-                                owner),
-                        () -> projectRepository.save(buildNewProject(externalProject, affiliation, owner)));
+
+        ProjectJpaEntity matched = projectRepository.findByExternalProjectId(externalProject.getId())
+                .orElseGet(() -> healOrphanedProject(externalProject));
+
+        if (matched == null) {
+            projectRepository.save(buildNewProject(externalProject, affiliation, owner));
+            return;
+        }
+
+        matched.syncUpdate(externalProject
+                .getName(), externalProject.getDescription(), affiliation, externalProject.getStartYear(), owner);
+    }
+
+    /**
+     * 승인 시 datagsm 등록은 성공했으나 external_project_id 저장이 유실된 프로젝트를 찾아 id를 다시 연결한다. 이
+     * 복구가 없으면 동기화가 해당 프로젝트를 신규로 판단해 중복 행을 만든다.
+     */
+    private ProjectJpaEntity healOrphanedProject(Project externalProject) {
+        List<ProjectJpaEntity> candidates = projectRepository
+                .findByExternalProjectIdIsNullAndTitleAndStartYearAndStatusNot(externalProject.getName(),
+                        externalProject.getStartYear(),
+                        Status.INACTIVE);
+
+        if (candidates.size() != 1) {
+            if (candidates.size() > 1) {
+                log.warn("external_project_id 복구 후보가 여러 건이라 건너뜁니다. title={}, startYear={}, count={}",
+                        externalProject.getName(),
+                        externalProject.getStartYear(),
+                        candidates.size());
+            }
+            return null;
+        }
+
+        ProjectJpaEntity orphan = candidates.getFirst();
+        orphan.assignExternalProjectId(externalProject.getId());
+        log.info("유실된 external_project_id를 복구했습니다. projectId={}, externalProjectId={}",
+                orphan.getId(),
+                externalProject.getId());
+        return orphan;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

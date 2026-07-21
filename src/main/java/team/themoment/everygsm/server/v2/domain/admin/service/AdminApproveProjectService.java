@@ -5,6 +5,7 @@ import static team.themoment.everygsm.server.v2.domain.project.entity.constant.S
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.http.HttpStatus;
@@ -67,9 +68,9 @@ public class AdminApproveProjectService {
 
     private void registerToDatagsm(ProjectJpaEntity project) {
         // datagsm에는 프로젝트 update API가 없으므로, 이미 같은 이름이 등록돼 있으면 그 id를 매핑하고 생성을 생략한다.
-        Long existingId = findExistingExternalId(project.getTitle());
+        Long existingId = findExistingExternalId(project.getTitle(), project.getStartYear());
         if (existingId != null) {
-            project.assignExternalProjectId(existingId);
+            assignIfUnoccupied(project, existingId);
             return;
         }
 
@@ -81,23 +82,60 @@ public class AdminApproveProjectService {
 
         DatagsmApiResponse<DatagsmProjectResDto> response = datagsmApiClient.createProject(reqDto);
         if (response == null || response.getData() == null || response.getData().getId() == null) {
+            // datagsm에는 이미 생성됐는데 응답만 못 읽었을 수 있다. 여기서 id를 회수하지 못하면
+            // 트랜잭션이 롤백되며 external_project_id가 유실되고, 다음 동기화가 중복 행을 만든다.
+            Long recoveredId = findExistingExternalId(project.getTitle(), project.getStartYear());
+            if (recoveredId != null) {
+                log.warn("datagsm 등록 응답을 읽지 못했으나 이름 조회로 id를 회수했습니다. title={}, externalProjectId={}",
+                        project.getTitle(),
+                        recoveredId);
+                assignIfUnoccupied(project, recoveredId);
+                return;
+            }
+
             String cause = (response != null && response.getMessage() != null)
                     ? response.getMessage()
                     : "응답 바디가 비어있거나 id가 누락되었습니다.";
             throw new ExpectedException("datagsm 프로젝트 등록에 실패했습니다. 원인=" + cause + ", title=" + project.getTitle(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        project.assignExternalProjectId(response.getData().getId());
+        assignIfUnoccupied(project, response.getData().getId());
     }
 
-    private Long findExistingExternalId(String title) {
-        ProjectResponse response = dataGsmOpenApiClient.projects()
-                .getProjects(new ProjectApi.ProjectRequest().projectName(title).size(100));
-        if (response == null || response.getProjects() == null) {
-            return null;
-        }
-        return response.getProjects().stream().filter(p -> title.equals(p.getName())).map(Project::getId).findFirst()
-                .orElse(null);
+    /**
+     * external_project_id는 unique 제약이 걸려 있어, 다른 프로젝트가 선점한 id를 할당하면 커밋 시점에야 실패한다.
+     * 원인이 드러나도록 미리 검증한다.
+     */
+    private void assignIfUnoccupied(ProjectJpaEntity project, Long externalProjectId) {
+        projectRepository.findByExternalProjectId(externalProjectId)
+                .filter(owner -> !owner.getId().equals(project.getId())).ifPresent(owner -> {
+                    throw new ExpectedException(
+                            "이미 다른 프로젝트에 매핑된 datagsm 프로젝트입니다. externalProjectId=" + externalProjectId
+                                    + ", 점유 중인 projectId=" + owner.getId(),
+                            HttpStatus.CONFLICT);
+                });
+        project.assignExternalProjectId(externalProjectId);
+    }
+
+    private Long findExistingExternalId(String title, Integer startYear) {
+        int page = 0;
+        int totalPages;
+        do {
+            ProjectResponse response = dataGsmOpenApiClient.projects()
+                    .getProjects(new ProjectApi.ProjectRequest().projectName(title).page(page).size(100));
+            if (response == null || response.getProjects() == null) {
+                return null;
+            }
+            Long matched = response.getProjects().stream()
+                    .filter(p -> title.equals(p.getName()) && Objects.equals(startYear, p.getStartYear()))
+                    .map(Project::getId).findFirst().orElse(null);
+            if (matched != null) {
+                return matched;
+            }
+            totalPages = response.getTotalPages();
+            page++;
+        } while (page < totalPages);
+        return null;
     }
 
     private Long resolveClubId(String affiliation) {
