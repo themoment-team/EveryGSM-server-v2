@@ -132,7 +132,7 @@ public class AdminApproveProjectService {
             if (matched != null) {
                 return matched;
             }
-            totalPages = response.getTotalPages();
+            totalPages = response.getTotalPages() != null ? response.getTotalPages() : 0;
             page++;
         } while (page < totalPages);
         return null;
