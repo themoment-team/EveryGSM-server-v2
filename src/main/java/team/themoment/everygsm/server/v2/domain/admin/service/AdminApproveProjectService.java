@@ -67,7 +67,6 @@ public class AdminApproveProjectService {
     }
 
     private void registerToDatagsm(ProjectJpaEntity project) {
-        // datagsm에는 프로젝트 update API가 없으므로, 이미 같은 이름이 등록돼 있으면 그 id를 매핑하고 생성을 생략한다.
         Long existingId = findExistingExternalId(project.getTitle(), project.getStartYear());
         if (existingId != null) {
             assignIfUnoccupied(project, existingId);
@@ -82,8 +81,6 @@ public class AdminApproveProjectService {
 
         DatagsmApiResponse<DatagsmProjectResDto> response = datagsmApiClient.createProject(reqDto);
         if (response == null || response.getData() == null || response.getData().getId() == null) {
-            // datagsm에는 이미 생성됐는데 응답만 못 읽었을 수 있다. 여기서 id를 회수하지 못하면
-            // 트랜잭션이 롤백되며 external_project_id가 유실되고, 다음 동기화가 중복 행을 만든다.
             Long recoveredId = findExistingExternalId(project.getTitle(), project.getStartYear());
             if (recoveredId != null) {
                 log.warn("datagsm 등록 응답을 읽지 못했으나 이름 조회로 id를 회수했습니다. title={}, externalProjectId={}",
@@ -102,10 +99,6 @@ public class AdminApproveProjectService {
         assignIfUnoccupied(project, response.getData().getId());
     }
 
-    /**
-     * external_project_id는 unique 제약이 걸려 있어, 다른 프로젝트가 선점한 id를 할당하면 커밋 시점에야 실패한다.
-     * 원인이 드러나도록 미리 검증한다.
-     */
     private void assignIfUnoccupied(ProjectJpaEntity project, Long externalProjectId) {
         projectRepository.findByExternalProjectId(externalProjectId)
                 .filter(owner -> !owner.getId().equals(project.getId())).ifPresent(owner -> {
