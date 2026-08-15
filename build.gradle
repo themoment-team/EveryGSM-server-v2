@@ -104,8 +104,8 @@ dependencies {
 	// Custom SDK
 	implementation("com.github.themoment-team:the-sdk:1.5")
 
-	// Disender
-	implementation 'io.github.zaman0806:disender-spring-boot-4-starter:0.1.1'
+	// Dicoshot
+	implementation 'io.github.dicoshot:dicoshot-spring-boot-starter:0.5.0'
 }
 
 tasks.named('test') {

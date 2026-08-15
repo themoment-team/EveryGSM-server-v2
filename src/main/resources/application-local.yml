@@ -36,7 +36,7 @@ datagsm:
     url: ${DATAGSM_API_URL:http://localhost}
     key: ${DATAGSM_OPENAPI_KEY:local-openapi-key}
 
-disender:
+dicoshot:
   webhook-url: ${DISCORD_ERROR_WEBHOOK_URL:}
 
 sdk:
