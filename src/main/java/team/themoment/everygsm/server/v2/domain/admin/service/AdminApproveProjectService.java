@@ -18,6 +18,7 @@ import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
 import team.themoment.datagsm.sdk.openapi.client.ProjectApi;
 import team.themoment.datagsm.sdk.openapi.model.Project;
 import team.themoment.datagsm.sdk.openapi.model.ProjectResponse;
+import team.themoment.datagsm.sdk.openapi.model.ProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
@@ -31,6 +32,7 @@ import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.Pro
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryClubReqDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.QueryStudentReqDto;
 import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.StudentListResDto;
+import team.themoment.everygsm.server.v2.global.thirdparty.feign.datagsm.dto.UpdateProjectReqDto;
 
 @Slf4j
 @Service
@@ -52,6 +54,8 @@ public class AdminApproveProjectService {
             original.applyFrom(project);
             if (original.getExternalProjectId() == null) {
                 registerToDatagsm(original);
+            } else {
+                updateInDatagsm(original);
             }
             original.updateStatus(APPROVED, null);
             project.markInactive();
@@ -60,6 +64,8 @@ public class AdminApproveProjectService {
 
         if (project.getExternalProjectId() == null) {
             registerToDatagsm(project);
+        } else {
+            updateInDatagsm(project);
         }
 
         project.updateStatus(APPROVED, null);
@@ -97,6 +103,46 @@ public class AdminApproveProjectService {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
         assignIfUnoccupied(project, response.getData().getId());
+    }
+
+    private void updateInDatagsm(ProjectJpaEntity project) {
+        Long clubId = resolveClubId(project.getAffiliation());
+        List<Long> participantIds = resolveParticipantIds(project);
+        CurrentDatagsmState currentState = fetchCurrentState(project.getExternalProjectId());
+
+        UpdateProjectReqDto reqDto = UpdateProjectReqDto.builder().name(project.getTitle())
+                .description(project.getDescription()).startYear(project.getStartYear()).clubId(clubId)
+                .participantIds(participantIds).status(currentState.status()).endYear(currentState.endYear()).build();
+
+        DatagsmApiResponse<DatagsmProjectResDto> response = datagsmApiClient
+                .updateProject(project.getExternalProjectId(), reqDto);
+        if (response == null || response.getData() == null || response.getData().getId() == null) {
+            String cause = (response != null && response.getMessage() != null)
+                    ? response.getMessage()
+                    : "응답 바디가 비어있거나 id가 누락되었습니다.";
+            throw new ExpectedException(
+                    "datagsm 프로젝트 수정에 실패했습니다. 원인=" + cause + ", externalProjectId=" + project.getExternalProjectId(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * datagsm이 관리하는 status/endYear는 EveryGSM에 저장되지 않으므로, 수정 API 호출 시 이 값을 임의로
+     * ACTIVE/null로 덮어쓰지 않도록 기존 값을 조회해 그대로 유지한다.
+     */
+    private CurrentDatagsmState fetchCurrentState(Long externalProjectId) {
+        try {
+            Project current = dataGsmOpenApiClient.projects().getProject(externalProjectId);
+            if (current != null && current.getStatus() != null) {
+                return new CurrentDatagsmState(current.getStatus(), current.getEndYear().orElse(null));
+            }
+        } catch (RuntimeException e) {
+            log.warn("datagsm 프로젝트 현재 상태 조회에 실패해 기본값(ACTIVE)으로 수정합니다. externalProjectId={}", externalProjectId, e);
+        }
+        return new CurrentDatagsmState(ProjectStatus.ACTIVE, null);
+    }
+
+    private record CurrentDatagsmState(ProjectStatus status, Integer endYear) {
     }
 
     private void assignIfUnoccupied(ProjectJpaEntity project, Long externalProjectId) {
