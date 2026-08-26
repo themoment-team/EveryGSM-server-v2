@@ -170,8 +170,8 @@ class SyncProjectServiceTest {
         class Context_with_ambiguous_candidates {
 
             @Test
-            @DisplayName("잘못된 복구를 피하고 새 프로젝트를 저장한다")
-            void it_saves_new_project() {
+            @DisplayName("잘못된 복구를 피하고 datagsm 전용 프로젝트로 간주해 무시한다")
+            void it_ignores_datagsm_only_project() {
                 given(projectRepository.findByExternalProjectId(EXTERNAL_ID)).willReturn(Optional.empty());
                 given(projectRepository.findByExternalProjectIdIsNullAndTitleAndStartYearAndStatusNot(TITLE,
                         START_YEAR,
@@ -179,7 +179,7 @@ class SyncProjectServiceTest {
 
                 syncProjectService.syncProject(externalProject());
 
-                verify(projectRepository).save(any(ProjectJpaEntity.class));
+                verify(projectRepository, never()).save(any(ProjectJpaEntity.class));
             }
         }
 
@@ -188,8 +188,8 @@ class SyncProjectServiceTest {
         class Context_with_no_candidate {
 
             @Test
-            @DisplayName("새 프로젝트를 저장한다")
-            void it_saves_new_project() {
+            @DisplayName("EveryGSM에 새로 생성하지 않고 무시한다")
+            void it_ignores_datagsm_only_project() {
                 given(projectRepository.findByExternalProjectId(EXTERNAL_ID)).willReturn(Optional.empty());
                 given(projectRepository.findByExternalProjectIdIsNullAndTitleAndStartYearAndStatusNot(TITLE,
                         START_YEAR,
@@ -197,7 +197,7 @@ class SyncProjectServiceTest {
 
                 syncProjectService.syncProject(externalProject());
 
-                verify(projectRepository).save(any(ProjectJpaEntity.class));
+                verify(projectRepository, never()).save(any(ProjectJpaEntity.class));
             }
         }
     }
