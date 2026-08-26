@@ -35,6 +35,8 @@ datagsm:
   api:
     url: ${DATAGSM_API_URL:http://localhost}
     key: ${DATAGSM_OPENAPI_KEY:local-openapi-key}
+  event:
+    secret: ${DATAGSM_EVENT_SECRET:local-event-secret}
 
 dicoshot:
   webhook-url: ${DISCORD_ERROR_WEBHOOK_URL:}
