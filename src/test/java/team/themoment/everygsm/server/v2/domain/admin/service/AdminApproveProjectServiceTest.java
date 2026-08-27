@@ -29,6 +29,7 @@ import team.themoment.datagsm.sdk.openapi.model.Project;
 import team.themoment.datagsm.sdk.openapi.model.ProjectResponse;
 import team.themoment.datagsm.sdk.openapi.model.ProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.DatagsmProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
@@ -214,6 +215,8 @@ class AdminApproveProjectServiceTest {
                 adminApproveProjectService.execute(PROJECT_ID);
 
                 verify(datagsmApiClient).updateProject(eq(EXTERNAL_ID), argThat(preservesEndedStatus));
+                assertEquals(DatagsmProjectStatus.ENDED, project.getDatagsmStatus());
+                assertEquals(2025, project.getDatagsmEndYear());
             }
         }
     }

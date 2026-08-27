@@ -14,6 +14,7 @@ import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmEvent
 import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmProjectEventObjectDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmProjectEventParticipantDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.DatagsmProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
 import team.themoment.everygsm.server.v2.domain.user.entity.constant.Role;
@@ -68,6 +69,7 @@ public class HandleDatagsmProjectEventService {
                 newState.startYear(),
                 owner);
         project.replaceParticipants(participants);
+        project.updateDatagsmState(parseStatus(newState.status()), newState.endYear());
         log.info("datagsm project.updated 이벤트를 반영했습니다. externalProjectId={}", newState.id());
     }
 
@@ -86,7 +88,21 @@ public class HandleDatagsmProjectEventService {
                 && Objects.equals(project.getDescription(), newState.description())
                 && Objects.equals(currentAffiliation, newAffiliation)
                 && Objects.equals(project.getStartYear(), newState.startYear())
-                && Objects.equals(currentParticipantEmails, newParticipantEmails);
+                && Objects.equals(currentParticipantEmails, newParticipantEmails)
+                && Objects.equals(project.getDatagsmStatus(), parseStatus(newState.status()))
+                && Objects.equals(project.getDatagsmEndYear(), newState.endYear());
+    }
+
+    private DatagsmProjectStatus parseStatus(String status) {
+        if (status == null) {
+            return null;
+        }
+        try {
+            return DatagsmProjectStatus.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            log.warn("알 수 없는 datagsm status 값이라 무시합니다. status={}", status);
+            return null;
+        }
     }
 
     private Set<UserJpaEntity> resolveParticipants(DatagsmProjectEventObjectDto newState) {

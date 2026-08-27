@@ -20,7 +20,9 @@ import team.themoment.datagsm.sdk.openapi.model.ClubDetail;
 import team.themoment.datagsm.sdk.openapi.model.ParticipantInfo;
 import team.themoment.datagsm.sdk.openapi.model.Project;
 import team.themoment.datagsm.sdk.openapi.model.ProjectResponse;
+import team.themoment.datagsm.sdk.openapi.model.ProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.DatagsmProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
@@ -79,6 +81,12 @@ public class SyncProjectService {
         UserJpaEntity owner = findOrCreateOwner(externalProject);
         matched.syncUpdate(externalProject
                 .getName(), externalProject.getDescription(), affiliation, externalProject.getStartYear(), owner);
+        matched.updateDatagsmState(toEntityStatus(externalProject.getStatus()),
+                externalProject.getEndYear().orElse(null));
+    }
+
+    private DatagsmProjectStatus toEntityStatus(ProjectStatus status) {
+        return status == ProjectStatus.ENDED ? DatagsmProjectStatus.ENDED : DatagsmProjectStatus.ACTIVE;
     }
 
     /**

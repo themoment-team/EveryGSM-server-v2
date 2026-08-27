@@ -45,7 +45,9 @@ public class ProjectMapper {
                 techStacks,
                 repositories,
                 participants,
-                liked);
+                liked,
+                project.getDatagsmStatus(),
+                project.getDatagsmEndYear());
     }
 
     private String generatePresignedUrl(String key) {

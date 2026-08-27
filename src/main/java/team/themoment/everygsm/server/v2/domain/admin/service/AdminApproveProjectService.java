@@ -21,6 +21,7 @@ import team.themoment.datagsm.sdk.openapi.model.ProjectResponse;
 import team.themoment.datagsm.sdk.openapi.model.ProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.dto.response.ProjectResDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.DatagsmProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.mapper.ProjectMapper;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.global.exception.error.ExpectedException;
@@ -103,6 +104,7 @@ public class AdminApproveProjectService {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
         assignIfUnoccupied(project, response.getData().getId());
+        project.updateDatagsmState(DatagsmProjectStatus.ACTIVE, null);
     }
 
     private void updateInDatagsm(ProjectJpaEntity project) {
@@ -124,6 +126,7 @@ public class AdminApproveProjectService {
                     "datagsm 프로젝트 수정에 실패했습니다. 원인=" + cause + ", externalProjectId=" + project.getExternalProjectId(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        project.updateDatagsmState(toEntityStatus(currentState.status()), currentState.endYear());
     }
 
     /**
@@ -140,6 +143,10 @@ public class AdminApproveProjectService {
             log.warn("datagsm 프로젝트 현재 상태 조회에 실패해 기본값(ACTIVE)으로 수정합니다. externalProjectId={}", externalProjectId, e);
         }
         return new CurrentDatagsmState(ProjectStatus.ACTIVE, null);
+    }
+
+    private DatagsmProjectStatus toEntityStatus(ProjectStatus status) {
+        return status == ProjectStatus.ENDED ? DatagsmProjectStatus.ENDED : DatagsmProjectStatus.ACTIVE;
     }
 
     private record CurrentDatagsmState(ProjectStatus status, Integer endYear) {

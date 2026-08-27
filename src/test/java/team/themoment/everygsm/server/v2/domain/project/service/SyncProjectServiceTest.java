@@ -24,7 +24,9 @@ import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
 import team.themoment.datagsm.sdk.openapi.client.ProjectApi;
 import team.themoment.datagsm.sdk.openapi.model.Project;
 import team.themoment.datagsm.sdk.openapi.model.ProjectResponse;
+import team.themoment.datagsm.sdk.openapi.model.ProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.DatagsmProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.domain.user.repository.UserRepository;
@@ -142,6 +144,22 @@ class SyncProjectServiceTest {
                 syncProjectService.syncProject(externalProject());
 
                 verify(projectRepository, never()).save(any(ProjectJpaEntity.class));
+            }
+
+            @Test
+            @DisplayName("datagsm 운영 상태가 ENDED이면 datagsmStatus/datagsmEndYear를 반영한다")
+            void it_updates_datagsm_state() {
+                ProjectJpaEntity existing = localProject();
+                given(projectRepository.findByExternalProjectId(EXTERNAL_ID)).willReturn(Optional.of(existing));
+
+                Project endedProject = externalProject();
+                endedProject.setStatus(ProjectStatus.ENDED);
+                endedProject.setEndYear(2026);
+
+                syncProjectService.syncProject(endedProject);
+
+                assertEquals(DatagsmProjectStatus.ENDED, existing.getDatagsmStatus());
+                assertEquals(2026, existing.getDatagsmEndYear());
             }
         }
 

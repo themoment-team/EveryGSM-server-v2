@@ -27,6 +27,7 @@ import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmProje
 import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmProjectEventObjectDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmProjectEventParticipantDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.DatagsmProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
@@ -53,7 +54,7 @@ class HandleDatagsmProjectEventServiceTest {
     private ProjectJpaEntity localProject() {
         return ProjectJpaEntity.builder().title(TITLE).description("설명").logo("logo.png").prodUrl("https://a.b")
                 .affiliation("동아리A").startYear(START_YEAR).status(Status.APPROVED).externalProjectId(EXTERNAL_ID)
-                .build();
+                .datagsmStatus(DatagsmProjectStatus.ACTIVE).build();
     }
 
     private DatagsmEventReqDto eventOf(DatagsmProjectEventObjectDto newObject) {
@@ -212,6 +213,33 @@ class HandleDatagsmProjectEventServiceTest {
                 Set<String> emails = project.getParticipants().stream().map(UserJpaEntity::getEmail)
                         .collect(Collectors.toSet());
                 assertTrue(emails.contains("new@gsm.hs.kr"));
+            }
+        }
+
+        @Nested
+        @DisplayName("datagsm 운영 상태가 ENDED로 바뀐 경우")
+        class Context_with_status_changed_to_ended {
+
+            @Test
+            @DisplayName("동일 이벤트로 판단하지 않고 datagsmStatus/datagsmEndYear를 갱신한다")
+            void it_updates_datagsm_state() {
+                ProjectJpaEntity project = localProject();
+                given(projectRepository.findByExternalProjectId(EXTERNAL_ID)).willReturn(Optional.of(project));
+
+                DatagsmProjectEventClubDto sameClub = new DatagsmProjectEventClubDto(1L, "동아리A");
+                DatagsmProjectEventObjectDto endedState = new DatagsmProjectEventObjectDto(EXTERNAL_ID,
+                        TITLE,
+                        "설명",
+                        START_YEAR,
+                        2026,
+                        "ENDED",
+                        sameClub,
+                        List.of());
+
+                handleDatagsmProjectEventService.execute(eventOf(endedState));
+
+                assertEquals(DatagsmProjectStatus.ENDED, project.getDatagsmStatus());
+                assertEquals(2026, project.getDatagsmEndYear());
             }
         }
     }
