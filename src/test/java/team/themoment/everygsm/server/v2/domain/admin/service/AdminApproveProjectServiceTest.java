@@ -167,6 +167,12 @@ class AdminApproveProjectServiceTest {
             void it_calls_update_instead_of_create() {
                 project.assignExternalProjectId(EXTERNAL_ID);
 
+                Project currentDatagsmProject = new Project();
+                currentDatagsmProject.setId(EXTERNAL_ID);
+                currentDatagsmProject.setStatus(ProjectStatus.ACTIVE);
+                given(dataGsmOpenApiClient.projects()).willReturn(projectApi);
+                given(projectApi.getProject(EXTERNAL_ID)).willReturn(currentDatagsmProject);
+
                 DatagsmApiResponse<DatagsmProjectResDto> response = mock(DatagsmApiResponse.class);
                 DatagsmProjectResDto data = mock(DatagsmProjectResDto.class);
                 given(data.getId()).willReturn(EXTERNAL_ID);
@@ -186,9 +192,27 @@ class AdminApproveProjectServiceTest {
             void it_throws_when_update_response_is_invalid() {
                 project.assignExternalProjectId(EXTERNAL_ID);
 
+                Project currentDatagsmProject = new Project();
+                currentDatagsmProject.setId(EXTERNAL_ID);
+                currentDatagsmProject.setStatus(ProjectStatus.ACTIVE);
+                given(dataGsmOpenApiClient.projects()).willReturn(projectApi);
+                given(projectApi.getProject(EXTERNAL_ID)).willReturn(currentDatagsmProject);
+
                 given(datagsmApiClient.updateProject(eq(EXTERNAL_ID), any(UpdateProjectReqDto.class))).willReturn(null);
 
                 assertThrows(ExpectedException.class, () -> adminApproveProjectService.execute(PROJECT_ID));
+            }
+
+            @Test
+            @DisplayName("datagsm 현재 상태 조회에 실패하면 ExpectedException을 던지고 수정 API를 호출하지 않는다")
+            void it_throws_when_current_state_fetch_fails() {
+                project.assignExternalProjectId(EXTERNAL_ID);
+
+                given(dataGsmOpenApiClient.projects()).willReturn(projectApi);
+                given(projectApi.getProject(EXTERNAL_ID)).willThrow(new RuntimeException("network error"));
+
+                assertThrows(ExpectedException.class, () -> adminApproveProjectService.execute(PROJECT_ID));
+                verify(datagsmApiClient, never()).updateProject(any(Long.class), any(UpdateProjectReqDto.class));
             }
 
             @Test

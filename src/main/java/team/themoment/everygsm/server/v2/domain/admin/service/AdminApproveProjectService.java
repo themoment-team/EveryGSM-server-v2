@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.http.HttpStatus;
@@ -110,7 +111,10 @@ public class AdminApproveProjectService {
     private void updateInDatagsm(ProjectJpaEntity project) {
         Long clubId = resolveClubId(project.getAffiliation());
         List<Long> participantIds = resolveParticipantIds(project);
-        CurrentDatagsmState currentState = fetchCurrentState(project.getExternalProjectId());
+        CurrentDatagsmState currentState = fetchCurrentState(project.getExternalProjectId())
+                .orElseThrow(() -> new ExpectedException(
+                        "datagsm 현재 상태 조회에 실패해 수정 요청을 중단합니다. externalProjectId=" + project.getExternalProjectId(),
+                        HttpStatus.INTERNAL_SERVER_ERROR));
 
         UpdateProjectReqDto reqDto = UpdateProjectReqDto.builder().name(project.getTitle())
                 .description(project.getDescription()).startYear(project.getStartYear()).clubId(clubId)
@@ -131,18 +135,20 @@ public class AdminApproveProjectService {
 
     /**
      * datagsm이 관리하는 status/endYear는 EveryGSM에 저장되지 않으므로, 수정 API 호출 시 이 값을 임의로
-     * ACTIVE/null로 덮어쓰지 않도록 기존 값을 조회해 그대로 유지한다.
+     * ACTIVE/null로 덮어쓰지 않도록 기존 값을 조회해 그대로 유지한다. 조회에 실패하면 잘못된 기본값(ACTIVE)으로 덮어쓰지 않도록
+     * 빈 Optional을 반환해 호출부가 수정 자체를 중단하게 한다.
      */
-    private CurrentDatagsmState fetchCurrentState(Long externalProjectId) {
+    private Optional<CurrentDatagsmState> fetchCurrentState(Long externalProjectId) {
         try {
             Project current = dataGsmOpenApiClient.projects().getProject(externalProjectId);
             if (current != null && current.getStatus() != null) {
-                return new CurrentDatagsmState(current.getStatus(), current.getEndYear().orElse(null));
+                return Optional.of(new CurrentDatagsmState(current.getStatus(), current.getEndYear().orElse(null)));
             }
+            log.warn("datagsm 프로젝트 현재 상태 응답이 비어있어 수정을 중단합니다. externalProjectId={}", externalProjectId);
         } catch (RuntimeException e) {
-            log.warn("datagsm 프로젝트 현재 상태 조회에 실패해 기본값(ACTIVE)으로 수정합니다. externalProjectId={}", externalProjectId, e);
+            log.warn("datagsm 프로젝트 현재 상태 조회에 실패해 수정을 중단합니다. externalProjectId={}", externalProjectId, e);
         }
-        return new CurrentDatagsmState(ProjectStatus.ACTIVE, null);
+        return Optional.empty();
     }
 
     private DatagsmProjectStatus toEntityStatus(ProjectStatus status) {
