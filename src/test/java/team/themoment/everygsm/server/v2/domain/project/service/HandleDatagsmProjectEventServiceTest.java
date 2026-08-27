@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -20,6 +21,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
+import team.themoment.datagsm.sdk.openapi.client.ClubApi;
+import team.themoment.datagsm.sdk.openapi.model.ClubDetail;
+import team.themoment.datagsm.sdk.openapi.model.ParticipantInfo;
 import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmEventDataDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmEventReqDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmEventSnapshotDto;
@@ -47,6 +52,12 @@ class HandleDatagsmProjectEventServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private DataGsmOpenApiClient dataGsmOpenApiClient;
+
+    @Mock
+    private ClubApi clubApi;
 
     @InjectMocks
     private HandleDatagsmProjectEventService handleDatagsmProjectEventService;
@@ -240,6 +251,52 @@ class HandleDatagsmProjectEventServiceTest {
 
                 assertEquals(DatagsmProjectStatus.ENDED, project.getDatagsmStatus());
                 assertEquals(2026, project.getDatagsmEndYear());
+            }
+        }
+
+        @Nested
+        @DisplayName("동아리 리더가 첫 참여자가 아닌 경우")
+        class Context_with_leader_not_first_participant {
+
+            @Test
+            @DisplayName("동아리 리더를 owner로 지정한다")
+            void it_assigns_leader_as_owner() {
+                ProjectJpaEntity project = localProject();
+                given(projectRepository.findByExternalProjectId(EXTERNAL_ID)).willReturn(Optional.of(project));
+
+                UserJpaEntity firstParticipant = UserJpaEntity.builder().email("first@gsm.hs.kr").name("첫참여자")
+                        .studentNumber("3011").role(Role.USER).build();
+                UserJpaEntity leader = UserJpaEntity.builder().email("leader@gsm.hs.kr").name("리더")
+                        .studentNumber("3022").role(Role.USER).build();
+                given(userRepository.findByEmail("first@gsm.hs.kr")).willReturn(Optional.of(firstParticipant));
+                given(userRepository.findByEmail("leader@gsm.hs.kr")).willReturn(Optional.of(leader));
+
+                given(dataGsmOpenApiClient.clubs()).willReturn(clubApi);
+                ClubDetail clubDetail = mock(ClubDetail.class);
+                ParticipantInfo leaderInfo = mock(ParticipantInfo.class);
+                given(leaderInfo.getEmail()).willReturn("leader@gsm.hs.kr");
+                given(clubDetail.getLeader()).willReturn(Optional.of(leaderInfo));
+                given(clubApi.getClub(1L)).willReturn(clubDetail);
+
+                DatagsmProjectEventClubDto sameClub = new DatagsmProjectEventClubDto(1L, "동아리A");
+                DatagsmProjectEventParticipantDto first = new DatagsmProjectEventParticipantDto("3011",
+                        "첫참여자",
+                        "first@gsm.hs.kr");
+                DatagsmProjectEventParticipantDto leaderParticipant = new DatagsmProjectEventParticipantDto("3022",
+                        "리더",
+                        "leader@gsm.hs.kr");
+                DatagsmProjectEventObjectDto changedState = new DatagsmProjectEventObjectDto(EXTERNAL_ID,
+                        "새 제목",
+                        "설명",
+                        START_YEAR,
+                        null,
+                        "ACTIVE",
+                        sameClub,
+                        List.of(first, leaderParticipant));
+
+                handleDatagsmProjectEventService.execute(eventOf(changedState));
+
+                assertEquals("leader@gsm.hs.kr", project.getUser().getEmail());
             }
         }
     }

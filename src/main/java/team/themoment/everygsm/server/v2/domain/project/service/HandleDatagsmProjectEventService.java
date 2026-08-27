@@ -10,7 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
+import team.themoment.datagsm.sdk.openapi.model.ClubDetail;
 import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmEventReqDto;
+import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmProjectEventClubDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmProjectEventObjectDto;
 import team.themoment.everygsm.server.v2.domain.project.dto.webhook.DatagsmProjectEventParticipantDto;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
@@ -29,6 +32,7 @@ public class HandleDatagsmProjectEventService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final DataGsmOpenApiClient dataGsmOpenApiClient;
 
     @Transactional
     public void execute(DatagsmEventReqDto event) {
@@ -62,7 +66,7 @@ public class HandleDatagsmProjectEventService {
         }
 
         Set<UserJpaEntity> participants = resolveParticipants(newState);
-        UserJpaEntity owner = resolveOwner(participants, project.getUser());
+        UserJpaEntity owner = resolveOwner(newState, participants, project.getUser());
         project.syncUpdate(newState.name(),
                 newState.description(),
                 newState.club() != null ? newState.club().name() : null,
@@ -123,7 +127,32 @@ public class HandleDatagsmProjectEventService {
         return participants;
     }
 
-    private UserJpaEntity resolveOwner(Set<UserJpaEntity> participants, UserJpaEntity fallback) {
+    /**
+     * SyncProjectService.findOrCreateOwner()와 동일하게 동아리 리더를 우선 owner로 지정하고, 리더를 확인할
+     * 수 없을 때만 첫 참여자로 폴백한다. 이 우선순위가 어긋나면 cron 동기화 경로와 웹훅 이벤트 경로 중 어느 쪽을 타느냐에 따라 같은
+     * 프로젝트의 owner가 달라질 수 있다.
+     */
+    private UserJpaEntity resolveOwner(DatagsmProjectEventObjectDto newState,
+            Set<UserJpaEntity> participants,
+            UserJpaEntity fallback) {
+        DatagsmProjectEventClubDto club = newState.club();
+        if (club != null && club.id() != null) {
+            try {
+                ClubDetail clubDetail = dataGsmOpenApiClient.clubs().getClub(club.id());
+                if (clubDetail.getLeader().isPresent()) {
+                    String leaderEmail = clubDetail.getLeader().get().getEmail();
+                    UserJpaEntity leader = participants.stream()
+                            .filter(participant -> participant.getEmail().equals(leaderEmail)).findFirst()
+                            .orElseGet(() -> userRepository.findByEmail(leaderEmail).orElse(null));
+                    if (leader != null) {
+                        return leader;
+                    }
+                }
+            } catch (RuntimeException e) {
+                log.warn("동아리 리더 조회에 실패해 첫 참여자로 대체합니다. clubId={}", club.id(), e);
+            }
+        }
+
         return participants.isEmpty() ? fallback : participants.iterator().next();
     }
 }
