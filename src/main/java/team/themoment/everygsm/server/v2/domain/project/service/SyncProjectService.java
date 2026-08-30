@@ -20,7 +20,9 @@ import team.themoment.datagsm.sdk.openapi.model.ClubDetail;
 import team.themoment.datagsm.sdk.openapi.model.ParticipantInfo;
 import team.themoment.datagsm.sdk.openapi.model.Project;
 import team.themoment.datagsm.sdk.openapi.model.ProjectResponse;
+import team.themoment.datagsm.sdk.openapi.model.ProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.DatagsmProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
@@ -65,24 +67,31 @@ public class SyncProjectService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void syncProject(Project externalProject) {
-        String affiliation = externalProject.getClub().map(club -> club.getName()).orElse(null);
-        UserJpaEntity owner = findOrCreateOwner(externalProject);
-
         ProjectJpaEntity matched = projectRepository.findByExternalProjectId(externalProject.getId())
                 .orElseGet(() -> healOrphanedProject(externalProject));
 
         if (matched == null) {
-            projectRepository.save(buildNewProject(externalProject, affiliation, owner));
+            log.info("EveryGSM에 없는 datagsm 전용 프로젝트라 무시합니다. externalProjectId={}, title={}",
+                    externalProject.getId(),
+                    externalProject.getName());
             return;
         }
 
+        String affiliation = externalProject.getClub().map(club -> club.getName()).orElse(null);
+        UserJpaEntity owner = findOrCreateOwner(externalProject);
         matched.syncUpdate(externalProject
                 .getName(), externalProject.getDescription(), affiliation, externalProject.getStartYear(), owner);
+        matched.updateDatagsmState(toEntityStatus(externalProject.getStatus()),
+                externalProject.getEndYear().orElse(null));
+    }
+
+    private DatagsmProjectStatus toEntityStatus(ProjectStatus status) {
+        return status == ProjectStatus.ENDED ? DatagsmProjectStatus.ENDED : DatagsmProjectStatus.ACTIVE;
     }
 
     /**
      * 승인 시 datagsm 등록은 성공했으나 external_project_id 저장이 유실된 프로젝트를 찾아 id를 다시 연결한다. 이
-     * 복구가 없으면 동기화가 해당 프로젝트를 신규로 판단해 중복 행을 만든다.
+     * 복구가 없으면 동기화가 해당 프로젝트를 EveryGSM 전용 프로젝트로 오인해 무시하게 된다.
      */
     private ProjectJpaEntity healOrphanedProject(Project externalProject) {
         List<ProjectJpaEntity> candidates = projectRepository
@@ -132,13 +141,6 @@ public class SyncProjectService {
             page++;
         } while (page < totalPages);
         return Optional.of(all);
-    }
-
-    private ProjectJpaEntity buildNewProject(Project externalProject, String affiliation, UserJpaEntity owner) {
-        return ProjectJpaEntity.builder().user(owner).title(externalProject.getName())
-                .description(externalProject.getDescription()).affiliation(affiliation).logo("").prodUrl("")
-                .startYear(externalProject.getStartYear()).status(Status.APPROVED).stackNames(new HashSet<>())
-                .externalProjectId(externalProject.getId()).build();
     }
 
     private UserJpaEntity findOrCreateOwner(Project externalProject) {

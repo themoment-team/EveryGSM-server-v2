@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.DatagsmProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.user.entity.UserJpaEntity;
 
@@ -71,6 +72,13 @@ public class ProjectJpaEntity {
     @Column(name = "original_project_id")
     private Long originalProjectId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "datagsm_status", length = 20)
+    private DatagsmProjectStatus datagsmStatus;
+
+    @Column(name = "datagsm_end_year")
+    private Integer datagsmEndYear;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "project_participants", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
             "project_id", "user_id"}))
@@ -96,6 +104,8 @@ public class ProjectJpaEntity {
             Set<String> stackNames,
             Long externalProjectId,
             Long originalProjectId,
+            DatagsmProjectStatus datagsmStatus,
+            Integer datagsmEndYear,
             Set<UserJpaEntity> participants) {
         this.user = user;
         this.logo = logo;
@@ -110,6 +120,8 @@ public class ProjectJpaEntity {
         this.stackNames = stackNames != null ? stackNames : new HashSet<>();
         this.externalProjectId = externalProjectId;
         this.originalProjectId = originalProjectId;
+        this.datagsmStatus = datagsmStatus;
+        this.datagsmEndYear = datagsmEndYear;
         this.participants = participants != null ? participants : new HashSet<>();
     }
 
@@ -183,5 +195,10 @@ public class ProjectJpaEntity {
 
     public void assignExternalProjectId(Long externalProjectId) {
         this.externalProjectId = externalProjectId;
+    }
+
+    public void updateDatagsmState(DatagsmProjectStatus datagsmStatus, Integer datagsmEndYear) {
+        this.datagsmStatus = datagsmStatus;
+        this.datagsmEndYear = datagsmEndYear;
     }
 }

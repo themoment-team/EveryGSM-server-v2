@@ -10,7 +10,7 @@ spring:
   cloud:
     datagsm:
       openapi:
-        sync-cron: "0 0 3 * * *"
+        sync-cron: "0 0 2 * * *"
     aws:
       region:
         static: ap-northeast-2
@@ -42,6 +42,8 @@ jwt:
 datagsm:
   api:
     url: ${DATAGSM_API_URL:http://localhost}
+  event:
+    secret: ${DATAGSM_EVENT_SECRET:}
 
 rate-limit:
   max-requests: 100

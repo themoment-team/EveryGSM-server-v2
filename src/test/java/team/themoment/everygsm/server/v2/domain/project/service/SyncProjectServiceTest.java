@@ -24,7 +24,9 @@ import team.themoment.datagsm.sdk.openapi.DataGsmOpenApiClient;
 import team.themoment.datagsm.sdk.openapi.client.ProjectApi;
 import team.themoment.datagsm.sdk.openapi.model.Project;
 import team.themoment.datagsm.sdk.openapi.model.ProjectResponse;
+import team.themoment.datagsm.sdk.openapi.model.ProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.ProjectJpaEntity;
+import team.themoment.everygsm.server.v2.domain.project.entity.constant.DatagsmProjectStatus;
 import team.themoment.everygsm.server.v2.domain.project.entity.constant.Status;
 import team.themoment.everygsm.server.v2.domain.project.repository.ProjectRepository;
 import team.themoment.everygsm.server.v2.domain.user.repository.UserRepository;
@@ -143,6 +145,22 @@ class SyncProjectServiceTest {
 
                 verify(projectRepository, never()).save(any(ProjectJpaEntity.class));
             }
+
+            @Test
+            @DisplayName("datagsm 운영 상태가 ENDED이면 datagsmStatus/datagsmEndYear를 반영한다")
+            void it_updates_datagsm_state() {
+                ProjectJpaEntity existing = localProject();
+                given(projectRepository.findByExternalProjectId(EXTERNAL_ID)).willReturn(Optional.of(existing));
+
+                Project endedProject = externalProject();
+                endedProject.setStatus(ProjectStatus.ENDED);
+                endedProject.setEndYear(2026);
+
+                syncProjectService.syncProject(endedProject);
+
+                assertEquals(DatagsmProjectStatus.ENDED, existing.getDatagsmStatus());
+                assertEquals(2026, existing.getDatagsmEndYear());
+            }
         }
 
         @Nested
@@ -170,8 +188,8 @@ class SyncProjectServiceTest {
         class Context_with_ambiguous_candidates {
 
             @Test
-            @DisplayName("잘못된 복구를 피하고 새 프로젝트를 저장한다")
-            void it_saves_new_project() {
+            @DisplayName("잘못된 복구를 피하고 datagsm 전용 프로젝트로 간주해 무시한다")
+            void it_ignores_datagsm_only_project() {
                 given(projectRepository.findByExternalProjectId(EXTERNAL_ID)).willReturn(Optional.empty());
                 given(projectRepository.findByExternalProjectIdIsNullAndTitleAndStartYearAndStatusNot(TITLE,
                         START_YEAR,
@@ -179,7 +197,7 @@ class SyncProjectServiceTest {
 
                 syncProjectService.syncProject(externalProject());
 
-                verify(projectRepository).save(any(ProjectJpaEntity.class));
+                verify(projectRepository, never()).save(any(ProjectJpaEntity.class));
             }
         }
 
@@ -188,8 +206,8 @@ class SyncProjectServiceTest {
         class Context_with_no_candidate {
 
             @Test
-            @DisplayName("새 프로젝트를 저장한다")
-            void it_saves_new_project() {
+            @DisplayName("EveryGSM에 새로 생성하지 않고 무시한다")
+            void it_ignores_datagsm_only_project() {
                 given(projectRepository.findByExternalProjectId(EXTERNAL_ID)).willReturn(Optional.empty());
                 given(projectRepository.findByExternalProjectIdIsNullAndTitleAndStartYearAndStatusNot(TITLE,
                         START_YEAR,
@@ -197,7 +215,7 @@ class SyncProjectServiceTest {
 
                 syncProjectService.syncProject(externalProject());
 
-                verify(projectRepository).save(any(ProjectJpaEntity.class));
+                verify(projectRepository, never()).save(any(ProjectJpaEntity.class));
             }
         }
     }

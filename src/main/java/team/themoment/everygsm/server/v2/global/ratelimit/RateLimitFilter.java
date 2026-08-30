@@ -24,10 +24,17 @@ import tools.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 public class RateLimitFilter extends OncePerRequestFilter {
 
+    private static final String DATAGSM_EVENT_PATH = "/api/v2/projects/datagsm-events";
+
     private final RateLimitProperties properties;
     private final ObjectMapper objectMapper;
 
     private final ConcurrentHashMap<String, RequestCounter> counterMap = new ConcurrentHashMap<>();
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return DATAGSM_EVENT_PATH.equals(request.getRequestURI());
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
